@@ -6,6 +6,76 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int    @id @default(autoincrement())
+  username   String @unique
+  firstName  String
+  lastName   String
+  email      String @unique
+  password   String // Hashed password
+  description String?
+  team       Team? @relation(fields: [teamId], references: [id])
+  teamId     Int?
+  postList   Json
+  regularPosts RegularPost[]
+
+  FastSearching FastSearching[]
+}
+
+model Team {
+  id          Int    @id @default(autoincrement())
+  teamname    String @unique
+  ceoFirstName String
+  ceoLastName  String
+  email       String @unique
+  password    String
+  description String?
+  rosterList  Json
+  teamColor   String
+  offerPosts  OfferPost[]
+  users       User[]
+}
+
+model RegularPost {
+  id          Int    @id @default(autoincrement())
+  imageList   Json
+  poster      User   @relation(fields: [posterId], references: [id])
+  posterId    Int
+  description String
+  likes       Int    @default(0)
+  likesList   Json
+  reposts     Int    @default(0)
+  repostsList Json
+  comments    Json
+}
+
+model OfferPost {
+  id               Int    @id @default(autoincrement())
+  imageList        Json
+  team            Team   @relation(fields: [teamId], references: [id])
+  teamId          Int
+  description     String
+  applyingUserList Json
+}
+
+model FastSearching {
+  id           Int    @id @default(autoincrement())
+  swiper      User   @relation(fields: [swiperId], references: [id])
+  swiperId    Int
+  acceptedList Json
+  refusedList  Json
+}
+
+model Games {
+  id       Int    @id @default(autoincrement())
+  gameName String @unique
+}
+
+model Notifications {
+  id               Int    @id @default(autoincrement())
+  notificationType String
 }
