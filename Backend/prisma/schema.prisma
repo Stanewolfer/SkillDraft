@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
+  id          String      @id @default(uuid())
   username    String   @unique
   firstName   String
   lastName    String
@@ -16,14 +16,14 @@ model User {
   password    String   // Password will be hashed
   description String?
   team        Team?    @relation(fields: [teamId], references: [id])
-  teamId      Int?
+  teamId      String?
   posts       RegularPost[]
   fastSearch  FastSearching[]
   notifications Notifications[]
 }
 
 model Team {
-  id          Int      @id @default(autoincrement())
+  id          String      @id @default(uuid())
   teamname    String   @unique
   ceoFirstName String
   ceoLastName  String
@@ -42,7 +42,7 @@ model RegularPost {
   id          Int      @id @default(autoincrement())
   imageList   Json
   poster      User     @relation(fields: [posterId], references: [id])
-  posterId    Int
+  posterId    String
   description String
   likes       Int      @default(0)
   likesList   Json
@@ -55,7 +55,7 @@ model OfferPost {
   id              Int      @id @default(autoincrement())
   imageList       Json
   team           Team     @relation(fields: [teamId], references: [id])
-  teamId         Int
+  teamId         String
   description     String
   applyingUserList Json
 }
@@ -63,7 +63,7 @@ model OfferPost {
 model FastSearching {
   id           Int    @id @default(autoincrement())
   swiper      User?  @relation(fields: [swiperId], references: [id])
-  swiperId    Int?
+  swiperId    String?
   acceptedList Json
   refusedList  Json
 
@@ -71,13 +71,14 @@ model FastSearching {
 }
 
 model Games {
-  id        Int    @id @default(autoincrement())
+  id        String      @id @default(uuid())
   gameName  String @unique
+  gameLogo String @unique
 }
 
 model Notifications {
   id               Int    @id @default(autoincrement())
   receiver        User   @relation(fields: [receiverId], references: [id])
-  receiverId      Int
+  receiverId      String
   notificationType String
 }
