@@ -5,7 +5,7 @@ export default function ConnexionScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>Connexion</Text>
+        <Text style={styles.title}>Bienvenue sur Skilldraft !</Text>
         <View style={styles.titleUnderline} />
       </View>
 
