@@ -1,8 +1,7 @@
 import React from 'react';
 import { LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import * as Unicons from '@iconscout/react-native-unicons';
-
-console.log("Icônes disponibles:", Object.keys(Unicons));
+import { useRouter } from 'expo-router';
 
 LogBox.ignoreLogs([
   "Warning: UilSignin: Support for defaultProps will be removed from function components",
@@ -13,6 +12,8 @@ const IconUser = Unicons.UilSignin;
 const IconSignIn = Unicons.UilUser;
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -21,7 +22,10 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.card}>
+        <TouchableOpacity
+          style={styles.card}
+          onPress={() => router.push('/inscription')}
+        >
           <Text style={styles.cardText}>Inscription</Text>
           {IconUser ? (
             <IconUser size={100} color="#010017" />
@@ -30,7 +34,10 @@ export default function HomeScreen() {
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.card, styles.cardInverted]}>
+        <TouchableOpacity
+          style={[styles.card, styles.cardInverted]}
+          onPress={() => router.push('/connexion')}
+        >
           {IconSignIn ? (
             <IconSignIn size={100} color="#A9F6CB" />
           ) : (
