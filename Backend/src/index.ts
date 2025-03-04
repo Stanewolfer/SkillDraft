@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import userRoutes from './modules/user/routes/user.routes';
-import { errorHandler } from './core/middleware/error.middleware';
+import router from './routes/user.routes';
+import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
 
@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.use('/api/users', userRoutes);
+app.use('/api', router);
 
 // Error handling middleware
 app.use(errorHandler);

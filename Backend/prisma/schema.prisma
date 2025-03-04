@@ -49,7 +49,7 @@ model RegularPost {
   reposts     Int      @default(0)
   repostsList Json
   comments    Json
-}
+} 
 
 model OfferPost {
   id              Int      @id @default(autoincrement())
