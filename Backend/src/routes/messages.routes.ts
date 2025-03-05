@@ -1,5 +1,6 @@
 import express from 'express'
 import {
+    getAllMessages,
   getMessagesBetweenUsers,
   getMessagesForOffer,
   sendMessage
@@ -7,8 +8,9 @@ import {
 
 const messagesRouter = express.Router()
 
-messagesRouter.post('/messages', sendMessage)
-messagesRouter.get('/messages/offer/:offerPostId', getMessagesForOffer)
-messagesRouter.get('/messages/:user1Id/:user2Id', getMessagesBetweenUsers)
+messagesRouter.post('/send', sendMessage)
+messagesRouter.get('/all-messages', getAllMessages)
+messagesRouter.get('/offer-messages/offer/:offerPostId', getMessagesForOffer)
+messagesRouter.get('/regular-messages/:user1Id/:user2Id', getMessagesBetweenUsers)
 
 export default messagesRouter

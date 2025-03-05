@@ -33,6 +33,24 @@ export const sendMessage = async (
   }
 }
 
+// route pour récupérer tous les messages
+export const getAllMessages = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const messages = await prisma.message.findMany()
+
+    res.json(messages)
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: errorMessage })
+  }
+}
+
 // route pour récupérer un message d'une offre
 export const getMessagesForOffer = async (
   req: Request,
