@@ -20,6 +20,10 @@ model User {
   posts       RegularPost[]
   fastSearch  FastSearching[]
   notifications Notifications[]
+
+  sendMessages Message[] @relation(name: "sender")
+
+  receivedMessages Message[] @relation(name: "receiver")
 }
 
 model Team {
@@ -58,6 +62,8 @@ model OfferPost {
   teamId         String
   description     String
   applyingUserList Json
+
+  Messages Message[]
 }
 
 model FastSearching {
@@ -82,3 +88,17 @@ model Notifications {
   receiverId      String
   notificationType String
 }
+
+model Message {
+  id          String   @id @default(uuid())
+  senderId    String
+  receiverId  String
+  offerPostId String?   // Peut être null si c'est une conversation générale
+  content     String
+  createdAt   DateTime @default(now())
+
+  sender      User     @relation(fields: [senderId], references: [id], name: "sender")
+  receiver    User     @relation(fields: [receiverId], references: [id], name: "receiver")
+  offerPost   OfferPost? @relation(fields: [offerPostId], references: [id])
+}
+
