@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,71 +8,77 @@ datasource db {
 }
 
 model User {
-  id         Int    @id @default(autoincrement())
-  username   String @unique
-  firstName  String
-  lastName   String
-  email      String @unique
-  password   String // Hashed password
+  id          String      @id @default(uuid())
+  username    String   @unique
+  firstName   String
+  lastName    String
+  email       String   @unique
+  password    String   // Password will be hashed
   description String?
-  team       Team? @relation(fields: [teamId], references: [id])
-  teamId     Int?
-  postList   Json
-  regularPosts RegularPost[]
-
-  FastSearching FastSearching[]
+  team        Team?    @relation(fields: [teamId], references: [id])
+  teamId      String?
+  posts       RegularPost[]
+  fastSearch  FastSearching[]
+  notifications Notifications[]
 }
 
 model Team {
-  id          Int    @id @default(autoincrement())
-  teamname    String @unique
+  id          String      @id @default(uuid())
+  teamname    String   @unique
   ceoFirstName String
   ceoLastName  String
-  email       String @unique
+  email       String   @unique
   password    String
   description String?
   rosterList  Json
   teamColor   String
   offerPosts  OfferPost[]
-  users       User[]
+  fastSearch  FastSearching[]
+
+  User User[]
 }
 
 model RegularPost {
-  id          Int    @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   imageList   Json
-  poster      User   @relation(fields: [posterId], references: [id])
-  posterId    Int
+  poster      User     @relation(fields: [posterId], references: [id])
+  posterId    String
   description String
-  likes       Int    @default(0)
+  likes       Int      @default(0)
   likesList   Json
-  reposts     Int    @default(0)
+  reposts     Int      @default(0)
   repostsList Json
   comments    Json
 }
 
 model OfferPost {
-  id               Int    @id @default(autoincrement())
-  imageList        Json
-  team            Team   @relation(fields: [teamId], references: [id])
-  teamId          Int
+  id              Int      @id @default(autoincrement())
+  imageList       Json
+  team           Team     @relation(fields: [teamId], references: [id])
+  teamId         String
   description     String
   applyingUserList Json
 }
 
 model FastSearching {
   id           Int    @id @default(autoincrement())
-  swiper      User   @relation(fields: [swiperId], references: [id])
-  swiperId    Int
+  swiper      User?  @relation(fields: [swiperId], references: [id])
+  swiperId    String?
   acceptedList Json
   refusedList  Json
+
+  Team Team[]
 }
 
 model Games {
-  id       Int    @id @default(autoincrement())
-  gameName String @unique
+  id        String      @id @default(uuid())
+  gameName  String @unique
+  gameLogo String @unique
 }
 
 model Notifications {
   id               Int    @id @default(autoincrement())
+  receiver        User   @relation(fields: [receiverId], references: [id])
+  receiverId      String
   notificationType String
 }

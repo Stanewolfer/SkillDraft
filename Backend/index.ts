@@ -1,17 +1,16 @@
 import { PrismaClient } from '@prisma/client'
+import express from 'express'
 
 const prisma = new PrismaClient()
+const app = express()
 
-async function main() {
-  // ... you will write your Prisma Client queries here
-}
+app.use(express.json())
 
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+app.get('/users', async (req, res) => {
+  const users = await prisma.user.findMany()
+  res.json(users)
+})
+
+app.listen(3000, () =>
+  console.log('REST API server ready at: http://localhost:3000'),
+)
