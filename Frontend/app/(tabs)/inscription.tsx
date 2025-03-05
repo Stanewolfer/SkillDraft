@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TextInput
 } from 'react-native'
+import CustomStackScreen from '../components/CustomStackScreen'
 
 function CustomInput({
   placeholder,
@@ -39,7 +40,7 @@ export default function InscriptionScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Inscription' }} />
+      <CustomStackScreen title='Inscription' />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Bienvenue sur Skilldraft !</Text>
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#010017',
     paddingHorizontal: 20,
-    paddingTop: 100,
+    paddingTop: 29,
     paddingBottom: 100
   },
   titleContainer: {

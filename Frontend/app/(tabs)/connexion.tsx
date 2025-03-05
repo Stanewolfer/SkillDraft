@@ -1,8 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import CustomStackScreen from '../components/CustomStackScreen';
+import { COLORS } from './styles/colors';
 
 export default function ConnexionScreen() {
   return (
+    <>
+    <CustomStackScreen title="Connexion" />
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Bienvenue sur Skilldraft !</Text>
@@ -10,16 +14,17 @@ export default function ConnexionScreen() {
       </View>
 
     </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#010017',
+    backgroundColor: COLORS.background_blue,
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 150,
+    paddingTop: 29,
   },
   titleContainer: {
     alignItems: 'center',
@@ -27,7 +32,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    color: '#FFFFFF',
+    color: COLORS.text_white,
     fontFamily: 'Montserrat',
     fontWeight: 'bold',
   },
@@ -35,7 +40,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     height: 3,
     width: 150,
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     borderRadius: 2,
   },
 });
