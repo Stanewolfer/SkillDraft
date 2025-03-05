@@ -20,6 +20,10 @@ model User {
   posts       RegularPost[]
   fastSearch  FastSearching[]
   notifications Notifications[]
+
+  sendMessages Message[] @relation(name: "sender")
+
+  receivedMessages Message[] @relation(name: "receiver")
 }
 
 model Team {
@@ -39,7 +43,7 @@ model Team {
 }
 
 model RegularPost {
-  id          Int      @id @default(autoincrement())
+  id          String      @id @default(uuid())
   imageList   Json
   poster      User     @relation(fields: [posterId], references: [id])
   posterId    String
@@ -49,19 +53,21 @@ model RegularPost {
   reposts     Int      @default(0)
   repostsList Json
   comments    Json
-}
+} 
 
 model OfferPost {
-  id              Int      @id @default(autoincrement())
+  id              String      @id @default(uuid())
   imageList       Json
   team           Team     @relation(fields: [teamId], references: [id])
   teamId         String
   description     String
   applyingUserList Json
+
+  Messages Message[]
 }
 
 model FastSearching {
-  id           Int    @id @default(autoincrement())
+  id           String    @id @default(uuid())
   swiper      User?  @relation(fields: [swiperId], references: [id])
   swiperId    String?
   acceptedList Json
@@ -77,8 +83,22 @@ model Games {
 }
 
 model Notifications {
-  id               Int    @id @default(autoincrement())
+  id               String    @id @default(uuid())
   receiver        User   @relation(fields: [receiverId], references: [id])
   receiverId      String
   notificationType String
 }
+
+model Message {
+  id          String   @id @default(uuid())
+  senderId    String
+  receiverId  String
+  offerPostId String?   // Peut être null si c'est une conversation générale
+  content     String
+  createdAt   DateTime @default(now())
+
+  sender      User     @relation(fields: [senderId], references: [id], name: "sender")
+  receiver    User     @relation(fields: [receiverId], references: [id], name: "receiver")
+  offerPost   OfferPost? @relation(fields: [offerPostId], references: [id])
+}
+
