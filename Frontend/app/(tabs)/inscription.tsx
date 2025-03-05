@@ -95,8 +95,19 @@ export default function InscriptionScreen() {
 
             {mode === 'personne' ? (
               <>
-                <CustomInput placeholder='Nom' required={true} />
+                <CustomInput placeholder='Nom de famille' required={true} />
                 <CustomInput placeholder='Prénom' required={true} />
+                <CustomInput placeholder='Pseudonyme' required={true} />
+                <View style={{ height: 25 }} />
+                <CustomInput placeholder='Email' required={true} />
+                <CustomInput placeholder='Mot de passe' required={true} />
+                <View style={styles.subTitleUnderline} />
+                <CustomInput
+                  placeholder='Description (biographie)'
+                  multiline={true}
+                  numberOfLines={4}
+                />
+                <CustomInput placeholder='Equipe dont vous faites partie (Optionnel)' />
               </>
             ) : (
               <>
