@@ -1,7 +1,7 @@
 import React from 'react';
 import { LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import * as Unicons from '@iconscout/react-native-unicons';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 
 LogBox.ignoreLogs([
   "Warning: UilSignin: Support for defaultProps will be removed from function components",
@@ -15,6 +15,8 @@ export default function HomeScreen() {
   const router = useRouter();
 
   return (
+    <>
+    <Stack.Screen options={{title: "Bienvenue sur Skilldraft"}} />
     <View style={styles.container}>
       <View style={styles.titleContainer}>
         <Text style={styles.title}>Bienvenue sur Skilldraft !</Text>
@@ -47,6 +49,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
     </View>
+    </>
   );
 }
 
