@@ -1,13 +1,12 @@
+import { RequestHandler, Router } from 'express';
+import { registerUser, uuidLogin, login, getUsers, getUserById } from '../controllers/user.controller';
 
-import express, { RequestHandler } from 'express';
-import { registerUser, uuidLogin, login, getUsers } from '../controllers/user.controller';
+const userRouter = Router();
 
+userRouter.post('/register', registerUser as RequestHandler);
+userRouter.post('/login', login as RequestHandler);
+userRouter.post('/uuid-login/:id', uuidLogin as RequestHandler);
+userRouter.get('/get-users', getUsers);
+userRouter.get('/get-user-by-id/:id', getUserById)
 
-const router = express.Router();
-
-router.post('/register',  registerUser as RequestHandler);
-router.post('/login', login as RequestHandler);
-router.post('/uuid-login/:id', uuidLogin as RequestHandler);
-router.get("/users", getUsers)
-
-export default router;
+export default userRouter;
