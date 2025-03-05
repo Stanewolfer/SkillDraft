@@ -5,7 +5,8 @@ import {
   login,
   getUsers,
   getUserById,
-  updateUser
+  updateUser,
+  deleteUser
 } from '../controllers/user.controller'
 
 const userRouter = Router()
@@ -16,4 +17,6 @@ userRouter.post('/uuid-login/:id', uuidLogin as RequestHandler)
 userRouter.get('/get-users', getUsers)
 userRouter.get('/get-user-by-id/:id', getUserById)
 userRouter.put('/update-user/:id', updateUser)
+userRouter.delete('/delete-user/:id', deleteUser)
+
 export default userRouter

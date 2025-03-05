@@ -193,3 +193,27 @@ export const updateUser = async (
       .json({ message: 'Internal Server Error', error: errorMessage })
   }
 }
+
+//supprimer un user
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.params.id;
+
+  try {
+    // Vérifier si l'utilisateur existe
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    // Supprimer l'utilisateur
+    await prisma.user.delete({ where: { id: userId } });
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    res.status(500).json({ message: 'Internal Server Error', error: errorMessage });
+  }
+};
+

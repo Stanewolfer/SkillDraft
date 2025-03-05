@@ -125,3 +125,32 @@ export const createPost = async (
       .json({ message: 'Internal Server Error', error: errorMessage })
   }
 }
+
+
+// suppression d'un post
+export const deletePost = async (req: Request, res: Response): Promise<void> => {
+  const postId = req.params.id;
+
+  try {
+    // Vérifier si le post existe dans l'une des deux tables
+    const regularPost = await prisma.regularPost.findUnique({ where: { id: postId } });
+    const offerPost = await prisma.offerPost.findUnique({ where: { id: postId } });
+
+    if (!regularPost && !offerPost) {
+      res.status(404).json({ message: 'Post not found' });
+      return;
+    }
+
+    // Supprimer dans la table correspondante
+    if (regularPost) {
+      await prisma.regularPost.delete({ where: { id: postId } });
+    } else {
+      await prisma.offerPost.delete({ where: { id: postId } });
+    }
+
+    res.json({ message: 'Post deleted successfully' });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    res.status(500).json({ message: 'Internal Server Error', error: errorMessage });
+  }
+};
