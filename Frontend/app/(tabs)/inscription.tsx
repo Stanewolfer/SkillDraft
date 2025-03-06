@@ -14,12 +14,16 @@ function CustomInput({
   placeholder,
   required = false,
   multiline = false,
-  numberOfLines = 1
+  numberOfLines = 1,
+  value = '',
+  onChangeText = () => {}
 }: {
   placeholder: string
   required?: boolean
   multiline?: boolean
   numberOfLines?: number
+  value?: string
+  onChangeText?: (text: string) => void
 }) {
   return (
     <View style={styles.inputWrapper}>
@@ -29,6 +33,8 @@ function CustomInput({
         placeholderTextColor='#A9F6CB80'
         multiline={multiline}
         numberOfLines={numberOfLines}
+        value={value}
+        onChangeText={onChangeText}
       />
       {required && <Text style={styles.required}>*</Text>}
     </View>
@@ -37,6 +43,49 @@ function CustomInput({
 
 export default function InscriptionScreen() {
   const [mode, setMode] = useState<'personne' | 'organisation'>('personne')
+
+  // State variables for "person" mode
+  const [familyName, setFamilyName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [bio, setBio] = useState('')
+  const [optionalTeam, setOptionalTeam] = useState('')
+
+  // State variables for "organization" mode
+  const [teamName, setTeamName] = useState('')
+  const [managerLastName, setManagerLastName] = useState('')
+  const [managerFirstName, setManagerFirstName] = useState('')
+  const [orgEmail, setOrgEmail] = useState('')
+  const [orgPassword, setOrgPassword] = useState('')
+  const [orgBio, setOrgBio] = useState('')
+
+  // Submit function that prepares data to be sent to the backend
+  const handleSubmit = () => {
+    if (mode === 'personne') {
+      const data = {
+        familyName,
+        firstName,
+        username,
+        email,
+        password,
+        bio,
+        optionalTeam
+      }
+      console.log('Données inscription personne : ', data)
+    } else {
+      const data = {
+        teamName,
+        managerLastName,
+        managerFirstName,
+        email: orgEmail,
+        password: orgPassword,
+        bio: orgBio
+      }
+      console.log('Données inscription organisation : ', data)
+    }
+  }
 
   return (
     <>
@@ -95,37 +144,95 @@ export default function InscriptionScreen() {
 
             {mode === 'personne' ? (
               <>
-                <CustomInput placeholder='Nom de famille' required={true} />
-                <CustomInput placeholder='Prénom' required={true} />
-                <CustomInput placeholder='Pseudonyme' required={true} />
+                <CustomInput
+                  placeholder='Nom de famille'
+                  required={true}
+                  value={familyName}
+                  onChangeText={setFamilyName}
+                />
+                <CustomInput
+                  placeholder='Prénom'
+                  required={true}
+                  value={firstName}
+                  onChangeText={setFirstName}
+                />
+                <CustomInput
+                  placeholder='Pseudonyme'
+                  required={true}
+                  value={username}
+                  onChangeText={setUsername}
+                />
                 <View style={{ height: 25 }} />
-                <CustomInput placeholder='Email' required={true} />
-                <CustomInput placeholder='Mot de passe' required={true} />
+                <CustomInput
+                  placeholder='Email'
+                  required={true}
+                  value={email}
+                  onChangeText={setEmail}
+                />
+                <CustomInput
+                  placeholder='Mot de passe'
+                  required={true}
+                  value={password}
+                  onChangeText={setPassword}
+                />
                 <View style={styles.subTitleUnderline} />
                 <CustomInput
                   placeholder='Description (biographie)'
                   multiline={true}
                   numberOfLines={4}
+                  value={bio}
+                  onChangeText={setBio}
                 />
-                <CustomInput placeholder='Equipe dont vous faites partie (Optionnel)' />
+                <CustomInput
+                  placeholder='Equipe dont vous faites partie (Optionnel)'
+                  value={optionalTeam}
+                  onChangeText={setOptionalTeam}
+                />
               </>
             ) : (
               <>
-                <CustomInput placeholder="Nom de l'équipe" required={true} />
+                <CustomInput
+                  placeholder="Nom de l'équipe"
+                  required={true}
+                  value={teamName}
+                  onChangeText={setTeamName}
+                />
                 <View style={styles.subTitleUnderline} />
-                <CustomInput placeholder='Nom du gérant' required={true} />
-                <CustomInput placeholder='Prénom du gérant' required={true} />
-                <CustomInput placeholder='Email' required={true} />
-                <CustomInput placeholder='Mot de passe' required={true} />
+                <CustomInput
+                  placeholder='Nom du gérant'
+                  required={true}
+                  value={managerLastName}
+                  onChangeText={setManagerLastName}
+                />
+                <CustomInput
+                  placeholder='Prénom du gérant'
+                  required={true}
+                  value={managerFirstName}
+                  onChangeText={setManagerFirstName}
+                />
+                <CustomInput
+                  placeholder='Email'
+                  required={true}
+                  value={orgEmail}
+                  onChangeText={setOrgEmail}
+                />
+                <CustomInput
+                  placeholder='Mot de passe'
+                  required={true}
+                  value={orgPassword}
+                  onChangeText={setOrgPassword}
+                />
                 <View style={styles.subTitleUnderline} />
                 <CustomInput
                   placeholder='Description (biographie)'
                   multiline={true}
                   numberOfLines={4}
+                  value={orgBio}
+                  onChangeText={setOrgBio}
                 />
               </>
             )}
-            <TouchableOpacity style={styles.submitButton}>
+            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
               <Text style={styles.submitButtonText}>S'inscrire</Text>
             </TouchableOpacity>
           </View>

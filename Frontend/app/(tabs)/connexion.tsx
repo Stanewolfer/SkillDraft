@@ -10,33 +10,35 @@ import {
 } from 'react-native'
 import CustomStackScreen from '../components/CustomStackScreen'
 
-function CustomInput({
-  placeholder,
-  required = false,
-  multiline = false,
-  numberOfLines = 1
-}: {
-  placeholder: string
-  required?: boolean
-  multiline?: boolean
-  numberOfLines?: number
-}) {
-  return (
-    <View style={styles.inputWrapper}>
-      <TextInput
-        style={[styles.input, multiline && styles.textArea]}
-        placeholder={placeholder}
-        placeholderTextColor='#A9F6CB80'
-        multiline={multiline}
-        numberOfLines={numberOfLines}
-      />
-      {required && <Text style={styles.required}>*</Text>}
-    </View>
-  )
-}
-
 export default function ConnexionScreen() {
   const [mode, setMode] = useState<'personne' | 'organisation'>('personne')
+
+  // State variables for "person" mode
+  const [userLogin, setUserLogin] = useState('')
+  const [userPassword, setUserePassword] = useState('')
+
+  // State variables for "organization" mode
+  const [orgTeamName, setOrgTeamName] = useState('')
+  const [orgEmail, setOrgEmail] = useState('')
+  const [orgPassword, setOrgPassword] = useState('')
+
+  // Submit function that prepares data to be sent to the backend
+  const handleLogin = () => {
+    if (mode === 'personne') {
+      const data = {
+        login: userLogin,
+        password: userPassword
+      }
+      console.log('Données de connexion (personne) : ', data)
+    } else {
+      const data = {
+        teamName: orgTeamName,
+        email: orgEmail,
+        password: orgPassword
+      }
+      console.log('Données de connexion (organisation) : ', data)
+    }
+  }
 
   return (
     <>
@@ -88,35 +90,72 @@ export default function ConnexionScreen() {
             <Text style={styles.formTitle}>
               Veuillez renseigner les informations ci-dessous
             </Text>
-            <Text style={styles.formSubtitle}>
-              (Les informations avec un <Text style={styles.required}>*</Text>{' '}
-              sont obligatoires)
-            </Text>
 
             {mode === 'personne' ? (
               <>
-                <CustomInput placeholder='Nom' required={true} />
-                <CustomInput placeholder='Prénom' required={true} />
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder='Email / Nom dutilisateur'
+                    placeholderTextColor='#A9F6CB80'
+                    value={userLogin}
+                    onChangeText={setUserLogin}
+                  />
+                </View>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder='Mot de passe'
+                    placeholderTextColor='#A9F6CB80'
+                    secureTextEntry={true}
+                    value={userPassword}
+                    onChangeText={setUserePassword}
+                  />
+                </View>
               </>
             ) : (
               <>
-                <CustomInput placeholder="Nom de l'équipe" required={true} />
-                <View style={styles.subTitleUnderline} />
-                <CustomInput placeholder='Nom du gérant' required={true} />
-                <CustomInput placeholder='Prénom du gérant' required={true} />
-                <CustomInput placeholder='Email' required={true} />
-                <CustomInput placeholder='Mot de passe' required={true} />
-                <View style={styles.subTitleUnderline} />
-                <CustomInput
-                  placeholder='Description (biographie)'
-                  multiline={true}
-                  numberOfLines={4}
-                />
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Nom de l'équipe"
+                    placeholderTextColor='#A9F6CB80'
+                    value={orgTeamName}
+                    onChangeText={setOrgTeamName}
+                  />
+                </View>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder='Email'
+                    placeholderTextColor='#A9F6CB80'
+                    value={orgEmail}
+                    onChangeText={setOrgEmail}
+                  />
+                </View>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder='Mot de passe'
+                    placeholderTextColor='#A9F6CB80'
+                    secureTextEntry={true}
+                    value={orgPassword}
+                    onChangeText={setOrgPassword}
+                  />
+                </View>
               </>
             )}
-            <TouchableOpacity style={styles.submitButton}>
+
+            <TouchableOpacity style={styles.submitButton} onPress={handleLogin}>
               <Text style={styles.submitButtonText}>Se Connecter</Text>
             </TouchableOpacity>
+            <Text style={[styles.linkText, { textAlign: 'center', marginTop: 10 }]}>
+              Mot de passe oublié ?
+            </Text>
+            <Text style={styles.normalText}>
+              Pas encore de compte ?{' '}
+              <Text style={styles.linkText}>Inscrivez vous !</Text>
+            </Text>
           </View>
         </View>
       </ScrollView>
@@ -202,14 +241,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontStyle: 'italic',
     fontWeight: 'bold',
-    marginBottom: 4,
-    textAlign: 'center'
-  },
-  formSubtitle: {
-    color: '#A9F6CB',
-    fontSize: 14,
-    fontStyle: 'italic',
-    marginBottom: 16,
+    marginBottom: 20,
     textAlign: 'center'
   },
   inputWrapper: {
@@ -245,5 +277,16 @@ const styles = StyleSheet.create({
     color: '#010017',
     fontWeight: 'bold',
     fontSize: 16
+  },
+  linkText: {
+    color: '#FCC943',
+    fontStyle: 'italic',
+    textDecorationLine: 'underline',
+    textDecorationColor: '#FCC943'
+  },
+  normalText: {
+    textAlign: 'center',
+    marginTop: 10,
+    color: '#A9F6CB'
   }
 })
