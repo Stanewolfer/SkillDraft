@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router'
 import React, { useState } from 'react'
+import { COLORS } from './styles/colors'
 import {
   ScrollView,
   View,
@@ -30,7 +31,7 @@ function CustomInput({
       <TextInput
         style={[styles.input, multiline && styles.textArea]}
         placeholder={placeholder}
-        placeholderTextColor='#A9F6CB80'
+        placeholderTextColor={COLORS.main_blue}
         multiline={multiline}
         numberOfLines={numberOfLines}
         value={value}
@@ -232,7 +233,10 @@ export default function InscriptionScreen() {
                 />
               </>
             )}
-            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+            >
               <Text style={styles.submitButtonText}>S'inscrire</Text>
             </TouchableOpacity>
           </View>
@@ -245,7 +249,7 @@ export default function InscriptionScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#010017',
+    backgroundColor: COLORS.background_blue,
     paddingHorizontal: 20,
     paddingTop: 29,
     paddingBottom: 100
@@ -256,7 +260,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: '#FFFFFF',
+    color: COLORS.text_white,
     fontFamily: 'Montserrat',
     fontWeight: 'bold'
   },
@@ -264,7 +268,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     height: 3,
     width: 180,
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     borderRadius: 2
   },
   subTitleUnderline: {
@@ -273,20 +277,20 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     height: 3,
     width: 180,
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     borderRadius: 2
   },
   cardContainer: {
     alignSelf: 'stretch',
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: '#A9F6CB',
-    backgroundColor: '#010017',
+    borderColor: COLORS.main_blue,
+    backgroundColor: COLORS.background_blue,
     padding: 20
   },
   switchContainer: {
     flexDirection: 'row',
-    backgroundColor: '#010017',
+    backgroundColor: COLORS.background_blue,
     marginHorizontal: -20,
     marginTop: -20,
     marginBottom: 20,
@@ -296,27 +300,27 @@ const styles = StyleSheet.create({
   },
   switchButton: {
     flex: 1,
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     paddingVertical: 12,
     alignItems: 'center'
   },
   switchButtonActive: {
-    backgroundColor: '#010017'
+    backgroundColor: COLORS.background_blue
   },
   switchButtonText: {
-    color: '#010017',
+    color: COLORS.background_blue,
     fontSize: 16,
     fontWeight: 'normal'
   },
   switchButtonTextActive: {
-    color: '#A9F6CB',
+    color: COLORS.main_blue,
     fontWeight: 'bold'
   },
   formContainer: {
     marginTop: 10
   },
   formTitle: {
-    color: '#A9F6CB',
+    color: COLORS.main_blue,
     fontSize: 13,
     fontStyle: 'italic',
     fontWeight: 'bold',
@@ -324,7 +328,7 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   formSubtitle: {
-    color: '#A9F6CB',
+    color: COLORS.main_blue,
     fontSize: 14,
     fontStyle: 'italic',
     marginBottom: 16,
@@ -334,7 +338,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#A9F6CB',
+    borderColor: COLORS.main_blue,
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -342,7 +346,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#A9F6CB'
+    color: COLORS.main_blue
   },
   textArea: {
     height: 100,
@@ -353,14 +357,14 @@ const styles = StyleSheet.create({
     marginLeft: 4
   },
   submitButton: {
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 10
   },
   submitButtonText: {
-    color: '#010017',
+    color: COLORS.background_blue,
     fontWeight: 'bold',
     fontSize: 16
   }

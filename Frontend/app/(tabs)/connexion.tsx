@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router'
 import React, { useState } from 'react'
+import { COLORS } from './styles/colors'
 import {
   ScrollView,
   View,
@@ -97,7 +98,7 @@ export default function ConnexionScreen() {
                   <TextInput
                     style={styles.input}
                     placeholder='Email / Nom dutilisateur'
-                    placeholderTextColor='#A9F6CB80'
+                    placeholderTextColor={COLORS.main_blue}
                     value={userLogin}
                     onChangeText={setUserLogin}
                   />
@@ -106,7 +107,7 @@ export default function ConnexionScreen() {
                   <TextInput
                     style={styles.input}
                     placeholder='Mot de passe'
-                    placeholderTextColor='#A9F6CB80'
+                    placeholderTextColor={COLORS.main_blue}
                     secureTextEntry={true}
                     value={userPassword}
                     onChangeText={setUserePassword}
@@ -119,7 +120,7 @@ export default function ConnexionScreen() {
                   <TextInput
                     style={styles.input}
                     placeholder="Nom de l'équipe"
-                    placeholderTextColor='#A9F6CB80'
+                    placeholderTextColor={COLORS.main_blue}
                     value={orgTeamName}
                     onChangeText={setOrgTeamName}
                   />
@@ -128,7 +129,7 @@ export default function ConnexionScreen() {
                   <TextInput
                     style={styles.input}
                     placeholder='Email'
-                    placeholderTextColor='#A9F6CB80'
+                    placeholderTextColor={COLORS.main_blue}
                     value={orgEmail}
                     onChangeText={setOrgEmail}
                   />
@@ -137,7 +138,7 @@ export default function ConnexionScreen() {
                   <TextInput
                     style={styles.input}
                     placeholder='Mot de passe'
-                    placeholderTextColor='#A9F6CB80'
+                    placeholderTextColor={COLORS.main_blue}
                     secureTextEntry={true}
                     value={orgPassword}
                     onChangeText={setOrgPassword}
@@ -166,7 +167,7 @@ export default function ConnexionScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#010017',
+    backgroundColor: COLORS.background_blue,
     paddingHorizontal: 20,
     paddingTop: 29,
     paddingBottom: 100
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: '#FFFFFF',
+    color: COLORS.text_white,
     fontFamily: 'Montserrat',
     fontWeight: 'bold'
   },
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     height: 3,
     width: 180,
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     borderRadius: 2
   },
   subTitleUnderline: {
@@ -194,20 +195,20 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     height: 3,
     width: 180,
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     borderRadius: 2
   },
   cardContainer: {
     alignSelf: 'stretch',
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: '#A9F6CB',
-    backgroundColor: '#010017',
+    borderColor: COLORS.main_blue,
+    backgroundColor: COLORS.background_blue,
     padding: 20
   },
   switchContainer: {
     flexDirection: 'row',
-    backgroundColor: '#010017',
+    backgroundColor: COLORS.background_blue,
     marginHorizontal: -20,
     marginTop: -20,
     marginBottom: 20,
@@ -217,27 +218,27 @@ const styles = StyleSheet.create({
   },
   switchButton: {
     flex: 1,
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     paddingVertical: 12,
     alignItems: 'center'
   },
   switchButtonActive: {
-    backgroundColor: '#010017'
+    backgroundColor: COLORS.background_blue
   },
   switchButtonText: {
-    color: '#010017',
+    color: COLORS.background_blue,
     fontSize: 16,
     fontWeight: 'normal'
   },
   switchButtonTextActive: {
-    color: '#A9F6CB',
+    color: COLORS.main_blue,
     fontWeight: 'bold'
   },
   formContainer: {
     marginTop: 10
   },
   formTitle: {
-    color: '#A9F6CB',
+    color: COLORS.main_blue,
     fontSize: 13,
     fontStyle: 'italic',
     fontWeight: 'bold',
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#A9F6CB',
+    borderColor: COLORS.main_blue,
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -256,7 +257,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#A9F6CB'
+    color: COLORS.main_blue
   },
   textArea: {
     height: 100,
@@ -267,26 +268,26 @@ const styles = StyleSheet.create({
     marginLeft: 4
   },
   submitButton: {
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 10
   },
   submitButtonText: {
-    color: '#010017',
+    color: COLORS.background_blue,
     fontWeight: 'bold',
     fontSize: 16
   },
   linkText: {
-    color: '#FCC943',
+    color: COLORS.link_yellow,
     fontStyle: 'italic',
     textDecorationLine: 'underline',
-    textDecorationColor: '#FCC943'
+    textDecorationColor: COLORS.link_yellow
   },
   normalText: {
     textAlign: 'center',
     marginTop: 10,
-    color: '#A9F6CB'
+    color: COLORS.main_blue
   }
 })
