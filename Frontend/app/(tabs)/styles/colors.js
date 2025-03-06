@@ -3,4 +3,4 @@ export const COLORS = {
     background_blue: '#010017', // Bleu foncé
     text_white: '#FFFFFF', // Blanc
     link_yellow: '#FCC943', // Jaune
-};  
+};
