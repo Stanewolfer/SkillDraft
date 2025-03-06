@@ -47,20 +47,30 @@ export const uuidLogin = async (req: Request, res: Response) => {
 
 // 🔹 Connexion classique
 export const login = async (req: Request, res: Response) => {
-  const { username, password } = req.body
+  const { username, password, email } = req.body
   const entityType = req.header('type')
 
-  if (!username || !password) {
-    return res
-      .status(400)
-      .json({ message: 'Username and password are required' })
+  if (entityType === 'team') {
+    if (!username || !password || !email) {
+      return res
+        .status(400)
+        .json({ message: 'Username, email and password are required' })
+    }
+  } else {
+    if (!username || !password) {
+      return res
+        .status(400)
+        .json({ message: 'Username and password are required' })
+    }
   }
 
   try {
     let entity = null
 
     if (entityType === 'team') {
-      entity = await prisma.team.findUnique({ where: { teamname: username } })
+      entity = await prisma.team.findUnique({
+        where: { teamname: username, email: email }
+      })
     } else {
       entity = await prisma.user.findUnique({ where: { username } })
     }
