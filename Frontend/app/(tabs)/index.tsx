@@ -1,26 +1,77 @@
-import React from 'react';
-import { LogBox, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import * as Unicons from '@iconscout/react-native-unicons';
-import { Stack, useRouter } from 'expo-router';
-import { COLORS } from './styles/colors';
+import React, { useEffect, useState } from 'react'
+import {
+  LogBox,
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator
+} from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import * as Unicons from '@iconscout/react-native-unicons'
+import { useRouter } from 'expo-router'
+import { COLORS } from './styles/colors'
 
 import { styles } from './styles/indexStyle';
 import CustomStackScreen from '../components/CustomStackScreen';
 
 LogBox.ignoreLogs([
-  "Warning: UilSignin: Support for defaultProps will be removed from function components",
-  "Warning: UilUser: Support for defaultProps will be removed from function components"
-]);
+  'Warning: UilSignin: Support for defaultProps will be removed from function components',
+  'Warning: UilUser: Support for defaultProps will be removed from function components'
+])
 
-const IconUser = Unicons.UilSignin;
-const IconSignIn = Unicons.UilUser;
+const IconUser = Unicons.UilSignin
+const IconSignIn = Unicons.UilUser
 
 export default function HomeScreen() {
-  const router = useRouter();
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const checkUserSession = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('userId')
+        const type = (await AsyncStorage.getItem('type')) || '' // Assure que ce n'est jamais null
+
+        if (userId) {
+          console.log('Fast login instancié')
+          const response = await fetch(
+            `http://localhost:5000/api/auth/fast-login/${userId}`,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                type // Ne sera jamais `null`
+              }
+            }
+          )
+
+          const result = await response.json()
+          console.log('Réponse API :', result)
+
+          if (!response.ok) {
+            throw new Error(result.message || 'Une erreur est survenue')
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors de la vérification de session :', error)
+        setLoading(false)
+      }
+    }
+
+    checkUserSession()
+  }, [])
+
+  /* if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size='large' color={COLORS.main_blue} />
+      </View>
+    )
+  } */
 
   return (
     <>
-      <CustomStackScreen title="Bienvenue sur Skilldraft" />
+      <CustomStackScreen title='Bienvenue sur Skilldraft' />
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Bienvenue sur Skilldraft !</Text>
@@ -33,26 +84,20 @@ export default function HomeScreen() {
             onPress={() => router.push('/inscription')}
           >
             <Text style={styles.cardText}>Inscription</Text>
-            {IconUser ? (
-              <IconUser size={100} color = { COLORS.background_blue} />
-            ) : (
-              <Text style={{ color: 'red' }}>Icon User introuvable</Text>
-            )}
+            <IconUser size={100} color={COLORS.background_blue} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.card, styles.cardInverted]}
             onPress={() => router.push('/connexion')}
           >
-            {IconSignIn ? (
-              <IconSignIn size={100} color={ COLORS.main_blue } />
-            ) : (
-              <Text style={{ color: 'red' }}>Icon SignIn introuvable</Text>
-            )}
-            <Text style={[styles.cardText, styles.cardTextInverted]}>Connexion</Text>
+            <IconSignIn size={100} color={COLORS.main_blue} />
+            <Text style={[styles.cardText, styles.cardTextInverted]}>
+              Connexion
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
     </>
-  );
+  )
 }

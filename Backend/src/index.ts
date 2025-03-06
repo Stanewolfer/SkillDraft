@@ -1,25 +1,18 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import router from './routes';
-import { errorHandler } from './middleware/error.middleware';
-import cors from 'cors';
+import router from "./routes";
 
-
-dotenv.config();
+const express = require('express');
+const cors = require('cors');
 
 const app = express();
+
+// Active CORS pour toutes les origines
+app.use(cors());
+
+// Ou pour une origine spécifique
+// app.use(cors({ origin: 'http://localhost:8081' }));
+
 app.use(express.json());
 
-// Routes
-app.use('/api', router);
+app.use('/api', router)
 
-app.use(cors())
-
-// Error handling middleware
-app.use(errorHandler);
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log('Server is ready to handle requests');
-});
+app.listen(5000, () => console.log('Serveur sur http://localhost:5000'));

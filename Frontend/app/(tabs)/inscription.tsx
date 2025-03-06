@@ -1,43 +1,249 @@
-import React, { useState } from 'react'
+import { Stack } from 'expo-router'
+import React, { useState, useEffect } from 'react'
+import { LogBox } from 'react-native'
 import {
   ScrollView,
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput
+  TextInput,
+  Modal
 } from 'react-native'
+import * as Unicons from '@iconscout/react-native-unicons'
+import { COLORS } from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
+import { useRouter } from 'expo-router';
 
-import { styles } from './styles/inscriptionStyle'
+LogBox.ignoreLogs([
+  'Warning: UilEyeSlash: Support for defaultProps will be removed from function components',
+  'Warning: UilEye: Support for defaultProps will be removed from function components'
+])
+
+// Hexadecimal → RGB conversion
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  hex = hex.replace('#', '')
+  if (hex.length === 3) {
+    hex = hex
+      .split('')
+      .map(c => c + c)
+      .join('')
+  }
+  const bigint = parseInt(hex, 16)
+  const r = (bigint >> 16) & 255
+  const g = (bigint >> 8) & 255
+  const b = bigint & 255
+  return { r, g, b }
+}
+
+// RGB → Hexadecimal Conversion
+function rgbToHex(r: number, g: number, b: number): string {
+  return (
+    '#' +
+    [r, g, b]
+      .map(x => x.toString(16).padStart(2, '0'))
+      .join('')
+      .toUpperCase()
+  )
+}
+
+// User input parsing function (hex or RGB)
+function parseColorInput(input: string): string | null {
+  input = input.trim()
+  if (input.startsWith('#')) {
+    if (input.length === 4 || input.length === 7) {
+      return input.toUpperCase()
+    }
+  } else {
+    const parts = input.split(',')
+    if (parts.length === 3) {
+      const r = parseInt(parts[0].trim(), 10)
+      const g = parseInt(parts[1].trim(), 10)
+      const b = parseInt(parts[2].trim(), 10)
+      if (
+        !isNaN(r) &&
+        !isNaN(g) &&
+        !isNaN(b) &&
+        r >= 0 &&
+        r <= 255 &&
+        g >= 0 &&
+        g <= 255 &&
+        b >= 0 &&
+        b <= 255
+      ) {
+        return rgbToHex(r, g, b)
+      }
+    }
+  }
+  return null
+}
+
+enum Mode {
+  Personne = 'personne',
+  Organisation = 'organisation'
+}
 
 function CustomInput({
   placeholder,
   required = false,
   multiline = false,
-  numberOfLines = 1
+  numberOfLines = 1,
+  value = '',
+  onChangeText = () => {}
 }: {
   placeholder: string
   required?: boolean
   multiline?: boolean
   numberOfLines?: number
+  value?: string
+  onChangeText?: (text: string) => void
 }) {
   return (
     <View style={styles.inputWrapper}>
       <TextInput
         style={[styles.input, multiline && styles.textArea]}
         placeholder={placeholder}
-        placeholderTextColor='#A9F6CB80'
+        placeholderTextColor={COLORS.main_blue}
         multiline={multiline}
         numberOfLines={numberOfLines}
+        value={value}
+        onChangeText={onChangeText}
       />
       {required && <Text style={styles.required}>*</Text>}
     </View>
   )
 }
 
+// Component for password field with toggle icon
+function PasswordInput({
+  placeholder,
+  required = false,
+  value = '',
+  onChangeText = () => {},
+  passwordVisible,
+  togglePasswordVisibility
+}: {
+  placeholder: string
+  required?: boolean
+  value?: string
+  onChangeText?: (text: string) => void
+  passwordVisible: boolean
+  togglePasswordVisibility: () => void
+}) {
+  return (
+    <View style={styles.inputWrapper}>
+      <TextInput
+        style={[styles.input, { flex: 1 }]}
+        placeholder={placeholder}
+        placeholderTextColor={COLORS.main_blue}
+        value={value}
+        onChangeText={onChangeText}
+        secureTextEntry={!passwordVisible}
+      />
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={togglePasswordVisibility}
+      >
+        {passwordVisible ? (
+          <Unicons.UilEyeSlash size={20} color={COLORS.main_blue} />
+        ) : (
+          <Unicons.UilEye size={20} color={COLORS.main_blue} />
+        )}
+      </TouchableOpacity>
+      {required && <Text style={styles.required}>*</Text>}
+    </View>
+  )
+}
+
 export default function InscriptionScreen() {
-  const [mode, setMode] = useState<'personne' | 'organisation'>('personne')
+  const router= useRouter()
+
+  const [mode, setMode] = useState<Mode>(Mode.Personne)
+
+  // State for "personne" mode
+  const [lastName, setLastName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [description, setDescription] = useState('')
+  const [teamId, setTeamId] = useState('')
+
+  // State for "organisation" mode
+  const [teamName, setTeamName] = useState('')
+  const [ceoLastName, setCeoLastName] = useState('')
+  const [ceoFirstName, setCeoFirstName] = useState('')
+  const [orgEmail, setOrgEmail] = useState('')
+  const [orgPassword, setOrgPassword] = useState('')
+  const [orgDescription, setOrgDescription] = useState('')
+  const [teamColor, setTeamColor] = useState('#FFFFFF')
+
+  // State for toggling password visibility
+  const [passwordVisible, setPasswordVisible] = useState(false)
+
+  // States for color selection modal
+  const [colorPickerVisible, setColorPickerVisible] = useState(false)
+  const [colorInput, setColorInput] = useState(teamColor)
+
+  // Update input when opening modal
+  useEffect(() => {
+    if (colorPickerVisible) {
+      setColorInput(teamColor)
+    }
+  }, [colorPickerVisible, teamColor])
+
+  // The preview updates in real time according to the input
+  const previewColor = parseColorInput(colorInput) || teamColor
+  const previewRGB = hexToRgb(previewColor)
+
+  // Submit function that prepares data to be sent to the backend
+  const handleSubmit = async () => {
+    const apiUrl = 'http://localhost:5000/api/auth/register'
+    try {
+      const data =
+        mode === Mode.Personne
+          ? {
+              username,
+              firstName,
+              lastName,
+              email,
+              password,
+              description: description || null,
+              teamId: teamId || null
+            }
+          : {
+              username: teamName,
+              ceoFirstName,
+              ceoLastName,
+              email: orgEmail,
+              password: orgPassword,
+              description: orgDescription || null,
+              teamColor
+            }
+      console.log('Données envoyées :', data)
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          type: mode === Mode.Personne ? 'user' : 'team'
+        },
+        body: JSON.stringify(data)
+      })
+
+      const result = await response.json()
+      console.log('Réponse API :', result)
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Une erreur est survenue')
+      }
+      alert('Inscription réussie !')
+      router.push('/connexion')
+    } catch (error) {
+      console.error('Erreur lors de l’inscription :', error)
+      alert('Erreur lors de l’inscription. Vérifie ta connexion et réessaie.')
+    }
+  }
 
   return (
     <>
@@ -53,31 +259,30 @@ export default function InscriptionScreen() {
             <TouchableOpacity
               style={[
                 styles.switchButton,
-                mode === 'personne' && styles.switchButtonActive
+                mode === Mode.Personne && styles.switchButtonActive
               ]}
-              onPress={() => setMode('personne')}
+              onPress={() => setMode(Mode.Personne)}
             >
               <Text
                 style={[
                   styles.switchButtonText,
-                  mode === 'personne' && styles.switchButtonTextActive
+                  mode === Mode.Personne && styles.switchButtonTextActive
                 ]}
               >
                 Personne
               </Text>
             </TouchableOpacity>
-
             <TouchableOpacity
               style={[
                 styles.switchButton,
-                mode === 'organisation' && styles.switchButtonActive
+                mode === Mode.Organisation && styles.switchButtonActive
               ]}
-              onPress={() => setMode('organisation')}
+              onPress={() => setMode(Mode.Organisation)}
             >
               <Text
                 style={[
                   styles.switchButtonText,
-                  mode === 'organisation' && styles.switchButtonTextActive
+                  mode === Mode.Organisation && styles.switchButtonTextActive
                 ]}
               >
                 Organisation
@@ -94,33 +299,296 @@ export default function InscriptionScreen() {
               sont obligatoires)
             </Text>
 
-            {mode === 'personne' ? (
+            {mode === Mode.Personne ? (
               <>
-                <CustomInput placeholder='Nom' required={true} />
-                <CustomInput placeholder='Prénom' required={true} />
+                <CustomInput
+                  placeholder='Nom de famille'
+                  required={true}
+                  value={lastName}
+                  onChangeText={setLastName}
+                />
+                <CustomInput
+                  placeholder='Prénom'
+                  required={true}
+                  value={firstName}
+                  onChangeText={setFirstName}
+                />
+                <CustomInput
+                  placeholder='Pseudonyme'
+                  required={true}
+                  value={username}
+                  onChangeText={setUsername}
+                />
+                <View style={{ height: 25 }} />
+                <CustomInput
+                  placeholder='Email'
+                  required={true}
+                  value={email}
+                  onChangeText={setEmail}
+                />
+                <PasswordInput
+                  placeholder='Mot de passe'
+                  required={true}
+                  value={password}
+                  onChangeText={setPassword}
+                  passwordVisible={passwordVisible}
+                  togglePasswordVisibility={() =>
+                    setPasswordVisible(prev => !prev)
+                  }
+                />
+                <View style={styles.subTitleUnderline} />
+                <CustomInput
+                  placeholder='Description'
+                  multiline={true}
+                  numberOfLines={4}
+                  value={description}
+                  onChangeText={setDescription}
+                />
+                <CustomInput
+                  placeholder='Equipe dont vous faites partie (Optionnel)'
+                  value={teamId}
+                  onChangeText={setTeamId}
+                />
               </>
             ) : (
               <>
-                <CustomInput placeholder="Nom de l'équipe" required={true} />
-                <View style={styles.subTitleUnderline} />
-                <CustomInput placeholder='Nom du gérant' required={true} />
-                <CustomInput placeholder='Prénom du gérant' required={true} />
-                <CustomInput placeholder='Email' required={true} />
-                <CustomInput placeholder='Mot de passe' required={true} />
+                <CustomInput
+                  placeholder="Nom de l'équipe"
+                  required={true}
+                  value={teamName}
+                  onChangeText={setTeamName}
+                />
                 <View style={styles.subTitleUnderline} />
                 <CustomInput
-                  placeholder='Description (biographie)'
+                  placeholder='Nom du gérant'
+                  required={true}
+                  value={ceoLastName}
+                  onChangeText={setCeoLastName}
+                />
+                <CustomInput
+                  placeholder='Prénom du gérant'
+                  required={true}
+                  value={ceoFirstName}
+                  onChangeText={setCeoFirstName}
+                />
+                <CustomInput
+                  placeholder='Email'
+                  required={true}
+                  value={orgEmail}
+                  onChangeText={setOrgEmail}
+                />
+                <PasswordInput
+                  placeholder='Mot de passe'
+                  required={true}
+                  value={orgPassword}
+                  onChangeText={setOrgPassword}
+                  passwordVisible={passwordVisible}
+                  togglePasswordVisibility={() =>
+                    setPasswordVisible(prev => !prev)
+                  }
+                />
+                <View style={styles.subTitleUnderline} />
+                <CustomInput
+                  placeholder='Description'
                   multiline={true}
                   numberOfLines={4}
+                  value={orgDescription}
+                  onChangeText={setOrgDescription}
                 />
+                <TouchableOpacity
+                  style={[styles.colorPicker, { backgroundColor: teamColor }]}
+                  onPress={() => setColorPickerVisible(true)}
+                >
+                  <Text style={styles.colorPickerText}>
+                    Choisir la couleur de l'équipe
+                  </Text>
+                </TouchableOpacity>
               </>
             )}
-            <TouchableOpacity style={styles.submitButton}>
+            <TouchableOpacity
+              style={styles.submitButton}
+              onPress={handleSubmit}
+            >
               <Text style={styles.submitButtonText}>S'inscrire</Text>
             </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
+
+      <Modal
+        visible={colorPickerVisible}
+        transparent={true}
+        animationType='slide'
+        onRequestClose={() => setColorPickerVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Sélectionnez une couleur</Text>
+            <View style={styles.previewContainer}>
+              <View
+                style={[styles.colorPreview, { backgroundColor: previewColor }]}
+              />
+              <Text style={styles.previewText}>Hex: {previewColor}</Text>
+              <Text style={styles.previewText}>
+                RGB: ({previewRGB.r}, {previewRGB.g}, {previewRGB.b})
+              </Text>
+            </View>
+            <TextInput
+              style={styles.hexInput}
+              placeholder='Hex (#FFFFFF) ou RGB (255,255,255)'
+              placeholderTextColor='black'
+              value={colorInput}
+              onChangeText={setColorInput}
+            />
+            <View style={styles.modalButtonsContainer}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  const newColor = parseColorInput(colorInput)
+                  if (newColor) {
+                    setTeamColor(newColor)
+                    setColorPickerVisible(false)
+                  } else {
+                    alert('Valeur de couleur invalide. Veuillez réessayer.')
+                  }
+                }}
+              >
+                <Text style={styles.modalButtonText}>Valider</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setColorPickerVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Annuler</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    backgroundColor: '#010017',
+    paddingHorizontal: 20,
+    paddingTop: 29,
+    paddingBottom: 100
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 40
+  },
+  title: {
+    fontSize: 24,
+    color: '#FFFFFF',
+    fontFamily: 'Montserrat',
+    fontWeight: 'bold'
+  },
+  titleUnderline: {
+    marginTop: 4,
+    height: 3,
+    width: 180,
+    backgroundColor: '#A9F6CB',
+    borderRadius: 2
+  },
+  subTitleUnderline: {
+    alignSelf: 'center',
+    marginTop: 4,
+    marginBottom: 15,
+    height: 3,
+    width: 180,
+    backgroundColor: '#A9F6CB',
+    borderRadius: 2
+  },
+  cardContainer: {
+    alignSelf: 'stretch',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#A9F6CB',
+    backgroundColor: '#010017',
+    padding: 20
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#010017',
+    marginHorizontal: -20,
+    marginTop: -20,
+    marginBottom: 20,
+    overflow: 'hidden',
+    borderTopLeftRadius: 13,
+    borderTopRightRadius: 13
+  },
+  switchButton: {
+    flex: 1,
+    backgroundColor: '#A9F6CB',
+    paddingVertical: 12,
+    alignItems: 'center'
+  },
+  switchButtonActive: {
+    backgroundColor: '#010017'
+  },
+  switchButtonText: {
+    color: '#010017',
+    fontSize: 16,
+    fontWeight: 'normal'
+  },
+  switchButtonTextActive: {
+    color: '#A9F6CB',
+    fontWeight: 'bold'
+  },
+  formContainer: {
+    marginTop: 10
+  },
+  formTitle: {
+    color: '#A9F6CB',
+    fontSize: 13,
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    marginBottom: 4,
+    textAlign: 'center'
+  },
+  formSubtitle: {
+    color: '#A9F6CB',
+    fontSize: 14,
+    fontStyle: 'italic',
+    marginBottom: 16,
+    textAlign: 'center'
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#A9F6CB',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 12
+  },
+  input: {
+    flex: 1,
+    color: '#A9F6CB'
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: 'top'
+  },
+  required: {
+    color: 'red',
+    marginLeft: 4
+  },
+  submitButton: {
+    backgroundColor: '#A9F6CB',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 10
+  },
+  submitButtonText: {
+    color: '#010017',
+    fontWeight: 'bold',
+    fontSize: 16
+  }
+})
