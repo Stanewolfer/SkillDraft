@@ -10,6 +10,8 @@ import {
   TextInput
 } from 'react-native'
 import CustomStackScreen from '../components/CustomStackScreen'
+import { useRouter } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 enum Mode {
   Personne = 'personne',
@@ -17,6 +19,8 @@ enum Mode {
 }
 
 export default function ConnexionScreen() {
+  const router = useRouter()
+
   const [mode, setMode] = useState<Mode>(Mode.Personne)
 
   // State variables for "person" mode
@@ -29,20 +33,48 @@ export default function ConnexionScreen() {
   const [orgPassword, setOrgPassword] = useState('')
 
   // Submit function that prepares data to be sent to the backend
-  const handleLogin = () => {
-    if (mode === 'personne') {
-      const data = {
-        login: userLogin,
-        password: userPassword
+  const handleLogin = async () => {
+    const apiUrl = 'http://localhost:5000/api/auth/login'
+
+    try {
+      const data =
+        mode === 'personne'
+          ? {
+              login: userLogin,
+              password: userPassword
+            }
+          : {
+              login: orgTeamName,
+              email: orgEmail,
+              password: orgPassword
+            }
+
+      console.log('Données envoyées :', data)
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          type: mode === 'personne' ? 'user' : 'team'
+        },
+        body: JSON.stringify(data)
+      })
+
+      const result = await response.json()
+      console.log('Réponse API :', result)
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Une erreur est survenue')
       }
-      console.log('Données de connexion (personne) : ', data)
-    } else {
-      const data = {
-        teamName: orgTeamName,
-        email: orgEmail,
-        password: orgPassword
-      }
-      console.log('Données de connexion (organisation) : ', data)
+
+      // Stocker l'ID utilisateur et le token dans AsyncStorage
+      await AsyncStorage.setItem('userId', result.entity.id)
+      await AsyncStorage.setItem('token', result.token)
+      await AsyncStorage.setItem('type', mode === 'personne' ? 'user' : 'team')
+
+      alert('Connexion réussie !')
+    } catch (error) {
+      console.error('Erreur lors de la connexion :', error)
+      alert('Erreur lors de l’inscription. Vérifie ta connexion et réessaie.')
     }
   }
 
@@ -155,12 +187,19 @@ export default function ConnexionScreen() {
             <TouchableOpacity style={styles.submitButton} onPress={handleLogin}>
               <Text style={styles.submitButtonText}>Se Connecter</Text>
             </TouchableOpacity>
-            <Text style={[styles.linkText, { textAlign: 'center', marginTop: 10 }]}>
+            <Text
+              style={[styles.linkText, { textAlign: 'center', marginTop: 10 }]}
+            >
               Mot de passe oublié ?
             </Text>
             <Text style={styles.normalText}>
               Pas encore de compte ?{' '}
-              <Text style={styles.linkText}>Inscrivez vous !</Text>
+              <Text
+                style={styles.linkText}
+                onPress={() => router.push('/inscription')}
+              >
+                Inscrivez vous !
+              </Text>
             </Text>
           </View>
         </View>
