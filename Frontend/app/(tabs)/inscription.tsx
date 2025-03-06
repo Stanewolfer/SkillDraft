@@ -11,6 +11,11 @@ import {
 } from 'react-native'
 import CustomStackScreen from '../components/CustomStackScreen'
 
+enum Mode {
+  Personne = 'personne',
+  Organisation = 'organisation'
+}
+
 function CustomInput({
   placeholder,
   required = false,
@@ -43,7 +48,7 @@ function CustomInput({
 }
 
 export default function InscriptionScreen() {
-  const [mode, setMode] = useState<'personne' | 'organisation'>('personne')
+  const [mode, setMode] = useState<Mode>(Mode.Personne)
 
   // State variables for "person" mode
   const [familyName, setFamilyName] = useState('')
@@ -64,7 +69,7 @@ export default function InscriptionScreen() {
 
   // Submit function that prepares data to be sent to the backend
   const handleSubmit = () => {
-    if (mode === 'personne') {
+    if (mode == Mode.Personne) {
       const data = {
         familyName,
         firstName,
@@ -102,14 +107,14 @@ export default function InscriptionScreen() {
             <TouchableOpacity
               style={[
                 styles.switchButton,
-                mode === 'personne' && styles.switchButtonActive
+                mode === Mode.Personne && styles.switchButtonActive
               ]}
-              onPress={() => setMode('personne')}
+              onPress={() => setMode(Mode.Personne)}
             >
               <Text
                 style={[
                   styles.switchButtonText,
-                  mode === 'personne' && styles.switchButtonTextActive
+                  mode === Mode.Personne && styles.switchButtonTextActive
                 ]}
               >
                 Personne
@@ -119,14 +124,14 @@ export default function InscriptionScreen() {
             <TouchableOpacity
               style={[
                 styles.switchButton,
-                mode === 'organisation' && styles.switchButtonActive
+                mode === Mode.Organisation && styles.switchButtonActive
               ]}
-              onPress={() => setMode('organisation')}
+              onPress={() => setMode(Mode.Organisation)}
             >
               <Text
                 style={[
                   styles.switchButtonText,
-                  mode === 'organisation' && styles.switchButtonTextActive
+                  mode === Mode.Organisation && styles.switchButtonTextActive
                 ]}
               >
                 Organisation
@@ -143,7 +148,7 @@ export default function InscriptionScreen() {
               sont obligatoires)
             </Text>
 
-            {mode === 'personne' ? (
+            {mode === Mode.Personne ? (
               <>
                 <CustomInput
                   placeholder='Nom de famille'

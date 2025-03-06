@@ -11,8 +11,13 @@ import {
 } from 'react-native'
 import CustomStackScreen from '../components/CustomStackScreen'
 
+enum Mode {
+  Personne = 'personne',
+  Organisation = 'organisation'
+}
+
 export default function ConnexionScreen() {
-  const [mode, setMode] = useState<'personne' | 'organisation'>('personne')
+  const [mode, setMode] = useState<Mode>(Mode.Personne)
 
   // State variables for "person" mode
   const [userLogin, setUserLogin] = useState('')
@@ -55,14 +60,14 @@ export default function ConnexionScreen() {
             <TouchableOpacity
               style={[
                 styles.switchButton,
-                mode === 'personne' && styles.switchButtonActive
+                mode === Mode.Personne && styles.switchButtonActive
               ]}
-              onPress={() => setMode('personne')}
+              onPress={() => setMode(Mode.Personne)}
             >
               <Text
                 style={[
                   styles.switchButtonText,
-                  mode === 'personne' && styles.switchButtonTextActive
+                  mode === Mode.Personne && styles.switchButtonTextActive
                 ]}
               >
                 Personne
@@ -72,14 +77,14 @@ export default function ConnexionScreen() {
             <TouchableOpacity
               style={[
                 styles.switchButton,
-                mode === 'organisation' && styles.switchButtonActive
+                mode === Mode.Organisation && styles.switchButtonActive
               ]}
-              onPress={() => setMode('organisation')}
+              onPress={() => setMode(Mode.Organisation)}
             >
               <Text
                 style={[
                   styles.switchButtonText,
-                  mode === 'organisation' && styles.switchButtonTextActive
+                  mode === Mode.Organisation && styles.switchButtonTextActive
                 ]}
               >
                 Organisation
@@ -92,7 +97,7 @@ export default function ConnexionScreen() {
               Veuillez renseigner les informations ci-dessous
             </Text>
 
-            {mode === 'personne' ? (
+            {mode === Mode.Personne ? (
               <>
                 <View style={styles.inputWrapper}>
                   <TextInput
