@@ -51,45 +51,70 @@ export default function InscriptionScreen() {
   const [mode, setMode] = useState<Mode>(Mode.Personne)
 
   // State variables for "person" mode
-  const [familyName, setFamilyName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [firstName, setFirstName] = useState('')
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [bio, setBio] = useState('')
-  const [optionalTeam, setOptionalTeam] = useState('')
+  const [description, setDescription] = useState('')
+  const [teamId, setTeamId] = useState('') // Correspond à la relation avec Team
 
   // State variables for "organization" mode
-  const [teamName, setTeamName] = useState('')
-  const [managerLastName, setManagerLastName] = useState('')
-  const [managerFirstName, setManagerFirstName] = useState('')
+  const [teamName, setTeamName] = useState('') // Correspond au schéma
+  const [ceoLastName, setCeoLastName] = useState('')
+  const [ceoFirstName, setCeoFirstName] = useState('')
   const [orgEmail, setOrgEmail] = useState('')
   const [orgPassword, setOrgPassword] = useState('')
-  const [orgBio, setOrgBio] = useState('')
+  const [orgDescription, setOrgDescription] = useState('')
 
   // Submit function that prepares data to be sent to the backend
-  const handleSubmit = () => {
-    if (mode == Mode.Personne) {
-      const data = {
-        familyName,
-        firstName,
-        username,
-        email,
-        password,
-        bio,
-        optionalTeam
+  const handleSubmit = async () => {
+    const apiUrl = 'http://localhost:5000/api/auth/register'
+
+    try {
+      const data =
+        mode === 'personne'
+          ? {
+              username,
+              firstName,
+              lastName,
+              email,
+              password,
+              description: description || null, // Ajout d'une valeur null si vide
+              teamId: teamId || null // Envoyer teamId ou null s'il n'est pas défini
+            }
+          : {
+              username: teamName,
+              ceoFirstName,
+              ceoLastName,
+              email: orgEmail,
+              password: orgPassword,
+              description: orgDescription || null, // Gérer la description optionnelle
+              teamColor: 'null'
+            }
+
+      console.log('Données envoyées :', data)
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          type: mode === 'personne' ? 'user' : 'team'
+        },
+        body: JSON.stringify(data)
+      })
+
+      const result = await response.json()
+      console.log('Réponse API :', result)
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Une erreur est survenue')
       }
-      console.log('Données inscription personne : ', data)
-    } else {
-      const data = {
-        teamName,
-        managerLastName,
-        managerFirstName,
-        email: orgEmail,
-        password: orgPassword,
-        bio: orgBio
-      }
-      console.log('Données inscription organisation : ', data)
+
+      alert('Inscription réussie !')
+    } catch (error) {
+      console.error('Erreur lors de l’inscription :', error)
+      alert('Erreur lors de l’inscription. Vérifie ta connexion et réessaie.')
     }
   }
 
@@ -153,8 +178,8 @@ export default function InscriptionScreen() {
                 <CustomInput
                   placeholder='Nom de famille'
                   required={true}
-                  value={familyName}
-                  onChangeText={setFamilyName}
+                  value={lastName}
+                  onChangeText={setLastName}
                 />
                 <CustomInput
                   placeholder='Prénom'
@@ -186,13 +211,13 @@ export default function InscriptionScreen() {
                   placeholder='Description (biographie)'
                   multiline={true}
                   numberOfLines={4}
-                  value={bio}
-                  onChangeText={setBio}
+                  value={description}
+                  onChangeText={setDescription}
                 />
                 <CustomInput
                   placeholder='Equipe dont vous faites partie (Optionnel)'
-                  value={optionalTeam}
-                  onChangeText={setOptionalTeam}
+                  value={teamId}
+                  onChangeText={setTeamId}
                 />
               </>
             ) : (
@@ -207,14 +232,14 @@ export default function InscriptionScreen() {
                 <CustomInput
                   placeholder='Nom du gérant'
                   required={true}
-                  value={managerLastName}
-                  onChangeText={setManagerLastName}
+                  value={ceoLastName}
+                  onChangeText={setCeoLastName}
                 />
                 <CustomInput
                   placeholder='Prénom du gérant'
                   required={true}
-                  value={managerFirstName}
-                  onChangeText={setManagerFirstName}
+                  value={ceoFirstName}
+                  onChangeText={setCeoFirstName}
                 />
                 <CustomInput
                   placeholder='Email'
@@ -230,11 +255,11 @@ export default function InscriptionScreen() {
                 />
                 <View style={styles.subTitleUnderline} />
                 <CustomInput
-                  placeholder='Description (biographie)'
+                  placeholder='Description (descriptiongraphie)'
                   multiline={true}
                   numberOfLines={4}
-                  value={orgBio}
-                  onChangeText={setOrgBio}
+                  value={orgDescription}
+                  onChangeText={setOrgDescription}
                 />
               </>
             )}

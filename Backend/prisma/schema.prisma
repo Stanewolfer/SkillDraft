@@ -8,29 +8,33 @@ datasource db {
 }
 
 model User {
-  id          String      @id @default(uuid())
-  username    String   @unique
-  firstName   String
-  lastName    String
-  email       String   @unique
-  password    String   // Password will be hashed
-  description String?
-  team        Team?    @relation(fields: [teamId], references: [id])
-  teamId      String?
-  posts       RegularPost[]
-  fastSearch  FastSearching[]
+  id            String          @id @default(uuid())
+  username      String          @unique
+  firstName     String
+  lastName      String
+  email         String          @unique
+  password      String // Password will be hashed
+  description   String?
+  team          Team?           @relation(fields: [teamId], references: [id])
+  teamId        String?
+  posts         RegularPost[]
+  fastSearch    FastSearching[]
   notifications Notifications[]
+
+  sendMessages Message[] @relation(name: "sender")
+
+  receivedMessages Message[] @relation(name: "receiver")
 }
 
 model Team {
   id          String      @id @default(uuid())
-  teamname    String   @unique
+  teamname    String      @unique
   ceoFirstName String
   ceoLastName  String
-  email       String   @unique
+  email       String      @unique
   password    String
   description String?
-  rosterList  Json
+  rosterList  Json?       // ✅ Rendu nullable correctement
   teamColor   String
   offerPosts  OfferPost[]
   fastSearch  FastSearching[]
@@ -38,32 +42,35 @@ model Team {
   User User[]
 }
 
+
 model RegularPost {
-  id          Int      @id @default(autoincrement())
+  id          String @id @default(uuid())
   imageList   Json
-  poster      User     @relation(fields: [posterId], references: [id])
+  poster      User   @relation(fields: [posterId], references: [id])
   posterId    String
   description String
-  likes       Int      @default(0)
+  likes       Int    @default(0)
   likesList   Json
-  reposts     Int      @default(0)
+  reposts     Int    @default(0)
   repostsList Json
   comments    Json
 }
 
 model OfferPost {
-  id              Int      @id @default(autoincrement())
-  imageList       Json
-  team           Team     @relation(fields: [teamId], references: [id])
-  teamId         String
-  description     String
+  id               String @id @default(uuid())
+  imageList        Json
+  team             Team   @relation(fields: [teamId], references: [id])
+  teamId           String
+  description      String
   applyingUserList Json
+
+  Messages Message[]
 }
 
 model FastSearching {
-  id           Int    @id @default(autoincrement())
-  swiper      User?  @relation(fields: [swiperId], references: [id])
-  swiperId    String?
+  id           String  @id @default(uuid())
+  swiper       User?   @relation(fields: [swiperId], references: [id])
+  swiperId     String?
   acceptedList Json
   refusedList  Json
 
@@ -71,14 +78,27 @@ model FastSearching {
 }
 
 model Games {
-  id        String      @id @default(uuid())
-  gameName  String @unique
+  id       String @id @default(uuid())
+  gameName String @unique
   gameLogo String @unique
 }
 
 model Notifications {
-  id               Int    @id @default(autoincrement())
-  receiver        User   @relation(fields: [receiverId], references: [id])
-  receiverId      String
+  id               String @id @default(uuid())
+  receiver         User   @relation(fields: [receiverId], references: [id])
+  receiverId       String
   notificationType String
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  senderId    String
+  receiverId  String
+  offerPostId String? // Peut être null si c'est une conversation générale
+  content     String
+  createdAt   DateTime @default(now())
+
+  sender    User       @relation(fields: [senderId], references: [id], name: "sender")
+  receiver  User       @relation(fields: [receiverId], references: [id], name: "receiver")
+  offerPost OfferPost? @relation(fields: [offerPostId], references: [id])
 }
