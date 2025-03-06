@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router'
 import React, { useState, useEffect } from 'react'
+import { LogBox } from 'react-native'
 import {
   ScrollView,
   View,
@@ -9,8 +10,14 @@ import {
   TextInput,
   Modal
 } from 'react-native'
+import * as Unicons from '@iconscout/react-native-unicons'
 import { COLORS } from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
+
+LogBox.ignoreLogs([
+  'Warning: UilEyeSlash: Support for defaultProps will be removed from function components',
+  'Warning: UilEye: Support for defaultProps will be removed from function components'
+])
 
 // Hexadecimal → RGB conversion
 function hexToRgb(hex: string): { r: number; g: number; b: number } {
@@ -106,6 +113,47 @@ function CustomInput({
   )
 }
 
+// Component for password field with toggle icon
+function PasswordInput({
+  placeholder,
+  required = false,
+  value = '',
+  onChangeText = () => {},
+  passwordVisible,
+  togglePasswordVisibility
+}: {
+  placeholder: string
+  required?: boolean
+  value?: string
+  onChangeText?: (text: string) => void
+  passwordVisible: boolean
+  togglePasswordVisibility: () => void
+}) {
+  return (
+    <View style={styles.inputWrapper}>
+      <TextInput
+        style={[styles.input, { flex: 1 }]}
+        placeholder={placeholder}
+        placeholderTextColor={COLORS.main_blue}
+        value={value}
+        onChangeText={onChangeText}
+        secureTextEntry={!passwordVisible}
+      />
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={togglePasswordVisibility}
+      >
+        {passwordVisible ? (
+          <Unicons.UilEyeSlash size={20} color={COLORS.main_blue} />
+        ) : (
+          <Unicons.UilEye size={20} color={COLORS.main_blue} />
+        )}
+      </TouchableOpacity>
+      {required && <Text style={styles.required}>*</Text>}
+    </View>
+  )
+}
+
 export default function InscriptionScreen() {
   const [mode, setMode] = useState<Mode>(Mode.Personne)
 
@@ -126,6 +174,9 @@ export default function InscriptionScreen() {
   const [orgPassword, setOrgPassword] = useState('')
   const [orgDescription, setOrgDescription] = useState('')
   const [teamColor, setTeamColor] = useState('#FFFFFF')
+
+  // State for toggling password visibility
+  const [passwordVisible, setPasswordVisible] = useState(false)
 
   // States for color selection modal
   const [colorPickerVisible, setColorPickerVisible] = useState(false)
@@ -217,7 +268,6 @@ export default function InscriptionScreen() {
                 Personne
               </Text>
             </TouchableOpacity>
-
             <TouchableOpacity
               style={[
                 styles.switchButton,
@@ -272,11 +322,15 @@ export default function InscriptionScreen() {
                   value={email}
                   onChangeText={setEmail}
                 />
-                <CustomInput
+                <PasswordInput
                   placeholder='Mot de passe'
                   required={true}
                   value={password}
                   onChangeText={setPassword}
+                  passwordVisible={passwordVisible}
+                  togglePasswordVisibility={() =>
+                    setPasswordVisible(prev => !prev)
+                  }
                 />
                 <View style={styles.subTitleUnderline} />
                 <CustomInput
@@ -319,11 +373,15 @@ export default function InscriptionScreen() {
                   value={orgEmail}
                   onChangeText={setOrgEmail}
                 />
-                <CustomInput
+                <PasswordInput
                   placeholder='Mot de passe'
                   required={true}
                   value={orgPassword}
                   onChangeText={setOrgPassword}
+                  passwordVisible={passwordVisible}
+                  togglePasswordVisibility={() =>
+                    setPasswordVisible(prev => !prev)
+                  }
                 />
                 <View style={styles.subTitleUnderline} />
                 <CustomInput
@@ -374,7 +432,7 @@ export default function InscriptionScreen() {
             <TextInput
               style={styles.hexInput}
               placeholder='Hex (#FFFFFF) ou RGB (255,255,255)'
-              placeholderTextColor='#000000'
+              placeholderTextColor='black'
               value={colorInput}
               onChangeText={setColorInput}
             />
@@ -517,6 +575,13 @@ const styles = StyleSheet.create({
     color: 'red',
     marginLeft: 4
   },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  iconContainer: {
+    paddingHorizontal: 8
+  },
   submitButton: {
     backgroundColor: COLORS.main_blue,
     borderRadius: 8,
@@ -599,6 +664,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5
   },
   modalButtonText: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: COLORS.background_blue
   }
 })
