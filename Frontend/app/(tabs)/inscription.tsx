@@ -57,10 +57,10 @@ export default function InscriptionScreen() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [description, setDescription] = useState('')
-  const [teamId, setTeamId] = useState('') // Correspond à la relation avec Team
+  const [teamId, setTeamId] = useState('')
 
   // State variables for "organization" mode
-  const [teamName, setTeamName] = useState('') // Correspond au schéma
+  const [teamName, setTeamName] = useState('')
   const [ceoLastName, setCeoLastName] = useState('')
   const [ceoFirstName, setCeoFirstName] = useState('')
   const [orgEmail, setOrgEmail] = useState('')
@@ -73,15 +73,15 @@ export default function InscriptionScreen() {
 
     try {
       const data =
-        mode === 'personne'
+        mode === Mode.Personne
           ? {
               username,
               firstName,
               lastName,
               email,
               password,
-              description: description || null, // Ajout d'une valeur null si vide
-              teamId: teamId || null // Envoyer teamId ou null s'il n'est pas défini
+              description: description || null,
+              teamId: teamId || null
             }
           : {
               username: teamName,
@@ -89,7 +89,7 @@ export default function InscriptionScreen() {
               ceoLastName,
               email: orgEmail,
               password: orgPassword,
-              description: orgDescription || null, // Gérer la description optionnelle
+              description: orgDescription || null,
               teamColor: 'null'
             }
 
