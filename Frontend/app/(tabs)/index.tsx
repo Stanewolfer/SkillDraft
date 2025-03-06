@@ -61,13 +61,13 @@ export default function HomeScreen() {
     checkUserSession()
   }, [])
 
-  if (loading) {
+  /* if (loading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size='large' color={COLORS.main_blue} />
       </View>
     )
-  }
+  } */
 
   return (
     <>
