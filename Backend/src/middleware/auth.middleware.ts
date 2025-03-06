@@ -11,7 +11,7 @@ declare global {
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   // Liste des routes publiques qui ne nécessitent pas d'authentification
-  const publicRoutes = ['/register', '/login'];
+  const publicRoutes = ['/api/auth/register', '/api/auth/login', '/auth/fast-login'];
 
   // Si la route est publique, on passe directement à la suite
   if (publicRoutes.includes(req.path)) {
