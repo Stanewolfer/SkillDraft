@@ -1,4 +1,3 @@
-import { Stack } from 'expo-router'
 import React, { useState } from 'react'
 import {
   ScrollView,
@@ -9,6 +8,8 @@ import {
   TextInput
 } from 'react-native'
 import CustomStackScreen from '../components/CustomStackScreen'
+
+import { styles } from './styles/inscriptionStyle'
 
 function CustomInput({
   placeholder,
@@ -123,127 +124,3 @@ export default function InscriptionScreen() {
     </>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: '#010017',
-    paddingHorizontal: 20,
-    paddingTop: 29,
-    paddingBottom: 100
-  },
-  titleContainer: {
-    alignItems: 'center',
-    marginBottom: 40
-  },
-  title: {
-    fontSize: 24,
-    color: '#FFFFFF',
-    fontFamily: 'Montserrat',
-    fontWeight: 'bold'
-  },
-  titleUnderline: {
-    marginTop: 4,
-    height: 3,
-    width: 180,
-    backgroundColor: '#A9F6CB',
-    borderRadius: 2
-  },
-  subTitleUnderline: {
-    alignSelf: 'center',
-    marginTop: 4,
-    marginBottom: 15,
-    height: 3,
-    width: 180,
-    backgroundColor: '#A9F6CB',
-    borderRadius: 2
-  },
-  cardContainer: {
-    alignSelf: 'stretch',
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#A9F6CB',
-    backgroundColor: '#010017',
-    padding: 20
-  },
-  switchContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#010017',
-    marginHorizontal: -20,
-    marginTop: -20,
-    marginBottom: 20,
-    overflow: 'hidden',
-    borderTopLeftRadius: 13,
-    borderTopRightRadius: 13
-  },
-  switchButton: {
-    flex: 1,
-    backgroundColor: '#A9F6CB',
-    paddingVertical: 12,
-    alignItems: 'center'
-  },
-  switchButtonActive: {
-    backgroundColor: '#010017'
-  },
-  switchButtonText: {
-    color: '#010017',
-    fontSize: 16,
-    fontWeight: 'normal'
-  },
-  switchButtonTextActive: {
-    color: '#A9F6CB',
-    fontWeight: 'bold'
-  },
-  formContainer: {
-    marginTop: 10
-  },
-  formTitle: {
-    color: '#A9F6CB',
-    fontSize: 13,
-    fontStyle: 'italic',
-    fontWeight: 'bold',
-    marginBottom: 4,
-    textAlign: 'center'
-  },
-  formSubtitle: {
-    color: '#A9F6CB',
-    fontSize: 14,
-    fontStyle: 'italic',
-    marginBottom: 16,
-    textAlign: 'center'
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#A9F6CB',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginBottom: 12
-  },
-  input: {
-    flex: 1,
-    color: '#A9F6CB'
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top'
-  },
-  required: {
-    color: 'red',
-    marginLeft: 4
-  },
-  submitButton: {
-    backgroundColor: '#A9F6CB',
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginTop: 10
-  },
-  submitButtonText: {
-    color: '#010017',
-    fontWeight: 'bold',
-    fontSize: 16
-  }
-})

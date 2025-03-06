@@ -4,7 +4,7 @@ import * as Unicons from '@iconscout/react-native-unicons';
 import { Stack, useRouter } from 'expo-router';
 import { COLORS } from './styles/colors';
 
-import { styles } from './styles/indexStyles';
+import { styles } from './styles/indexStyle';
 import CustomStackScreen from '../components/CustomStackScreen';
 
 LogBox.ignoreLogs([
