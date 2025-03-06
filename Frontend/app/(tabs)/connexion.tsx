@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router'
 import React, { useState } from 'react'
+import { COLORS } from './styles/colors'
 import {
   ScrollView,
   View,
@@ -10,33 +11,35 @@ import {
 } from 'react-native'
 import CustomStackScreen from '../components/CustomStackScreen'
 
-function CustomInput({
-  placeholder,
-  required = false,
-  multiline = false,
-  numberOfLines = 1
-}: {
-  placeholder: string
-  required?: boolean
-  multiline?: boolean
-  numberOfLines?: number
-}) {
-  return (
-    <View style={styles.inputWrapper}>
-      <TextInput
-        style={[styles.input, multiline && styles.textArea]}
-        placeholder={placeholder}
-        placeholderTextColor='#A9F6CB80'
-        multiline={multiline}
-        numberOfLines={numberOfLines}
-      />
-      {required && <Text style={styles.required}>*</Text>}
-    </View>
-  )
-}
-
 export default function ConnexionScreen() {
   const [mode, setMode] = useState<'personne' | 'organisation'>('personne')
+
+  // State variables for "person" mode
+  const [userLogin, setUserLogin] = useState('')
+  const [userPassword, setUserePassword] = useState('')
+
+  // State variables for "organization" mode
+  const [orgTeamName, setOrgTeamName] = useState('')
+  const [orgEmail, setOrgEmail] = useState('')
+  const [orgPassword, setOrgPassword] = useState('')
+
+  // Submit function that prepares data to be sent to the backend
+  const handleLogin = () => {
+    if (mode === 'personne') {
+      const data = {
+        login: userLogin,
+        password: userPassword
+      }
+      console.log('Données de connexion (personne) : ', data)
+    } else {
+      const data = {
+        teamName: orgTeamName,
+        email: orgEmail,
+        password: orgPassword
+      }
+      console.log('Données de connexion (organisation) : ', data)
+    }
+  }
 
   return (
     <>
@@ -88,35 +91,72 @@ export default function ConnexionScreen() {
             <Text style={styles.formTitle}>
               Veuillez renseigner les informations ci-dessous
             </Text>
-            <Text style={styles.formSubtitle}>
-              (Les informations avec un <Text style={styles.required}>*</Text>{' '}
-              sont obligatoires)
-            </Text>
 
             {mode === 'personne' ? (
               <>
-                <CustomInput placeholder='Nom' required={true} />
-                <CustomInput placeholder='Prénom' required={true} />
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder='Email / Nom dutilisateur'
+                    placeholderTextColor={COLORS.main_blue}
+                    value={userLogin}
+                    onChangeText={setUserLogin}
+                  />
+                </View>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder='Mot de passe'
+                    placeholderTextColor={COLORS.main_blue}
+                    secureTextEntry={true}
+                    value={userPassword}
+                    onChangeText={setUserePassword}
+                  />
+                </View>
               </>
             ) : (
               <>
-                <CustomInput placeholder="Nom de l'équipe" required={true} />
-                <View style={styles.subTitleUnderline} />
-                <CustomInput placeholder='Nom du gérant' required={true} />
-                <CustomInput placeholder='Prénom du gérant' required={true} />
-                <CustomInput placeholder='Email' required={true} />
-                <CustomInput placeholder='Mot de passe' required={true} />
-                <View style={styles.subTitleUnderline} />
-                <CustomInput
-                  placeholder='Description (biographie)'
-                  multiline={true}
-                  numberOfLines={4}
-                />
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Nom de l'équipe"
+                    placeholderTextColor={COLORS.main_blue}
+                    value={orgTeamName}
+                    onChangeText={setOrgTeamName}
+                  />
+                </View>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder='Email'
+                    placeholderTextColor={COLORS.main_blue}
+                    value={orgEmail}
+                    onChangeText={setOrgEmail}
+                  />
+                </View>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder='Mot de passe'
+                    placeholderTextColor={COLORS.main_blue}
+                    secureTextEntry={true}
+                    value={orgPassword}
+                    onChangeText={setOrgPassword}
+                  />
+                </View>
               </>
             )}
-            <TouchableOpacity style={styles.submitButton}>
+
+            <TouchableOpacity style={styles.submitButton} onPress={handleLogin}>
               <Text style={styles.submitButtonText}>Se Connecter</Text>
             </TouchableOpacity>
+            <Text style={[styles.linkText, { textAlign: 'center', marginTop: 10 }]}>
+              Mot de passe oublié ?
+            </Text>
+            <Text style={styles.normalText}>
+              Pas encore de compte ?{' '}
+              <Text style={styles.linkText}>Inscrivez vous !</Text>
+            </Text>
           </View>
         </View>
       </ScrollView>
@@ -127,7 +167,7 @@ export default function ConnexionScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#010017',
+    backgroundColor: COLORS.background_blue,
     paddingHorizontal: 20,
     paddingTop: 29,
     paddingBottom: 100
@@ -138,7 +178,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: '#FFFFFF',
+    color: COLORS.text_white,
     fontFamily: 'Montserrat',
     fontWeight: 'bold'
   },
@@ -146,7 +186,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     height: 3,
     width: 180,
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     borderRadius: 2
   },
   subTitleUnderline: {
@@ -155,20 +195,20 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     height: 3,
     width: 180,
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     borderRadius: 2
   },
   cardContainer: {
     alignSelf: 'stretch',
     borderRadius: 16,
     borderWidth: 2,
-    borderColor: '#A9F6CB',
-    backgroundColor: '#010017',
+    borderColor: COLORS.main_blue,
+    backgroundColor: COLORS.background_blue,
     padding: 20
   },
   switchContainer: {
     flexDirection: 'row',
-    backgroundColor: '#010017',
+    backgroundColor: COLORS.background_blue,
     marginHorizontal: -20,
     marginTop: -20,
     marginBottom: 20,
@@ -178,45 +218,38 @@ const styles = StyleSheet.create({
   },
   switchButton: {
     flex: 1,
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     paddingVertical: 12,
     alignItems: 'center'
   },
   switchButtonActive: {
-    backgroundColor: '#010017'
+    backgroundColor: COLORS.background_blue
   },
   switchButtonText: {
-    color: '#010017',
+    color: COLORS.background_blue,
     fontSize: 16,
     fontWeight: 'normal'
   },
   switchButtonTextActive: {
-    color: '#A9F6CB',
+    color: COLORS.main_blue,
     fontWeight: 'bold'
   },
   formContainer: {
     marginTop: 10
   },
   formTitle: {
-    color: '#A9F6CB',
+    color: COLORS.main_blue,
     fontSize: 13,
     fontStyle: 'italic',
     fontWeight: 'bold',
-    marginBottom: 4,
-    textAlign: 'center'
-  },
-  formSubtitle: {
-    color: '#A9F6CB',
-    fontSize: 14,
-    fontStyle: 'italic',
-    marginBottom: 16,
+    marginBottom: 20,
     textAlign: 'center'
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#A9F6CB',
+    borderColor: COLORS.main_blue,
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -224,7 +257,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: '#A9F6CB'
+    color: COLORS.main_blue
   },
   textArea: {
     height: 100,
@@ -235,15 +268,26 @@ const styles = StyleSheet.create({
     marginLeft: 4
   },
   submitButton: {
-    backgroundColor: '#A9F6CB',
+    backgroundColor: COLORS.main_blue,
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 10
   },
   submitButtonText: {
-    color: '#010017',
+    color: COLORS.background_blue,
     fontWeight: 'bold',
     fontSize: 16
+  },
+  linkText: {
+    color: COLORS.link_yellow,
+    fontStyle: 'italic',
+    textDecorationLine: 'underline',
+    textDecorationColor: COLORS.link_yellow
+  },
+  normalText: {
+    textAlign: 'center',
+    marginTop: 10,
+    color: COLORS.main_blue
   }
 })
