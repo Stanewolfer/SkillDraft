@@ -7,11 +7,12 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput
+  TextInput,
 } from 'react-native'
 import CustomStackScreen from '../components/CustomStackScreen'
 import { useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Checkbox, HStack } from 'native-base'
 
 export default function ConnexionScreen() {
   const router = useRouter()
@@ -33,9 +34,10 @@ export default function ConnexionScreen() {
                 style={ styles.inputWrapper }
                 placeholderTextColor={COLORS.main_blue}
             />
+            <OffreCheckbox />
             <TouchableOpacity
                 onPress={() => {
-                    // Handle post creation logic here
+                    // Mettre la logique de création de post
                 }}
                 style={{ backgroundColor: COLORS.background_blue, padding: 10, alignItems: 'center' }}
             >
@@ -45,6 +47,30 @@ export default function ConnexionScreen() {
     </>
   )
 }
+
+const OffreCheckbox = () => {
+    return <HStack space={6}>
+        <Checkbox value="test" defaultIsChecked>Ce post est une offre.</Checkbox>
+      </HStack>;
+  };
+
+const checkboxStyle = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    checkboxContainer: {
+      flexDirection: 'row',
+      marginBottom: 20,
+    },
+    checkbox: {
+      alignSelf: 'center',
+    },
+    label: {
+      margin: 8,
+    },
+  });
 
 const styles = StyleSheet.create({
     container: {
