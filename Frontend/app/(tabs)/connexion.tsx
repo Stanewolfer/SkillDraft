@@ -134,7 +134,7 @@ export default function ConnexionScreen() {
                 <View style={styles.inputWrapper}>
                   <TextInput
                     style={styles.input}
-                    placeholder='Email / Nom dutilisateur'
+                    placeholder="Email / Nom d'utilisateur"
                     placeholderTextColor={COLORS.main_blue}
                     value={userLogin}
                     onChangeText={setUserLogin}
