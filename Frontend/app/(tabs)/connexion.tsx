@@ -70,7 +70,6 @@ export default function ConnexionScreen() {
       await AsyncStorage.setItem('token', result.token)
       await AsyncStorage.setItem('type', mode === 'personne' ? 'user' : 'team')
 
-      alert('Connexion réussie !')
       router.push('/feed')
     } catch (error) {
       console.error('Erreur lors de la connexion :', error)

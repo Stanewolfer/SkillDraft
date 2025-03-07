@@ -27,25 +27,25 @@ model User {
 }
 
 model Team {
-  id          String      @id @default(uuid())
-  teamname    String      @unique
+  id           String          @id @default(uuid())
+  teamname     String          @unique
   ceoFirstName String
   ceoLastName  String
-  email       String      @unique
-  password    String
-  description String?
-  rosterList  Json?       // ✅ Rendu nullable correctement
-  teamColor   String
-  offerPosts  OfferPost[]
-  fastSearch  FastSearching[]
+  email        String          @unique
+  password     String
+  description  String?
+  rosterList   Json? // ✅ Rendu nullable correctement
+  teamColor    String
+  offerPosts   OfferPost[]
+  fastSearch   FastSearching[]
 
   User User[]
 }
 
-
 model RegularPost {
   id          String @id @default(uuid())
-  imageList   Json
+  imageList   Json?
+  title       String
   poster      User   @relation(fields: [posterId], references: [id])
   posterId    String
   description String
@@ -58,7 +58,8 @@ model RegularPost {
 
 model OfferPost {
   id               String @id @default(uuid())
-  imageList        Json
+  title            String
+  imageList        Json?
   team             Team   @relation(fields: [teamId], references: [id])
   teamId           String
   description      String
