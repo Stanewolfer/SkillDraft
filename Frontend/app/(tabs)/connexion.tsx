@@ -34,7 +34,7 @@ export default function ConnexionScreen() {
 
   // Submit function that prepares data to be sent to the backend
   const handleLogin = async () => {
-    const apiUrl = 'http://localhost:5000/api/auth/login'
+    const apiUrl = 'http://10.57.32.33:5000/api/auth/login'
 
     try {
       const data =

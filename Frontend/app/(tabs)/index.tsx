@@ -35,7 +35,7 @@ export default function HomeScreen() {
         if (userId) {
           console.log('Fast login instancié')
           const response = await fetch(
-            `http://localhost:5000/api/auth/fast-login/${userId}`,
+            `http://10.57.32.33:5000/api/auth/fast-login/${userId}`,
             {
               method: 'POST',
               headers: {
