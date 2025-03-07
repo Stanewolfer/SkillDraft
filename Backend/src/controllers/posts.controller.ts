@@ -84,7 +84,9 @@ export const createPost = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const { type, ...postData } = req.body
+  const type = req.header('type')
+
+  const { ...postData } = req.body
 
   try {
     let newPost
