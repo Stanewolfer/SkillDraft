@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
     backgroundColor: COLORS.background_blue,
-    paddingBottom: 80 // espace pour la barre de navigation
+    paddingBottom: 80
   },
   scrollContent: {
     paddingHorizontal: 20,
