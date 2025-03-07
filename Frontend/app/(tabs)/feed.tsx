@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import { COLORS } from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 enum Mode {
   Personne = 'personne',
@@ -18,6 +19,11 @@ enum Mode {
 
 export default function FeedScreen() {
   const router = useRouter()
+
+  const logout = () =>{
+    AsyncStorage.clear()
+    router.push('/')
+  }
 
   return (
     <>
@@ -39,6 +45,12 @@ export default function FeedScreen() {
           >
             <Text style={styles.bottomButtonText}>Messagerie</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.bottomButton}
+            onPress={() => logout()}
+          >
+            <Text style={styles.bottomButtonText}>Se déconnecter</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </>
@@ -49,7 +61,7 @@ const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
     backgroundColor: COLORS.background_blue,
-    paddingBottom: 80 // espace pour la barre de navigation
+    paddingBottom: 80
   },
   scrollContent: {
     paddingHorizontal: 20,
