@@ -86,7 +86,7 @@ export const createPost = async (
 ): Promise<void> => {
   const type = req.header('type')
 
-  const { ...postData } = req.body
+  const { posterId, description, imageList, title } = req.body
 
   try {
     let newPost
@@ -94,9 +94,10 @@ export const createPost = async (
     if (type === 'regular') {
       newPost = await prisma.regularPost.create({
         data: {
-          description: postData.description,
-          imageList: postData.imageList,
-          posterId: postData.posterId,
+          description,
+          imageList,
+          title,
+          posterId,
           likes: 0,
           likesList: [],
           reposts: 0,
@@ -107,9 +108,10 @@ export const createPost = async (
     } else if (type === 'offer') {
       newPost = await prisma.offerPost.create({
         data: {
-          description: postData.description,
-          teamId: postData.teamId,
-          imageList: postData.imageList,
+          description,
+          teamId: posterId,
+          title,
+          imageList,
           applyingUserList: []
         }
       })
