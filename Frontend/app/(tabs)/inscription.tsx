@@ -13,7 +13,7 @@ import {
 import * as Unicons from '@iconscout/react-native-unicons'
 import { COLORS } from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
-import { useRouter } from 'expo-router';
+import { useRouter } from 'expo-router'
 
 LogBox.ignoreLogs([
   'Warning: UilEyeSlash: Support for defaultProps will be removed from function components',
@@ -156,7 +156,7 @@ function PasswordInput({
 }
 
 export default function InscriptionScreen() {
-  const router= useRouter()
+  const router = useRouter()
 
   const [mode, setMode] = useState<Mode>(Mode.Personne)
 
@@ -237,7 +237,7 @@ export default function InscriptionScreen() {
       if (!response.ok) {
         throw new Error(result.message || 'Une erreur est survenue')
       }
-      alert('Inscription réussie !')
+
       router.push('/connexion')
     } catch (error) {
       console.error('Erreur lors de l’inscription :', error)
