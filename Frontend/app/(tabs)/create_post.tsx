@@ -12,7 +12,7 @@ import {
 import CustomStackScreen from '../components/CustomStackScreen'
 import { useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Checkbox, HStack } from 'native-base'
+import { Checkbox, HStack, NativeBaseProvider } from 'native-base'
 
 export default function ConnexionScreen() {
   const router = useRouter()
@@ -20,7 +20,7 @@ export default function ConnexionScreen() {
   // const [mode, setMode] = useState<Mode>(Mode.Personne)
 
   return (
-    <>
+    <NativeBaseProvider>
         <CustomStackScreen title="Créer un post" />
         <ScrollView contentContainerStyle={styles.container}>
             <TextInput
@@ -44,13 +44,15 @@ export default function ConnexionScreen() {
                 <Text style={{ color: '#fff' }}>Créer</Text>
             </TouchableOpacity>
         </ScrollView>
-    </>
+    </NativeBaseProvider>
   )
 }
 
 const OffreCheckbox = () => {
     return <HStack space={6}>
-        <Checkbox value="test" defaultIsChecked>Ce post est une offre.</Checkbox>
+        <Checkbox value="test" defaultIsChecked>
+            <Text style={styles.text}>Ce post est une offre.</Text>
+            </Checkbox>
       </HStack>;
   };
 
@@ -79,7 +81,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    
+    text: {
+        color: COLORS.main_blue
+    },
     inputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
