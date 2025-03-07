@@ -20,7 +20,6 @@ enum Mode {
 
 export default function ConnexionScreen() {
   const router = useRouter()
-
   const [mode, setMode] = useState<Mode>(Mode.Personne)
 
   // State variables for "person" mode
@@ -38,7 +37,7 @@ export default function ConnexionScreen() {
 
     try {
       const data =
-        mode === 'personne'
+        mode === Mode.Personne
           ? {
               login: userLogin,
               password: userPassword
@@ -54,7 +53,7 @@ export default function ConnexionScreen() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          type: mode === 'personne' ? 'user' : 'team'
+          type: mode === Mode.Personne ? 'user' : 'team'
         },
         body: JSON.stringify(data)
       })
@@ -66,7 +65,7 @@ export default function ConnexionScreen() {
         throw new Error(result.message || 'Une erreur est survenue')
       }
 
-      // Stocker l'ID utilisateur et le token dans AsyncStorage
+      // Store user ID and token in AsyncStorage
       await AsyncStorage.setItem('userId', result.entity.id)
       await AsyncStorage.setItem('token', result.token)
       await AsyncStorage.setItem('type', mode === 'personne' ? 'user' : 'team')
@@ -74,7 +73,6 @@ export default function ConnexionScreen() {
       alert('Connexion réussie !')
       router.push('/feed')
     } catch (error) {
-      router.push('/feed') // temporary
       console.error('Erreur lors de la connexion :', error)
       alert('Erreur lors de l’inscription. Vérifie ta connexion et réessaie.')
     }

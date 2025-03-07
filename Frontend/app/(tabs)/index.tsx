@@ -47,7 +47,8 @@ export default function HomeScreen() {
 
           const result = await response.json()
           console.log('Réponse API :', result)
-
+          router.push('/feed')
+          
           if (!response.ok) {
             throw new Error(result.message || 'Une erreur est survenue')
           }
