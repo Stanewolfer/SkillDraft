@@ -41,17 +41,18 @@ export default function ConnexionScreen() {
     }
 
     const apiUrl = 'http://10.57.32.33:5000/api/posts/create'
+    console.log(mode)
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          type: mode
         },
         body: JSON.stringify({
           posterId,
           title: postTitle,
           description: postContent,
-          type: mode,
           imageList: []
         })
       })
@@ -116,11 +117,7 @@ const OffreCheckbox = ({
 
   return (
     <HStack space={6} alignItems='center'>
-      <Checkbox
-        isChecked={isChecked}
-        onChange={handleCheckboxChange}
-        value='offre'
-      >
+      <Checkbox isChecked={isChecked} onChange={handleCheckboxChange} value=''>
         <Text style={styles.text}>Ce post est une offre.</Text>
       </Checkbox>
     </HStack>
