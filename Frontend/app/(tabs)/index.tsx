@@ -30,7 +30,7 @@ export default function HomeScreen() {
     const checkUserSession = async () => {
       try {
         const userId = await AsyncStorage.getItem('userId')
-        const type = (await AsyncStorage.getItem('type')) || '' // Assure que ce n'est jamais null
+        const type = (await AsyncStorage.getItem('type')) || ''
 
         if (userId) {
           console.log('Fast login instancié')
@@ -40,7 +40,7 @@ export default function HomeScreen() {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                type // Ne sera jamais `null`
+                type // Will never be `null`
               }
             }
           )
@@ -48,7 +48,7 @@ export default function HomeScreen() {
           const result = await response.json()
           console.log('Réponse API :', result)
           router.push('/feed')
-          
+
           if (!response.ok) {
             throw new Error(result.message || 'Une erreur est survenue')
           }
@@ -61,14 +61,6 @@ export default function HomeScreen() {
 
     checkUserSession()
   }, [])
-
-  /* if (loading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size='large' color={COLORS.main_blue} />
-      </View>
-    )
-  } */
 
   return (
     <>
