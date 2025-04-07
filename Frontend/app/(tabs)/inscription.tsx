@@ -198,7 +198,7 @@ export default function InscriptionScreen() {
 
   // Submit function that prepares data to be sent to the backend
   const handleSubmit = async () => {
-    const apiUrl = 'http://10.57.32.33:5000/api/auth/register'
+    const apiUrl = `${process.env.API_URL}/auth/register`
     try {
       const data =
         mode === Mode.Personne
