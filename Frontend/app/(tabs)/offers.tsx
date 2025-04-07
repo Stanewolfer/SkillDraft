@@ -5,26 +5,13 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  LogBox
+  TouchableOpacity
 } from 'react-native'
 import * as Unicons from '@iconscout/react-native-unicons'
 import { COLORS } from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import OfferCard from '../components/OfferCard'
-
-LogBox.ignoreLogs([
-  'Warning: UilHeart: Support for defaultProps will be removed',
-  'Warning: UilCommentAlt: Support for defaultProps will be removed',
-  'Warning: UilRepeat: Support for defaultProps will be removed',
-  'Warning: UilCornerUpRight: Support for defaultProps will be removed',
-  'Warning: UilAirplay: Support for defaultProps will be removed',
-  'Warning: UilPlusCircle: Support for defaultProps will be removed',
-  'Warning: UilBag: Support for defaultProps will be removed',
-  'Warning: UilEnvelopeAlt: Support for defaultProps will be removed',
-  'Warning: UilSignout: Support for defaultProps will be removed'
-])
 
 export default function Offers() {
   const router = useRouter()
