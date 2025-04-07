@@ -5,6 +5,7 @@ import postRouter from './posts.routes'
 import messagesRouter from './messages.routes'
 import authRouter from './auth.routes'
 import teamRouter from './teams.routes'
+import followRouter from './follow.routes'
 
 const router = Router()
 
@@ -15,5 +16,6 @@ router.use('/posts', postRouter)
 router.use('/messages', messagesRouter)
 router.use('/auth', authRouter)
 router.use('/teams', teamRouter)
+router.use('/follows', followRouter)
 
 export default router
