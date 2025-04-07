@@ -4,9 +4,8 @@ import { prisma } from '../config'
 // fonction pour générer un feed
 export const generateFeed = async (req: Request, res: Response) => {
   const userId = req.params.userId
-  const page = parseInt(req.query.page as string) || 0
+  const cursor = req.query.cursor as string | undefined
   const limit = parseInt(req.query.limit as string) || 10
-  const offset = page * limit
 
   const followings = await prisma.follow.findMany({
     where: { followerId: userId },
@@ -14,61 +13,36 @@ export const generateFeed = async (req: Request, res: Response) => {
   })
 
   const followedIds = followings.map(follow => follow.followed.id)
+  followedIds.push(userId) // Include own posts
 
-  followedIds.push(userId) // Include the user's own posts
-
+  // On récupère les regular posts
   const regularPosts = await prisma.regularPost.findMany({
     where: { posterId: { in: followedIds } },
-    include: {
-      poster: true,
-    },
+    include: { poster: true },
     orderBy: { createdAt: 'desc' },
-    skip: offset,
-    take: limit
   })
 
+  // Et les offer posts
   const offerPosts = await prisma.offerPost.findMany({
     where: { teamId: { in: followedIds } },
-    include: {
-      team: true
-    },
+    include: { team: true },
     orderBy: { createdAt: 'desc' },
   })
 
-  const totalPosts = await prisma.regularPost.count({
-    where: { posterId: { in: followedIds } }
+  // On combine et trie tous les posts selon leur date de création
+  const allPosts = [...regularPosts.map(p => ({ ...p, type: 'regular' })), ...offerPosts.map(p => ({ ...p, type: 'offer' }))]
+
+  allPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
+  const startIndex = cursor ? allPosts.findIndex(post => post.id === cursor) + 1 : 0
+  const paginatedPosts = allPosts.slice(startIndex, startIndex + limit)
+  const nextCursor = paginatedPosts.length + startIndex < allPosts.length ? paginatedPosts[paginatedPosts.length - 1].id : null
+
+  res.json({
+    posts: paginatedPosts,
+    nextCursor,
+    hasMore: nextCursor !== null
   })
-
-  const totalPages = Math.ceil(totalPosts / limit)
-
-  const hasNextPage = page < totalPages - 1
-
-  const hasPreviousPage = page > 0
-
-  const nextPage = hasNextPage ? page + 1 : null
-
-  const previousPage = hasPreviousPage ? page - 1 : null
-
-  const feed = {
-    regularPosts: regularPosts.map(post => ({
-      ...post,
-      likeCount: post.likes,
-      commentCount: Array.isArray(post.comments) ? post.comments.length : 0,
-    })),
-
-    offerPosts: offerPosts.map(post => ({
-      ...post,
-    })),
-
-    pagination: {
-      totalPosts,
-      totalPages,
-      hasNextPage,
-      hasPreviousPage,
-      nextPage,
-      previousPage
-    }
-  }
-
-  res.json(feed)
 }
+
+
