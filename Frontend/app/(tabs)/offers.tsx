@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import COLORS from './styles/colors'
+import { COLORS } from './styles/colors'
 
 const Messaging = () => {
   return (
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.text_white
+    backgroundColor: COLORS.main_blue
   },
   title: {
     fontSize: 24,

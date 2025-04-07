@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router'
 import React, { useState } from 'react'
-import COLORS from './styles/colors'
+import { COLORS } from './styles/colors'
 import {
   ScrollView,
   View,
@@ -22,16 +22,13 @@ export default function ConnexionScreen() {
   const router = useRouter()
   const [mode, setMode] = useState<Mode>(Mode.Personne)
 
-  // State variables for "person" mode
   const [userLogin, setUserLogin] = useState('')
   const [userPassword, setUserePassword] = useState('')
 
-  // State variables for "organization" mode
   const [orgTeamName, setOrgTeamName] = useState('')
   const [orgEmail, setOrgEmail] = useState('')
   const [orgPassword, setOrgPassword] = useState('')
 
-  // Submit function that prepares data to be sent to the backend
   const handleLogin = async () => {
     const apiUrl = 'http://10.57.32.33:5000/api/auth/login'
 
@@ -65,7 +62,6 @@ export default function ConnexionScreen() {
         throw new Error(result.message || 'Une erreur est survenue')
       }
 
-      // Store user ID and token in AsyncStorage
       await AsyncStorage.setItem('userId', result.entity.id)
       await AsyncStorage.setItem('token', result.token)
       await AsyncStorage.setItem('type', mode === 'personne' ? 'user' : 'team')
@@ -221,7 +217,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: COLORS.text_white,
+    color: COLORS.main_blue,
     fontFamily: 'Montserrat',
     fontWeight: 'bold'
   },

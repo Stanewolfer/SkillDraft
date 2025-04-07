@@ -1,5 +1,6 @@
+import React from "react";
 import { Stack } from "expo-router";
-import COLORS from "../(tabs)/styles/colors";
+import { COLORS } from "../(tabs)/styles/colors";
 import { View } from "react-native";
 
 interface CustomStackScreenProps {

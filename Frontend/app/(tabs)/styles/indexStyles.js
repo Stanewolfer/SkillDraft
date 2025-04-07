@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { COLORS } from './colors';
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#010017',
@@ -15,7 +15,6 @@ const styles = StyleSheet.create({
     },
     title: {
       fontSize: 20,
-      color: COLORS.text_white,
       fontFamily: 'Montserrat',
       fontWeight: 'bold',
     },
@@ -56,5 +55,3 @@ const styles = StyleSheet.create({
       color: COLORS.main_blue,
     },
   });
-  
-export default styles;

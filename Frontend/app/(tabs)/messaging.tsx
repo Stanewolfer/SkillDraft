@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet, TextInput } from 'react-native'
-import COLORS from './styles/colors'
+import { COLORS } from './styles/colors'
 // import CustomStackScreen from '../components/CustomStackScreen'
 import { Button, NativeBaseProvider } from 'native-base'
 

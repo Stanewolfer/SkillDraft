@@ -4,14 +4,13 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Unicons from '@iconscout/react-native-unicons'
 import { useRouter } from 'expo-router'
-import COLORS from './styles/colors'
+import { COLORS } from './styles/colors'
 
-import styles from './styles/indexStyles'
+import { styles } from './styles/indexStyles'
 import CustomStackScreen from '../components/CustomStackScreen'
 
 LogBox.ignoreLogs([
@@ -22,7 +21,7 @@ LogBox.ignoreLogs([
 const IconUser = Unicons.UilSignin
 const IconSignIn = Unicons.UilUser
 
-export default function HomeScreen() {
+function HomeScreen() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
 
@@ -40,7 +39,7 @@ export default function HomeScreen() {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                type // Will never be `null`
+                type
               }
             }
           )
@@ -94,3 +93,5 @@ export default function HomeScreen() {
     </>
   )
 }
+
+export default HomeScreen;
