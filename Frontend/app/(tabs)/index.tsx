@@ -35,7 +35,7 @@ export default function HomeScreen() {
         if (userId) {
           console.log('Fast login instancié')
           const response = await fetch(
-            `${process.env.API_URL}/auth/fast-login/${userId}`,
+            `${process.env.EXPO_PUBLIC_API_URL}/auth/fast-login/${userId}`,
             {
               method: 'POST',
               headers: {

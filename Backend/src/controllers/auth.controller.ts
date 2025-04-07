@@ -131,6 +131,8 @@ export const registerEntity = async (req: Request, res: Response) => {
         data: {
           teamname: username,
           password: hashedPassword,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           ...rest
         }
       })
@@ -139,6 +141,8 @@ export const registerEntity = async (req: Request, res: Response) => {
         data: {
           username,
           password: hashedPassword,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           ...rest
         }
       })

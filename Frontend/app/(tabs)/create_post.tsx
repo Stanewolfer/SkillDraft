@@ -40,7 +40,7 @@ export default function ConnexionScreen() {
       return
     }
 
-    const apiUrl = `${process.env.API_URL}/posts/create`
+    const apiUrl = `${process.env.EXPO_PUBLIC_API_URL}/posts/create`
     console.log(mode)
     try {
       const response = await fetch(apiUrl, {

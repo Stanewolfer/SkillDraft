@@ -33,7 +33,8 @@ export default function ConnexionScreen() {
 
   // Submit function that prepares data to be sent to the backend
   const handleLogin = async () => {
-    const apiUrl = `${process.env.API_URL}/auth/login`
+      const apiUrl = `${process.env.EXPO_PUBLIC_API_URL}/auth/login`
+      console.log('URL de l\'API :', apiUrl)
 
     try {
       const data =
