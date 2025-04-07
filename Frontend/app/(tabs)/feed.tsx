@@ -247,15 +247,16 @@ const styles = StyleSheet.create({
   },
   verifiedBadge: {
     backgroundColor: '#B8F600',
-    borderRadius: 50,
-    marginLeft: 6,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    justifyContent: 'center'
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 6
   },
   badgeText: {
     color: COLORS.text_white,
-    fontSize: 7.5,
+    fontSize: 8,
     fontWeight: 'bold'
   },
   subtitle: {
@@ -344,16 +345,17 @@ const styles = StyleSheet.create({
   },
   card2VerifiedBadge: {
     backgroundColor: '#B8F600',
-    borderRadius: 50,
-    marginLeft: 4,
-    paddingHorizontal: 3,
-    paddingVertical: 1,
-    justifyContent: 'center'
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 6,
   },
   card2BadgeText: {
     color: COLORS.text_white,
-    fontSize: 7,
-    fontWeight: 'bold'
+    fontSize: 8,
+    fontWeight: 'bold',
   },
   card2Team: {
     fontSize: 12,
