@@ -40,7 +40,7 @@ export default function ConnexionScreen() {
       return
     }
 
-    const apiUrl = 'http://10.57.32.33:5000/api/posts/create'
+    const apiUrl = `${process.env.API_URL}/posts/create`
     console.log(mode)
     try {
       const response = await fetch(apiUrl, {
