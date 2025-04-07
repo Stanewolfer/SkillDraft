@@ -1,13 +1,13 @@
 import React from 'react'
 import { View, Text, StyleSheet, TextInput } from 'react-native'
 import { COLORS } from './styles/colors'
-import CustomStackScreen from '../components/CustomStackScreen'
+// import CustomStackScreen from '../components/CustomStackScreen'
 import { Button, NativeBaseProvider } from 'native-base'
 
 const Messaging = () => {
   return (
     <NativeBaseProvider>
-      <CustomStackScreen title="Messages : GentleMates" />
+      {/*<CustomStackScreen title="Messages : GentleMates" />*/}
       <View style={styles.container}>
         <Text style={styles.title}>Bienvenue dans le début de votre conversation épique avec GentleMates.</Text>
         <Text>Aucun message pour le moment.</Text>
@@ -70,4 +70,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Messaging
+export default Messaging;

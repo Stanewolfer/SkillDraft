@@ -22,16 +22,13 @@ export default function ConnexionScreen() {
   const router = useRouter()
   const [mode, setMode] = useState<Mode>(Mode.Personne)
 
-  // State variables for "person" mode
   const [userLogin, setUserLogin] = useState('')
   const [userPassword, setUserePassword] = useState('')
 
-  // State variables for "organization" mode
   const [orgTeamName, setOrgTeamName] = useState('')
   const [orgEmail, setOrgEmail] = useState('')
   const [orgPassword, setOrgPassword] = useState('')
 
-  // Submit function that prepares data to be sent to the backend
   const handleLogin = async () => {
       const apiUrl = `${process.env.EXPO_PUBLIC_API_URL}/auth/login`
       console.log('URL de l\'API :', apiUrl)
@@ -66,7 +63,6 @@ export default function ConnexionScreen() {
         throw new Error(result.message || 'Une erreur est survenue')
       }
 
-      // Store user ID and token in AsyncStorage
       await AsyncStorage.setItem('userId', result.entity.id)
       await AsyncStorage.setItem('token', result.token)
       await AsyncStorage.setItem('type', mode === 'personne' ? 'user' : 'team')
@@ -74,7 +70,7 @@ export default function ConnexionScreen() {
       router.push('/feed')
     } catch (error) {
       console.error('Erreur lors de la connexion :', error)
-      alert('Erreur lors de l’inscription. Vérifie ta connexion et réessaie.')
+      alert('Erreur lors de la connexion. Vérifie ta connexion et réessaie.')
     }
   }
 
@@ -222,7 +218,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: COLORS.text_white,
+    color: COLORS.main_blue,
     fontFamily: 'Montserrat',
     fontWeight: 'bold'
   },

@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: COLORS.text_white,
+    color: COLORS.main_blue,
     fontFamily: 'Montserrat',
     fontWeight: 'bold'
   },
@@ -618,7 +618,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   modalContent: {
-    backgroundColor: COLORS.text_white,
+    backgroundColor: COLORS.main_blue,
     width: '85%',
     padding: 20,
     borderRadius: 10,

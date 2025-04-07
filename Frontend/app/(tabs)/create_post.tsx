@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Checkbox, HStack, NativeBaseProvider } from 'native-base'
 
-export default function ConnexionScreen() {
+export default function CreatePost() {
   const router = useRouter()
   const [mode, setMode] = useState<'regular' | 'offer'>('regular')
   const [postTitle, setPostTitle] = useState('')
