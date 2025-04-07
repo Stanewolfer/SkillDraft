@@ -70,7 +70,7 @@ export default function ConnexionScreen() {
       router.push('/feed')
     } catch (error) {
       console.error('Erreur lors de la connexion :', error)
-      alert('Erreur lors de l’inscription. Vérifie ta connexion et réessaie.')
+      alert('Erreur lors de la connexion. Vérifie ta connexion et réessaie.')
     }
   }
 
