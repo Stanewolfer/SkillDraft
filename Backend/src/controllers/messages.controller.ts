@@ -16,10 +16,15 @@ export const sendMessage = async (
   try {
     const message = await prisma.message.create({
       data: {
-        senderId,
-        receiverId,
-        offerPostId: offerPostId || null, // Si non fourni, reste null
-        content
+        content,
+        userId: senderId,
+        sender: {
+          connect: { id: senderId }
+        },
+        receiver: {
+          connect: { id: receiverId }
+        },
+        offerPostId
       }
     })
 
