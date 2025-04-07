@@ -170,8 +170,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderTopWidth: 1,
     borderColor: COLORS.main_blue,
-    borderTopLeftRadius: 35,
-    borderTopRightRadius: 35,
+    //borderTopLeftRadius: 35,
+    //borderTopRightRadius: 35,
     zIndex: 999
   },
   bottomButton: {
@@ -191,8 +191,7 @@ const styles = StyleSheet.create({
   },
   activeBottomButton: {
     backgroundColor: COLORS.main_blue,
-    paddingVertical: 10,
-    borderRadius: 8
+    paddingVertical: 10
   },
   activeBottomButtonLabel: {
     color: COLORS.background_blue
