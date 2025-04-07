@@ -11,7 +11,7 @@ import {
   Modal
 } from 'react-native'
 import * as Unicons from '@iconscout/react-native-unicons'
-import { COLORS } from './styles/colors'
+import COLORS from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
 import { useRouter } from 'expo-router'
 

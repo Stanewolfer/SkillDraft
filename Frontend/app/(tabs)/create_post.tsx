@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router'
 import React, { useState, useEffect } from 'react'
-import { COLORS } from './styles/colors'
+import COLORS from './styles/colors'
 import {
   ScrollView,
   Text,
@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Checkbox, HStack, NativeBaseProvider } from 'native-base'
 
-export default function ConnexionScreen() {
+export default function CreatePost() {
   const router = useRouter()
   const [mode, setMode] = useState<'regular' | 'offer'>('regular')
   const [postTitle, setPostTitle] = useState('')

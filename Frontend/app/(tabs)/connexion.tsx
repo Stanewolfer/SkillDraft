@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router'
 import React, { useState } from 'react'
-import { COLORS } from './styles/colors'
+import COLORS from './styles/colors'
 import {
   ScrollView,
   View,

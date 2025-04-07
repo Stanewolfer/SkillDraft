@@ -9,9 +9,9 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Unicons from '@iconscout/react-native-unicons'
 import { useRouter } from 'expo-router'
-import { COLORS } from './styles/colors'
+import COLORS from './styles/colors'
 
-import { styles } from './styles/indexStyles'
+import styles from './styles/indexStyles'
 import CustomStackScreen from '../components/CustomStackScreen'
 
 LogBox.ignoreLogs([

@@ -12,8 +12,8 @@ import {
 } from 'react-native'
 import * as Unicons from '@iconscout/react-native-unicons'
 import { LinearGradient } from 'expo-linear-gradient'
-import { COLORS } from './styles/colors'
-import CustomStackScreen from '../components/CustomStackScreen'
+import COLORS from './styles/colors'
+// import CustomStackScreen from '../components/CustomStackScreen'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 LogBox.ignoreLogs([
@@ -40,7 +40,7 @@ export default function FeedScreen() {
 
   return (
     <>
-      <CustomStackScreen title='Feed' />
+      {/*<CustomStackScreen title='Feed' />*/}
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.card}>
           <View style={styles.cardRow}>
