@@ -80,13 +80,15 @@ export const getPostsByPosterId = async (
 }
 
 // Création d'un post
-export const createPost = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const createPost = async (req: Request, res: Response): Promise<void> => {
   const type = req.header('type')
+  const { posterId, description, title } = req.body
 
-  const { posterId, description, imageList, title } = req.body
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[]
+  }
+
+  const imageList = files?.images?.map(file => `/uploads/${file.filename}`) || []
 
   try {
     let newPost
@@ -94,10 +96,10 @@ export const createPost = async (
     if (type === 'regular') {
       newPost = await prisma.regularPost.create({
         data: {
-          description,
-          imageList,
-          title,
           posterId,
+          description,
+          title,
+          imageList,
           likes: 0,
           likesList: [],
           reposts: 0,
@@ -108,8 +110,8 @@ export const createPost = async (
     } else if (type === 'offer') {
       newPost = await prisma.offerPost.create({
         data: {
-          description,
           teamId: posterId,
+          description,
           title,
           imageList,
           applyingUserList: []
@@ -122,13 +124,11 @@ export const createPost = async (
 
     res.status(201).json(newPost)
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    res
-      .status(500)
-      .json({ message: 'Internal Server Error', error: errorMessage })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    res.status(500).json({ message: 'Internal Server Error', error: errorMessage })
   }
 }
+
 
 
 // suppression d'un post
