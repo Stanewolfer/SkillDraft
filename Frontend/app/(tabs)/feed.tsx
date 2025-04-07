@@ -12,7 +12,7 @@ import * as Unicons from '@iconscout/react-native-unicons'
 import { COLORS } from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import OfferCard from '../components/OfferCard'
+import OfferPostCard from '../components/OfferPostCard'
 import MediaCard from '../components/MediaCard'
 
 LogBox.ignoreLogs([
@@ -41,13 +41,13 @@ export default function FeedScreen() {
     <>
       <CustomStackScreen title='Feed' />
       <ScrollView contentContainerStyle={styles.container}>
-        <OfferCard />
+        <OfferPostCard />
         <MediaCard />
 
         <View style={styles.bottomButtonsContainer}>
           <TouchableOpacity
             style={[styles.bottomButton, styles.activeBottomButton]}
-            //onPress={() => router.push('/news_feed')}
+            onPress={() => router.push('/feed')}
           >
             <View style={styles.bottomButtonContent}>
               <Unicons.UilNewspaper size={28} color={COLORS.background_blue} />

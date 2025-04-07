@@ -1,139 +1,137 @@
 import React from 'react'
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
-import * as Unicons from '@iconscout/react-native-unicons'
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ImageBackground
+} from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { COLORS } from '../(tabs)/styles/colors'
 
-export default function OfferCard() {
+export default function OfferCard({
+  backgroundImageUrl = 'https://c1.wallpaperflare.com/preview/595/1003/783/code-coder-coding-computer.jpg',
+  logoUrl = 'https://pbs.twimg.com/profile_images/1864400903316389888/61aizUvr_400x400.jpg',
+  orgName = 'Team Name',
+  gameName = 'Game',
+  description = `Text Description`
+}) {
   return (
-    <View style={styles.card}>
-      <View style={styles.cardRow}>
-        <Image
-          source={{
-            uri: 'https://pbs.twimg.com/profile_images/1864400903316389888/61aizUvr_400x400.jpg'
-          }}
-          style={styles.image}
-        />
-        <View style={styles.textContainer}>
-          <View style={styles.titleRow}>
-            <Text style={styles.title}>GentleMates</Text>
-            <View style={styles.verifiedBadge}>
-              <Text style={styles.badgeText}>✔</Text>
+    <ImageBackground
+      source={{ uri: backgroundImageUrl }}
+      style={styles.offerCardContainer}
+      imageStyle={styles.imageStyle}
+    >
+      <LinearGradient
+        colors={['rgba(0,0,0,0.9)', 'transparent']}
+        style={styles.linearGradient}
+        start={{ x: 0.5, y: 1 }}
+        end={{ x: 0.5, y: 0 }}
+      />
+      <View style={styles.contentContainer}>
+        <View style={styles.offerCardHeader}>
+          <Image source={{ uri: logoUrl }} style={styles.offerCardLogo} />
+          <View style={styles.offerCardInfo}>
+            <View style={styles.offerCardTitleRow}>
+              <Text style={styles.offerCardTitle}>{orgName}</Text>
+              <View style={styles.offerCardVerified}>
+                <Text style={styles.offerCardVerifiedText}>✔</Text>
+              </View>
             </View>
+            <Text style={styles.offerCardSubtitle}>{gameName}</Text>
           </View>
-          <Text style={styles.subtitle}>VALORANT</Text>
-          <Text style={styles.description}>
-            Notre équipe VALORANT recrute ! Nous avons besoin de créateurs de contenu afin de maintenir notre communauté occupée, même hors VCT. Nous cherchons un profil intéressant
-            <Text style={{ color: COLORS.main_blue }}> … plus</Text>
-          </Text>
         </View>
-      </View>
-
-      <View style={styles.actionsContainer}>
-        <View style={styles.iconsContainer}>
-          <TouchableOpacity style={styles.iconButton}>
-            <Unicons.UilHeart size={25} color={COLORS.main_blue} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Unicons.UilCommentAlt size={25} color={COLORS.main_blue} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Unicons.UilRepeat size={25} color={COLORS.main_blue} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Unicons.UilCornerUpRight size={25} color={COLORS.main_blue} />
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.offerCardDescription}>{description}</Text>
         <TouchableOpacity
-          style={styles.candidaterButton}
+          style={styles.offerCardButton}
           onPress={() => console.log('Candidater pressed')}
         >
-          <Text style={styles.candidaterButtonText}>Candidater</Text>
+          <Text style={styles.offerCardButtonText}>CANDIDATER</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.cardDivider} />
-    </View>
+    </ImageBackground>
   )
 }
 
 const styles = StyleSheet.create({
-  card: {
+  offerCardContainer: {
     borderRadius: 10,
-    marginBottom: 20,
-    backgroundColor: COLORS.background_blue
+    overflow: 'hidden',
+    padding: 15,
+    marginBottom: 20
   },
-  cardRow: {
-    flexDirection: 'row'
+  imageStyle: {
+    borderRadius: 10
   },
-  image: {
-    width: 80,
-    height: 80,
+  linearGradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 5000
+  },
+  contentContainer: {
+    zIndex: 2
+  },
+  offerCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10
+  },
+  offerCardLogo: {
+    width: 60,
+    height: 60,
     borderRadius: 8,
     marginRight: 10
   },
-  textContainer: {
+  offerCardInfo: {
     flex: 1
   },
-  titleRow: {
+  offerCardTitleRow: {
     flexDirection: 'row',
     alignItems: 'center'
   },
-  title: {
+  offerCardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: COLORS.text_white
   },
-  verifiedBadge: {
+  offerCardVerified: {
     backgroundColor: '#B8F600',
-    width: 16,
-    height: 16,
-    borderRadius: 8,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 6
   },
-  badgeText: {
-    color: COLORS.text_white,
-    fontSize: 8,
+  offerCardVerifiedText: {
+    color: COLORS.background_blue,
+    fontSize: 10,
     fontWeight: 'bold'
   },
-  subtitle: {
+  offerCardSubtitle: {
     fontSize: 14,
     color: COLORS.text_white,
-    marginTop: 4
+    marginTop: 2
   },
-  description: {
+  offerCardDescription: {
     fontSize: 14,
     color: COLORS.text_white,
-    marginTop: 8
+    marginTop: 4,
+    lineHeight: 18
   },
-  actionsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10
-  },
-  iconsContainer: {
-    flexDirection: 'row',
-    flex: 1,
-    justifyContent: 'flex-start'
-  },
-  iconButton: {
-    marginRight: 15
-  },
-  candidaterButton: {
+  offerCardButton: {
+    marginTop: 15,
     backgroundColor: COLORS.main_blue,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
     borderRadius: 8,
-    marginLeft: 'auto'
+    paddingVertical: 12,
+    alignItems: 'center'
   },
-  candidaterButtonText: {
+  offerCardButtonText: {
     color: COLORS.background_blue,
     fontWeight: 'bold',
     fontSize: 16
-  },
-  cardDivider: {
-    borderBottomWidth: 1,
-    borderColor: COLORS.main_blue,
-    marginTop: 10
   }
 })
