@@ -174,6 +174,31 @@ export default function FeedScreen() {
 
         <View style={styles.bottomButtonsContainer}>
           <TouchableOpacity
+            style={[styles.bottomButton, styles.activeBottomButton]}
+            //onPress={() => router.push('/news_feed')}
+          >
+            <View style={styles.bottomButtonContent}>
+              <Unicons.UilNewspaper size={28} color={COLORS.background_blue} />
+              <Text
+                style={[
+                  styles.bottomButtonLabel,
+                  styles.activeBottomButtonLabel
+                ]}
+              >
+                Fil d'actualité
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.bottomButton}
+            //onPress={() => router.push('/quick_search')}
+          >
+            <View style={styles.bottomButtonContent}>
+              <Unicons.UilSearch size={28} color={COLORS.main_blue} />
+              <Text style={styles.bottomButtonLabel}>Recherches rapides</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.bottomButton}
             onPress={() => router.push('/create_post')}
           >
@@ -200,7 +225,7 @@ export default function FeedScreen() {
               <Text style={styles.bottomButtonLabel}>Messagerie</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={logout}>
+          <TouchableOpacity style={styles.bottomButton} onPress={logout}> // Tempory
             <View style={styles.bottomButtonContent}>
               <Unicons.UilSignout size={28} color={COLORS.main_blue} />
               <Text style={styles.bottomButtonLabel}>Déconnexion</Text>
@@ -215,7 +240,7 @@ export default function FeedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 18,
+    padding: 10,
     backgroundColor: COLORS.background_blue
   },
   // -- First card
@@ -350,12 +375,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 6,
+    marginLeft: 6
   },
   card2BadgeText: {
     color: COLORS.text_white,
     fontSize: 8,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   card2Team: {
     fontSize: 12,
@@ -409,17 +434,24 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: COLORS.background_blue,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
     alignItems: 'center',
-    paddingVertical: 10,
+    justifyContent: 'space-between',
+    padding: 0,
+    margin: 0,
+    overflow: 'hidden',
     borderTopWidth: 1,
     borderColor: COLORS.main_blue,
+    borderTopLeftRadius: 35,
+    //borderTopRightRadius: 35,
     zIndex: 999
   },
+
   bottomButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 8
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 0,
+    padding: 0
   },
   bottomButtonContent: {
     alignItems: 'center'
@@ -428,5 +460,12 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
     color: COLORS.main_blue
+  },
+  activeBottomButton: {
+    backgroundColor: COLORS.main_blue,
+    paddingVertical: 10
+  },
+  activeBottomButtonLabel: {
+    color: COLORS.background_blue
   }
 })
