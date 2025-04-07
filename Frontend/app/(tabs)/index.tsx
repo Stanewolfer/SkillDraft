@@ -63,7 +63,7 @@ function HomeScreen() {
 
   return (
     <>
-      <CustomStackScreen title='Bienvenue sur Skilldraft' />
+      <CustomStackScreen title="Skilldraft" />
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Bienvenue sur Skilldraft !</Text>
