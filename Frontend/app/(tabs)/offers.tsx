@@ -56,7 +56,6 @@ export default function Offers() {
           />
         </ScrollView>
 
-        {/* Barre de navigation fixe en bas */}
         <View style={styles.bottomButtonsContainer}>
           <TouchableOpacity
             style={styles.bottomButton}
@@ -124,9 +123,8 @@ const styles = StyleSheet.create({
   container: {
     padding: 10,
     backgroundColor: COLORS.background_blue,
-    paddingBottom: 80 // espace suffisant pour que le contenu ne soit pas caché derrière la navbar
+    paddingBottom: 80
   },
-  // Titre et barre bleue
   titleContainer: {
     alignItems: 'center',
     marginBottom: 15
@@ -142,7 +140,7 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: COLORS.main_blue
   },
-  // Barre de navigation fixe en bas
+  // -- Bottom navigation bar
   bottomButtonsContainer: {
     position: 'absolute',
     bottom: 0,
