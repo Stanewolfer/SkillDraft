@@ -13,7 +13,7 @@ import {
 import * as Unicons from '@iconscout/react-native-unicons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { COLORS } from './styles/colors'
-import CustomStackScreen from '../components/CustomStackScreen'
+// import CustomStackScreen from '../components/CustomStackScreen'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 LogBox.ignoreLogs([
@@ -40,7 +40,7 @@ export default function FeedScreen() {
 
   return (
     <>
-      <CustomStackScreen title='Feed' />
+      {/*<CustomStackScreen title='Feed' />*/}
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.card}>
           <View style={styles.cardRow}>
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: COLORS.text_white
+    color: COLORS.main_blue
   },
   verifiedBadge: {
     backgroundColor: '#B8F600',
@@ -254,18 +254,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   badgeText: {
-    color: COLORS.text_white,
+    color: COLORS.main_blue,
     fontSize: 7.5,
     fontWeight: 'bold'
   },
   subtitle: {
     fontSize: 14,
-    color: COLORS.text_white,
+    color: COLORS.main_blue,
     marginTop: 4
   },
   description: {
     fontSize: 14,
-    color: COLORS.text_white,
+    color: COLORS.main_blue,
     marginTop: 8
   },
   actionsContainer: {
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   card2UserName: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.text_white
+    color: COLORS.main_blue
   },
   card2VerifiedBadge: {
     backgroundColor: '#B8F600',
@@ -351,13 +351,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   card2BadgeText: {
-    color: COLORS.text_white,
+    color: COLORS.main_blue,
     fontSize: 7,
     fontWeight: 'bold'
   },
   card2Team: {
     fontSize: 12,
-    color: COLORS.text_white,
+    color: COLORS.main_blue,
     fontStyle: 'italic'
   },
   card2VideoLabelContainer: {
@@ -377,12 +377,12 @@ const styles = StyleSheet.create({
   card2UpdateTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: COLORS.text_white,
+    color: COLORS.main_blue,
     marginBottom: 4
   },
   card2Description: {
     fontSize: 14,
-    color: COLORS.text_white,
+    color: COLORS.main_blue,
     flex: 1,
     lineHeight: 20
   },
