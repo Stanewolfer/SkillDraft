@@ -30,7 +30,8 @@ export default function ConnexionScreen() {
   const [orgPassword, setOrgPassword] = useState('')
 
   const handleLogin = async () => {
-    const apiUrl = 'http://10.57.32.33:5000/api/auth/login'
+      const apiUrl = `${process.env.EXPO_PUBLIC_API_URL}/auth/login`
+      console.log('URL de l\'API :', apiUrl)
 
     try {
       const data =

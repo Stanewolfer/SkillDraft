@@ -34,7 +34,7 @@ function HomeScreen() {
         if (userId) {
           console.log('Fast login instancié')
           const response = await fetch(
-            `http://10.57.32.33:5000/api/auth/fast-login/${userId}`,
+            `${process.env.EXPO_PUBLIC_API_URL}/auth/fast-login/${userId}`,
             {
               method: 'POST',
               headers: {
