@@ -23,16 +23,39 @@ const morganFormat = (tokens: any, req: any, res: any): string => {
       ? '\x1b[33m' // Yellow for client errors
       : '\x1b[32m' // Green for success
 
+  // Créer un buffer pour stocker la réponse
+  const oldWrite = res.write
+  const oldEnd = res.end
+  const chunks: Buffer[] = []
+
+  res.write = function (chunk: Buffer) {
+    chunks.push(Buffer.from(chunk))
+    return oldWrite.apply(res, arguments as any)
+  }
+
+  res.end = function (chunk: Buffer) {
+    if (chunk) {
+      chunks.push(Buffer.from(chunk))
+    }
+    const responseBody = Buffer.concat(chunks).toString('utf8')
+    res.content = responseBody
+
+    return oldEnd.apply(res, arguments as any)
+  }
+
 return [
     `-------------------------------\n`,
-    `| Timestamp : ${tokens['timestamp'](req, res)} \n`,
+    `| Timestamp : \x1b[1m${new Date(tokens['timestamp'](req, res)).toLocaleString(
+        'fr-FR',
+        { timeZone: 'Europe/Paris' }
+    )}\x1b[0m \n`,
     `| Method : ${color}${tokens.method(req, res)}\x1b[0m \n`,
-    `| URL : \x1b[36m${tokens.url(req, res)}\x1b[0m \n`,
+    `| URL : \x1b[96m${tokens.url(req, res)}\x1b[0m \n`,
     `| Status : ${color}${status}\x1b[0m \n`,
-    `| Response Length : ${tokens.res(req, res, 'content-length')} \n`,
-    `| Response Content : ${res.responseContent || '-'} \n`,
-    `| Response Time : ${tokens['response-time'](req, res)} ms \n`,
-    `| Body Provided : ${tokens.body(req, res)} \n`,
+    `| Response Length : \x1b[33m${tokens.res(req, res, 'content-length')}\x1b[0m \n`,
+    `| Response Content : \x1b[1m${res.content || '-'}\x1b[0m \n`,
+    `| Response Time : \x1b[35m${tokens['response-time'](req, res)}\x1b[0m ms \n`,
+    `| Body Provided : \x1b[1m${tokens.body(req, res)}\x1b[0m \n`,
     `-------------------------------\n`
 ]
     .filter(Boolean)
