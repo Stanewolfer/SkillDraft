@@ -24,7 +24,7 @@ export default function OfferCard({
       imageStyle={styles.imageStyle}
     >
       <LinearGradient
-        colors={['rgba(0,0,0,0.9)', 'transparent']}
+        colors={['rgba(0,0,0,1)', 'transparent']}
         style={styles.linearGradient}
         start={{ x: 0.5, y: 1 }}
         end={{ x: 0.5, y: 0 }}
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 5000
+    height: 1500
   },
   contentContainer: {
     zIndex: 2
