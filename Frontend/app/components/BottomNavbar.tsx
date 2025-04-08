@@ -57,7 +57,7 @@ export default function BottomNavbar() {
 
             <TouchableOpacity
                 style={bottomNavbarStyles.bottomButton}
-                onPress={() => router.push('/messaging')}
+                onPress={() => router.push('/mailbox')}
             >
             <View style={bottomNavbarStyles.bottomButtonContent}>
                 <Unicons.UilEnvelopeAlt size={36} color={COLORS.main_blue} />
