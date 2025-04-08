@@ -19,11 +19,11 @@ export default function PlayerConversation(PlayerConversationProps: PlayerConver
           <Image source={profilePicture} style={styles.profilePicture}></Image>
           <View style={styles.informations}>
               <View style={styles.profile}>
-                  <Text style={styles.title}>{pseudonym}</Text>
-                  <Text style={styles.teamTitle}>[ {team} ]</Text>
+                  <Text style={styles.title}>{pseudonym || 'Pseudonyme'}</Text>
+                  <Text style={styles.teamTitle}>[ {team || 'Equipe'} ]</Text>
               </View>
-              <Text style={styles.lastMessage}>{lastMessage}</Text>
-              <Text style={styles.dateText}>{date}</Text>
+              <Text style={styles.lastMessage}>{lastMessage || 'Lorem Ipsum'}</Text>
+              <Text style={styles.dateText}>{date || '01/12'}</Text>
           </View>
         </View>
       </View>
