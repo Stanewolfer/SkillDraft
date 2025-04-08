@@ -13,8 +13,9 @@ import {
 import * as Unicons from '@iconscout/react-native-unicons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { COLORS } from './styles/colors'
-// import CustomStackScreen from '../components/CustomStackScreen'
+import CustomStackScreen from '../components/CustomStackScreen'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import BottomNavbar from '../components/BottomNavbar'
 
 LogBox.ignoreLogs([
   'Warning: UilHeart: Support for defaultProps will be removed',
@@ -27,20 +28,15 @@ LogBox.ignoreLogs([
   'Warning: UilPlusCircle: Support for defaultProps will be removed',
   'Warning: UilBag: Support for defaultProps will be removed',
   'Warning: UilEnvelopeAlt: Support for defaultProps will be removed',
-  'Warning: UilSignout: Support for defaultProps will be removed'
+  'Warning: UilSignout: Support for defaultProps will be removed',
 ])
 
 export default function FeedScreen() {
   const router = useRouter()
 
-  const logout = async () => {
-    await AsyncStorage.clear()
-    router.push('/')
-  }
-
   return (
     <>
-      {/*<CustomStackScreen title='Feed' />*/}
+      <CustomStackScreen title='Feed' />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.card}>
           <View style={styles.cardRow}>
@@ -171,43 +167,8 @@ export default function FeedScreen() {
           </View>
           <View style={styles.cardDivider} />
         </View>
-
-        <View style={styles.bottomButtonsContainer}>
-          <TouchableOpacity
-            style={styles.bottomButton}
-            onPress={() => router.push('/create_post')}
-          >
-            <View style={styles.bottomButtonContent}>
-              <Unicons.UilPlusCircle size={28} color={COLORS.main_blue} />
-              <Text style={styles.bottomButtonLabel}>Ajouter un post</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.bottomButton}
-            onPress={() => router.push('/offers')}
-          >
-            <View style={styles.bottomButtonContent}>
-              <Unicons.UilBag size={28} color={COLORS.main_blue} />
-              <Text style={styles.bottomButtonLabel}>Offres</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.bottomButton}
-            onPress={() => router.push('/messaging')}
-          >
-            <View style={styles.bottomButtonContent}>
-              <Unicons.UilEnvelopeAlt size={28} color={COLORS.main_blue} />
-              <Text style={styles.bottomButtonLabel}>Messagerie</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={logout}>
-            <View style={styles.bottomButtonContent}>
-              <Unicons.UilSignout size={28} color={COLORS.main_blue} />
-              <Text style={styles.bottomButtonLabel}>Déconnexion</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
+      <BottomNavbar />
     </>
   )
 }
@@ -218,7 +179,6 @@ const styles = StyleSheet.create({
     padding: 18,
     backgroundColor: COLORS.background_blue
   },
-  // -- First card
   card: {
     borderRadius: 10,
     marginBottom: 20,
@@ -398,33 +358,4 @@ const styles = StyleSheet.create({
   verticalIconButton: {
     marginBottom: 10
   },
-
-  // -- Bottom navigation bar
-  bottomButtonsContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: COLORS.background_blue,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderColor: COLORS.main_blue,
-    zIndex: 999
-  },
-  bottomButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    borderRadius: 8
-  },
-  bottomButtonContent: {
-    alignItems: 'center'
-  },
-  bottomButtonLabel: {
-    marginTop: 4,
-    fontSize: 12,
-    color: COLORS.main_blue
-  }
 })
