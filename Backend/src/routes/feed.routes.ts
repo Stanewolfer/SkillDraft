@@ -1,4 +1,4 @@
-import { RequestHandler, Router } from 'express'
+import { Router } from 'express'
 import { generateFeed } from '../controllers/feed.controller'
 
 

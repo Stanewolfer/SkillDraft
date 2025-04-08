@@ -84,7 +84,6 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
   }
 }
 
-
 //supprimer un user
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
   const userId = req.params.id;

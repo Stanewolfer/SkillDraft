@@ -17,5 +17,4 @@ app.use(express.json())
 
 app.use('/api', router)
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
-
-app.listen(5000, () => console.log('Serveur sur http://localhost:5000'))
+app.listen(5000, () => console.log('Serveur sur http://localhost:5000', router))

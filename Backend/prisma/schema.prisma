@@ -24,8 +24,7 @@ model User {
   // Posts et contenus
   posts            RegularPost[]
   notifications    Notification[]
-  sentMessages     Message[]         @relation("SenderMessages")
-  receivedMessages Message[]         @relation("ReceiverMessages")
+  sentMessages     Message[]      @relation("SenderMessages")
 
   // Système de follow
   followedBy Follow[] @relation("Follower")
@@ -39,8 +38,10 @@ model User {
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Message   Message[]
   Comment   Comment[]
+
+  conversationsAsUser1 Conversation[] @relation("User1")
+  conversationsAsUser2 Conversation[] @relation("User2")
 }
 
 model Team {
@@ -64,6 +65,8 @@ model Team {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Conversation Conversation[]
 }
 
 // Relation many-to-many entre utilisateurs (follow)
@@ -147,20 +150,38 @@ model OfferPost {
   Comment   Comment[]
 }
 
+model Conversation {
+  id        String   @id @default(uuid())
+
+  // Soit une conversation User <-> User
+  user1Id   String?
+  user2Id   String?
+  user1     User?    @relation("User1", fields: [user1Id], references: [id])
+  user2     User?    @relation("User2", fields: [user2Id], references: [id])
+
+  // Soit une conversation User <-> Team
+  teamId    String?
+  team      Team?    @relation(fields: [teamId], references: [id])
+
+  messages  Message[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
 model Message {
-  id          String     @id @default(uuid())
-  content     String
-  userId      String
-  offerPostId String?
-  offerPost   OfferPost? @relation(fields: [offerPostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id             String @id @default(uuid())
+  content        String
+  senderId       String
+  conversationId String
+
+  sender       User         @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  sender        User       @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  receiver      User       @relation("ReceiverMessages", fields: [receiverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  senderId      String
-  receiverId    String
-
-  User User[]
+  OfferPost   OfferPost? @relation(fields: [offerPostId], references: [id])
+  offerPostId String?
 }
 
 model Comment {

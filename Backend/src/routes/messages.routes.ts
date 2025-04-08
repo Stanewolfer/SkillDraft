@@ -1,16 +1,12 @@
-import express from 'express'
-import {
-    getAllMessages,
-  getMessagesBetweenUsers,
-  getMessagesForOffer,
-  sendMessage
-} from '../controllers/messages.controller'
+import { RequestHandler, Router } from 'express'
+import { deleteMessage, getMessageById, getMessagesByConvId, sendMessage } from '../controllers/messages.controller'
 
-const messagesRouter = express.Router()
 
-messagesRouter.post('/send', sendMessage)
-messagesRouter.get('/all-messages', getAllMessages)
-messagesRouter.get('/offer-messages/offer/:offerPostId', getMessagesForOffer)
-messagesRouter.get('/regular-messages/:user1Id/:user2Id', getMessagesBetweenUsers)
+const messagesRouter = Router()
+
+messagesRouter.post('/send/:userId', sendMessage as RequestHandler)
+messagesRouter.get('/get-messages/:convId', getMessagesByConvId as RequestHandler)
+messagesRouter.get('/get-message/:messageId', getMessageById as RequestHandler)
+messagesRouter.delete('/delete-message/:messageId', deleteMessage as RequestHandler)
 
 export default messagesRouter

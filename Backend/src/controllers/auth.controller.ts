@@ -113,7 +113,7 @@ export const login = async (req: Request, res: Response) => {
 // 🔹 Inscription (user ou team)
 export const registerEntity = async (req: Request, res: Response) => {
   const entityType = req.header('type')
-  const { username, password, ...rest } = req.body
+  const { username, password, email, ...rest } = req.body
 
   if (!username || !password) {
     return res
@@ -122,6 +122,29 @@ export const registerEntity = async (req: Request, res: Response) => {
   }
 
   try {
+    let existingEntity = null
+    if (entityType === 'team') {
+      existingEntity = await prisma.team.findFirst({
+        where: {
+          OR: [{ teamname: username }, { email: email }]
+        }
+      })
+    } else {
+      existingEntity = await prisma.user.findFirst({
+        where: {
+          OR: [{ username: username }, { email: email }]
+        }
+      })
+    }
+
+    if (existingEntity) {
+      return res.status(400).json({
+        message: `${
+          entityType || 'user'
+        } already exists with this username or email`
+      })
+    }
+
     // Hachage du mot de passe
     const hashedPassword = await bcrypt.hash(password, 10)
     let newEntity = null
@@ -131,6 +154,7 @@ export const registerEntity = async (req: Request, res: Response) => {
         data: {
           teamname: username,
           password: hashedPassword,
+          email,
           createdAt: new Date(),
           updatedAt: new Date(),
           ...rest
@@ -141,6 +165,7 @@ export const registerEntity = async (req: Request, res: Response) => {
         data: {
           username,
           password: hashedPassword,
+          email,
           createdAt: new Date(),
           updatedAt: new Date(),
           ...rest

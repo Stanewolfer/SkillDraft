@@ -129,8 +129,6 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
   }
 }
 
-
-
 // suppression d'un post
 export const deletePost = async (req: Request, res: Response): Promise<void> => {
   const postId = req.params.id;
