@@ -2,19 +2,28 @@ import React from "react";
 import { View, Text, Image } from "react-native";
 import { styles } from "@/app/(tabs)/styles/playerConversationStyles";
 
-export default function PlayerConversation() {
+interface PlayerConversationProps {
+  pseudonym: string;
+  team?: string;
+  lastMessage: string;
+  date: string;
+  profilePicture: any; // Replace `any` with the appropriate type for your image source
+}
+
+export default function PlayerConversation(PlayerConversationProps: PlayerConversationProps) {
+  const { pseudonym, team, lastMessage, date, profilePicture } = PlayerConversationProps;
   return (
     <>
       <View style={styles.container}>
         <View style={styles.subContainer}>
-          <Image source={require("@/assets/images/circle-placeholder.png")} style={styles.profilePicture}></Image>
+          <Image source={profilePicture} style={styles.profilePicture}></Image>
           <View style={styles.informations}>
               <View style={styles.profile}>
-                  <Text style={styles.title}>Pseudonyme</Text>
-                  <Text style={styles.teamTitle}>[ Equipe (optionnel) ]</Text>
+                  <Text style={styles.title}>{pseudonym}</Text>
+                  <Text style={styles.teamTitle}>[ {team} ]</Text>
               </View>
-              <Text style={styles.lastMessage}>Dernier message de la conversation</Text>
-              <Text style={styles.dateText}>01/25</Text>
+              <Text style={styles.lastMessage}>{lastMessage}</Text>
+              <Text style={styles.dateText}>{date}</Text>
           </View>
         </View>
       </View>
