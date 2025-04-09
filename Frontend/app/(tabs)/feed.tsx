@@ -1,20 +1,12 @@
-import { Stack } from 'expo-router'
-import React from 'react'
-import { useRouter } from 'expo-router'
-import {
-  ScrollView,
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  LogBox
-} from 'react-native'
-import * as Unicons from '@iconscout/react-native-unicons'
-import { LinearGradient } from 'expo-linear-gradient'
-import { COLORS } from './styles/colors'
-import CustomStackScreen from '../components/CustomStackScreen'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import React from "react";
+import { useRouter } from "expo-router";
+import { ScrollView, StyleSheet, LogBox } from "react-native";
+import { COLORS } from "./styles/colors";
+import CustomStackScreen from "../components/CustomStackScreen";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import OfferPostCard from "../components/OfferPostCard";
+import MediaCard from "../components/MediaCard";
+import { BottomNavbar } from "../components/BottomNavbar";
 
 LogBox.ignoreLogs([
   "Warning: UilHeart: Support for defaultProps will be removed",
@@ -24,11 +16,11 @@ LogBox.ignoreLogs([
 
   "Warning: UilAirplay: Support for defaultProps will be removed",
 
-  'Warning: UilPlusCircle: Support for defaultProps will be removed',
-  'Warning: UilBag: Support for defaultProps will be removed',
-  'Warning: UilEnvelopeAlt: Support for defaultProps will be removed',
-  'Warning: UilSignout: Support for defaultProps will be removed'
-])
+  "Warning: UilPlusCircle: Support for defaultProps will be removed",
+  "Warning: UilBag: Support for defaultProps will be removed",
+  "Warning: UilEnvelopeAlt: Support for defaultProps will be removed",
+  "Warning: UilSignout: Support for defaultProps will be removed",
+]);
 
 export default function FeedScreen() {
   const router = useRouter();
@@ -47,7 +39,6 @@ export default function FeedScreen() {
 
         <BottomNavbar activeScreen="feed" logout={logout} />
       </ScrollView>
-      <BottomNavbar />
     </>
   );
 }
