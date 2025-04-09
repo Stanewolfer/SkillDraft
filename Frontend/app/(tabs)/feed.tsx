@@ -20,6 +20,10 @@ LogBox.ignoreLogs([
   "Warning: UilBag: Support for defaultProps will be removed",
   "Warning: UilEnvelopeAlt: Support for defaultProps will be removed",
   "Warning: UilSignout: Support for defaultProps will be removed",
+
+  "Warning: UilBell: Support for defaultProps will be removed",
+  "Warning: UilNewspaper: Support for defaultProps will be removed",
+  "Warning: UilSearch: Support for defaultProps will be removed",
 ]);
 
 export default function FeedScreen() {
