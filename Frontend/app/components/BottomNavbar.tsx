@@ -16,7 +16,7 @@ type RouteType =
   | "/quick_search"
   | "/create_post"
   | "/offers"
-  | "/messaging";
+  | "/mailbox";
 
 interface BottomNavbarProps {
   activeScreen: NavScreen;
@@ -64,7 +64,7 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({
     {
       id: "messaging",
       label: "Messagerie",
-      route: "/messaging",
+      route: "/mailbox",
       icon: <Unicons.UilEnvelopeAlt size={28} />,
     },
   ];
