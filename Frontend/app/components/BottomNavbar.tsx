@@ -25,7 +25,7 @@ interface BottomNavbarProps {
 
 interface NavButton {
   id: NavScreen;
-  label: string;
+  label?: string;
   route: RouteType;
   icon: JSX.Element;
 }
@@ -41,7 +41,7 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({
       id: "feed",
       label: "Fil d'actualité",
       route: "/feed",
-      icon: <Unicons.UilNewspaper size={28} />,
+      icon: <Unicons.UilHouse size={28} />,
     },
     {
       id: "quick_search",
@@ -51,7 +51,6 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({
     },
     {
       id: "create_post",
-      label: "Ajouter un post",
       route: "/create_post",
       icon: <Unicons.UilPlusCircle size={28} />,
     },
@@ -94,12 +93,6 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({
           </TouchableOpacity>
         );
       })}
-      <TouchableOpacity style={styles.bottomButton} onPress={logout}>
-        <View style={styles.bottomButtonContent}>
-          <Unicons.UilSignout size={28} color={COLORS.main_blue} />
-          <Text style={styles.bottomButtonLabel}>Déconnexion</Text>
-        </View>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -115,8 +108,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
     borderColor: COLORS.main_blue,
     zIndex: 999,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    overflow: "hidden",
   },
   bottomButton: {
     flex: 1,
