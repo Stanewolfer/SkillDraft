@@ -122,7 +122,8 @@ model FeedItem {
 model RegularPost {
   id          String @id @default(uuid())
   title       String
-  description String
+  description String @db.Text
+
   imageList   Json?
   likes       Int    @default(0)
   likesList   Json?
