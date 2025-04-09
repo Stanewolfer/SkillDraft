@@ -6,7 +6,7 @@ export const uploadFile = (req: Request) => {
   }
 
   // Exemple : retourne juste l'URL de l'image
-  const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+  const fileUrl = `${req.protocol}://10.57.32.33:5000/uploads/${req.file.filename}`
 
   return {
     filename: req.file.filename,

@@ -9,34 +9,45 @@ import { BottomNavbar } from '../components/BottomNavbar'
 const Mailbox = () => {
   const [convData, setConvData] = useState([])
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [otherUsers, setOtherUsers] = useState<Record<string, any>>({})
 
   const fetchConversations = async () => {
     try {
       const type = await AsyncStorage.getItem('type')
       const userId = await AsyncStorage.getItem('userId')
 
-      if (!type || !userId) {
-        console.warn('Type ou userId non trouvé dans AsyncStorage')
-        return
-      }
+      if (!type || !userId) return
 
-      setCurrentUserId(userId) // on stocke ici pour le rendu plus tard
+      setCurrentUserId(userId)
 
       const apiUrl = `${process.env.EXPO_PUBLIC_API_URL}/convs/get-${type}-convs/${userId}`
-      console.log("URL de l'API :", apiUrl)
+      const response = await fetch(apiUrl)
+      const conversations = await response.json()
+      console.log('Conversations récupérées:', conversations)
 
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
+      setConvData(conversations)
 
-      const result = await response.json()
-      console.log('Réponse API :', result)
-      setConvData(result)
+      const usersToFetch = conversations.map((conv: any) =>
+        conv.user1Id === userId ? conv.user2Id : conv.user1Id
+      )
+
+      const uniqueUserIds = [...new Set(usersToFetch)]
+
+      const usersData: Record<string, any> = {}
+
+      await Promise.all(
+        uniqueUserIds.map(async id => {
+          const res = await fetch(
+            `${process.env.EXPO_PUBLIC_API_URL}/users/get-user-by-id/${id}`
+          )
+          const data = await res.json()
+          usersData[id] = data
+        })
+      )
+
+      setOtherUsers(usersData)
     } catch (error) {
-      console.error('Erreur lors de la récupération des conversations :', error)
+      console.error('Erreur dans fetchConversations :', error)
     }
   }
 
@@ -48,19 +59,21 @@ const Mailbox = () => {
     <>
       <CustomStackScreen title='Mailbox' />
       <View style={mailboxStyles.container}>
-        {currentUserId && (
-          convData.length > 0 ? (
-            convData.map((conversation: any, index) => (
+        {currentUserId &&
+          convData.map((conversation: any, index) => {
+            const otherUserId =
+              conversation.user1Id === currentUserId
+                ? conversation.user2Id
+                : conversation.user1Id
+
+            const otherUser = otherUsers[otherUserId]
+
+            return (
               <PlayerConversation
                 key={index}
-                pseudonym={
-                  conversation.user1?.id === currentUserId
-                    ? conversation.user2?.username
-                    : conversation.user1?.username
-                }
+                pseudonym={otherUser?.username || 'Utilisateur inconnu'}
                 lastMessage={
-                  conversation.messages[conversation.messages.length - 1]
-                    .content || ''
+                  conversation.lastMessage?.content || 'Aucun message'
                 }
                 date={
                   new Date(conversation.updatedAt).toLocaleDateString('fr-FR', {
@@ -71,21 +84,10 @@ const Mailbox = () => {
                     minute: '2-digit'
                   }) || ''
                 }
-                profilePicture={
-                  conversation.user1?.id === currentUserId
-                    ? conversation.user2?.avatarUrl
-                    : conversation.user1?.avatarUrl
-                }
+                profilePicture={otherUser?.avatarUrl}
               />
-            ))
-          ) : (
-            <View style={{ alignItems: 'center', marginTop: 40 }}>
-              <Text style={{ fontSize: 16, color: '#fff' }}>
-                Aucune conversation trouvée. T'inquiètes, t'auras bientôt des amis !
-              </Text>
-            </View>
-          )
-        )}
+            )
+          })}
       </View>
     </>
   )  
