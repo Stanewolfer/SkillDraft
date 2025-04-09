@@ -22,9 +22,9 @@ model User {
   teamId String?
 
   // Posts et contenus
-  posts            RegularPost[]
-  notifications    Notification[]
-  sentMessages     Message[]      @relation("SenderMessages")
+  posts         RegularPost[]
+  notifications Notification[]
+  sentMessages  Message[]      @relation("SenderMessages")
 
   // Système de follow
   followedBy Follow[] @relation("Follower")
@@ -151,23 +151,23 @@ model OfferPost {
 }
 
 model Conversation {
-  id        String   @id @default(uuid())
+  id String @id @default(uuid())
 
   // Soit une conversation User <-> User
-  user1Id   String?
-  user2Id   String?
-  user1     User?    @relation("User1", fields: [user1Id], references: [id])
-  user2     User?    @relation("User2", fields: [user2Id], references: [id])
+  user1Id String?
+  user2Id String?
+  user1   User?   @relation("User1", fields: [user1Id], references: [id])
+  user2   User?   @relation("User2", fields: [user2Id], references: [id])
 
   // Soit une conversation User <-> Team
-  teamId    String?
-  team      Team?    @relation(fields: [teamId], references: [id])
+  teamId String?
+  team   Team?   @relation(fields: [teamId], references: [id])
 
-  messages  Message[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  lastMessage   Message? @relation(fields: [lastMessageid], references: [id])
+  lastMessageid String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
-
 
 model Message {
   id             String @id @default(uuid())
@@ -175,13 +175,14 @@ model Message {
   senderId       String
   conversationId String
 
-  sender       User         @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  sender User @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   OfferPost   OfferPost? @relation(fields: [offerPostId], references: [id])
   offerPostId String?
+
+  Conversation Conversation[]
 }
 
 model Comment {

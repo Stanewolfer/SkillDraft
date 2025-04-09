@@ -22,6 +22,24 @@ export const sendMessage = async (req: Request, res: Response) => {
         updatedAt: new Date()
       }
     })
+    await prisma.conversation.update({
+      where: {
+        id: conversationId
+      },
+      data: {
+        updatedAt: new Date(),
+        lastMessage: {
+          connect: {
+            id: message.id,
+            content: message.content,
+            createdAt: message.createdAt,
+            updatedAt: message.updatedAt,
+            senderId: message.senderId,
+            conversationId: message.conversationId
+          }
+        }
+      }
+    })
 
     res.status(201).json(message)
   } catch (error) {
@@ -43,8 +61,7 @@ export const getMessagesByConvId = async (req: Request, res: Response) => {
         conversationId: convId
       },
       include: {
-        sender: true,
-        conversation: true
+        sender: true
       }
     })
 
@@ -68,8 +85,7 @@ export const getMessageById = async (req: Request, res: Response) => {
         id: messageId
       },
       include: {
-        sender: true,
-        conversation: true
+        sender: true
       }
     })
 
