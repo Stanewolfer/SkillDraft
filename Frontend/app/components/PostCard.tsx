@@ -9,7 +9,7 @@ interface RegularPostCardProps {
   type?: 'regular' | 'offer'
   title: string
   description: string
-  imageList?: string[] // ou Json si tu veux garder brut
+  imageList?: string[]
   poster: {
     username: string
     avatarUrl: string
@@ -235,20 +235,10 @@ const styles = StyleSheet.create({
     borderColor: COLORS.main_blue,
     marginTop: 10
   },
-  verticalIconsContainer: {
-    position: 'absolute',
-    left: 15,
-    top: '50%',
-    transform: [{ translateY: -100 }],
-    flexDirection: 'column'
-  },
   horizontalIconsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 10
-  },
-  verticalIconButton: {
-    marginBottom: 20
   },
   iconButton: {
     marginRight: 15

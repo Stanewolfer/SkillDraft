@@ -69,6 +69,7 @@ export default function FeedScreen() {
                   id={post.id}
                   title={post.title}
                   description={post.description}
+                  imageList={post.imageList}
                   poster={post.poster}
                 />
               )
