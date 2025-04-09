@@ -36,8 +36,6 @@ export default function FeedScreen() {
       <ScrollView contentContainerStyle={styles.container}>
         <OfferPostCard />
         <MediaCard />
-
-        <BottomNavbar activeScreen="feed" logout={logout} />
       </ScrollView>
     </>
   );

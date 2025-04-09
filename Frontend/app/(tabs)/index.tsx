@@ -14,8 +14,6 @@ import { COLORS } from './styles/colors'
 import { styles } from './styles/indexStyles'
 import CustomStackScreen from '../components/CustomStackScreen'
 import { ThemedText } from '@/components/ThemedText'
-import BottomNavbar from '../components/BottomNavbar'
-
 LogBox.ignoreLogs([
   'Warning: UilSignin: Support for defaultProps will be removed from function components',
   'Warning: UilUser: Support for defaultProps will be removed from function components'

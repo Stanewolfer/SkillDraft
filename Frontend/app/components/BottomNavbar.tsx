@@ -3,6 +3,7 @@ import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import * as Unicons from "@iconscout/react-native-unicons";
 import { useRouter } from "expo-router";
 import { COLORS } from "../(tabs)/styles/colors";
+import { Circle } from "native-base";
 
 export type NavScreen =
   | "feed"
@@ -41,7 +42,7 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({
       id: "feed",
       label: "Fil d'actualité",
       route: "/feed",
-      icon: <Unicons.UilHouse size={28} />,
+      icon: <Unicons.UilHome size={28} />,
     },
     {
       id: "quick_search",
@@ -52,7 +53,7 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({
     {
       id: "create_post",
       route: "/create_post",
-      icon: <Unicons.UilPlusCircle size={28} />,
+      icon: <Unicons.UilPlus size={40} />,
     },
     {
       id: "offers",
@@ -69,31 +70,33 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({
   ];
 
   return (
-    <View style={styles.bottomButtonsContainer}>
-      {navButtons.map((button) => {
-        const isActive = button.id === activeScreen;
-        const iconColor = isActive ? COLORS.background_blue : COLORS.main_blue;
-        return (
-          <TouchableOpacity
-            key={button.id}
-            style={[styles.bottomButton, isActive && styles.activeBottomButton]}
-            onPress={() => router.push(button.route as any)}
-          >
-            <View style={styles.bottomButtonContent}>
-              {React.cloneElement(button.icon, { color: iconColor })}
-              <Text
-                style={[
-                  styles.bottomButtonLabel,
-                  isActive && styles.activeBottomButtonLabel,
-                ]}
-              >
-                {button.label}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
+    <>
+      <View style={styles.bottomButtonsContainer}>
+        {navButtons.map((button) => {
+          const isActive = button.id === activeScreen;
+          const iconColor = isActive ? COLORS.background_blue : COLORS.main_blue;
+          return (
+            <TouchableOpacity
+              key={button.id}
+              style={[styles.bottomButton, isActive && styles.activeBottomButton]}
+              onPress={() => router.push(button.route as any)}
+            >
+              <View style={styles.bottomButtonContent}>
+                {React.cloneElement(button.icon, { color: iconColor })}
+                <Text
+                  style={[
+                    styles.bottomButtonLabel,
+                    isActive && styles.activeBottomButtonLabel,
+                  ]}
+                >
+                  {button.label}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </>
   );
 };
 
@@ -127,7 +130,7 @@ const styles = StyleSheet.create({
   },
   bottomButtonLabel: {
     marginTop: 4,
-    fontSize: 12,
+    fontSize: 8,
     color: COLORS.main_blue,
   },
   activeBottomButton: {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import CustomStackScreen from '../components/CustomStackScreen'
 import { mailboxStyles } from '@/app/(tabs)/styles/mailboxStyles'
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 import PlayerConversation from '../components/PlayerConversation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { BottomNavbar } from '../components/BottomNavbar'
@@ -48,39 +48,47 @@ const Mailbox = () => {
     <>
       <CustomStackScreen title='Mailbox' />
       <View style={mailboxStyles.container}>
-        {currentUserId &&
-          convData.map((conversation: any, index) => (
-            <PlayerConversation
-              key={index}
-              pseudonym={
-                conversation.user1?.id === currentUserId
-                  ? conversation.user2?.username
-                  : conversation.user1?.username
-              }
-              lastMessage={
-                conversation.messages[conversation.messages.length - 1]
-                  .content || ''
-              }
-              date={
-                new Date(conversation.updatedAt).toLocaleDateString('fr-FR', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                }) || ''
-              }
-              profilePicture={
-                conversation.user1?.id === currentUserId
-                  ? conversation.user2?.avatarUrl
-                  : conversation.user1?.avatarUrl
-              }
-            />
-          ))}
+        {currentUserId && (
+          convData.length > 0 ? (
+            convData.map((conversation: any, index) => (
+              <PlayerConversation
+                key={index}
+                pseudonym={
+                  conversation.user1?.id === currentUserId
+                    ? conversation.user2?.username
+                    : conversation.user1?.username
+                }
+                lastMessage={
+                  conversation.messages[conversation.messages.length - 1]
+                    .content || ''
+                }
+                date={
+                  new Date(conversation.updatedAt).toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }) || ''
+                }
+                profilePicture={
+                  conversation.user1?.id === currentUserId
+                    ? conversation.user2?.avatarUrl
+                    : conversation.user1?.avatarUrl
+                }
+              />
+            ))
+          ) : (
+            <View style={{ alignItems: 'center', marginTop: 40 }}>
+              <Text style={{ fontSize: 16, color: '#fff' }}>
+                Aucune conversation trouvée. T'inquiètes, t'auras bientôt des amis !
+              </Text>
+            </View>
+          )
+        )}
       </View>
-      <BottomNavbar activeScreen="messaging" logout={() => {}} />
     </>
-  )
+  )  
 }
 
 export default Mailbox
