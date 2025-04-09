@@ -9,6 +9,18 @@ export const createFollow = async (
   const { followerId, followedId } = req.body
 
   try {
+    const existingFollow = await prisma.follow.findFirst({
+      where: {
+        followerId,
+        followedId
+      }
+    })
+
+    if (existingFollow) {
+      res.status(400).json({ message: 'Follow relationship already exists' })
+      return
+    }
+
     const follow = await prisma.follow.create({
       data: {
         followerId,

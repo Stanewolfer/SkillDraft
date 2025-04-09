@@ -1,3 +1,6 @@
+-- DropForeignKey
+ALTER TABLE `feeditem` DROP FOREIGN KEY `FeedItem_userId_fkey`;
+
 -- DropIndex
 DROP INDEX `FeedItem_userId_createdAt_idx` ON `feeditem`;
 

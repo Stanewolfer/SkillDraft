@@ -1,30 +1,25 @@
 import { Request, Response } from 'express'
 import { prisma } from '../config'
 
-// route pour envoyer des messages
-export const sendMessage = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { senderId, receiverId, content, offerPostId } = req.body
+// envoyer un message
+export const sendMessage = async (req: Request, res: Response) => {
+  const { content, conversationId } = req.body
+  const userId = req.params.userId
 
-  if (!senderId || !receiverId || !content) {
-    res.status(400).json({ message: 'Missing required fields' })
-    return
+  if (!content || !conversationId) {
+    return res
+      .status(400)
+      .json({ message: 'Content and conversationId are required' })
   }
 
   try {
     const message = await prisma.message.create({
       data: {
         content,
-        userId: senderId,
-        sender: {
-          connect: { id: senderId }
-        },
-        receiver: {
-          connect: { id: receiverId }
-        },
-        offerPostId
+        conversationId,
+        senderId: userId,
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     })
 
@@ -38,66 +33,72 @@ export const sendMessage = async (
   }
 }
 
-// route pour récupérer tous les messages
-export const getAllMessages = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const messages = await prisma.message.findMany()
-
-    res.json(messages)
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    res
-      .status(500)
-      .json({ message: 'Internal Server Error', error: errorMessage })
-  }
-}
-
-// route pour récupérer un message d'une offre
-export const getMessagesForOffer = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const offerPostId = req.params.offerPostId
-
-  try {
-    const messages = await prisma.message.findMany({
-      where: { offerPostId },
-      include: { sender: true, receiver: true }
-    })
-
-    res.json(messages)
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    res
-      .status(500)
-      .json({ message: 'Internal Server Error', error: errorMessage })
-  }
-}
-
-// route pour récupérer un message entre deux users
-export const getMessagesBetweenUsers = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { user1Id, user2Id } = req.params
+// récupérer tous les messages d'une conversation
+export const getMessagesByConvId = async (req: Request, res: Response) => {
+  const convId = req.params.convId
 
   try {
     const messages = await prisma.message.findMany({
       where: {
-        OR: [
-          { senderId: user1Id, receiverId: user2Id },
-          { senderId: user2Id, receiverId: user1Id }
-        ]
+        conversationId: convId
       },
-      orderBy: { createdAt: 'asc' } // Trie les messages du plus ancien au plus récent
+      include: {
+        sender: true,
+        conversation: true
+      }
     })
 
-    res.json(messages)
+    res.status(200).json(messages)
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: errorMessage })
+  }
+}
+
+// récupérer un message par son ID
+export const getMessageById = async (req: Request, res: Response) => {
+  const messageId = req.params.messageId
+
+  try {
+    const message = await prisma.message.findUnique({
+      where: {
+        id: messageId
+      },
+      include: {
+        sender: true,
+        conversation: true
+      }
+    })
+
+    if (!message) {
+      return res.status(404).json({ message: 'Message not found' })
+    }
+
+    res.status(200).json(message)
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: errorMessage })
+  }
+}
+
+// supprimer un message
+export const deleteMessage = async (req: Request, res: Response) => {
+  const messageId = req.params.messageId
+
+  try {
+    const message = await prisma.message.delete({
+      where: {
+        id: messageId
+      }
+    })
+
+    res.status(200).json(message)
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred'
