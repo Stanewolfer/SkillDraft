@@ -26,6 +26,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
                             borderBottomLeftRadius: 12,
                             borderBottomRightRadius: 12,
                             overflow: "hidden",
+                            zIndex: 999,
                         }}
                     />
                 ),
