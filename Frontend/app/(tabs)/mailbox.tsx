@@ -4,6 +4,7 @@ import { mailboxStyles } from '@/app/(tabs)/styles/mailboxStyles'
 import { View } from 'react-native'
 import PlayerConversation from '../components/PlayerConversation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { BottomNavbar } from '../components/BottomNavbar'
 
 const Mailbox = () => {
   const [convData, setConvData] = useState([])
