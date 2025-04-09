@@ -27,7 +27,6 @@ const Mailbox = () => {
 
       setConvData(conversations)
 
-      // Préchargement des autres utilisateurs
       const usersToFetch = conversations.map((conv: any) =>
         conv.user1Id === userId ? conv.user2Id : conv.user1Id
       )

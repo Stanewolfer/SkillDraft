@@ -8,6 +8,8 @@ CREATE TABLE `User` (
     `password` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NULL,
     `avatarUrl` VARCHAR(191) NULL,
+    `bannerUrl` VARCHAR(191) NULL,
+    `isVerified` BOOLEAN NOT NULL DEFAULT false,
     `teamId` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
@@ -29,6 +31,8 @@ CREATE TABLE `Team` (
     `rosterList` JSON NULL,
     `teamColor` VARCHAR(191) NOT NULL,
     `logoUrl` VARCHAR(191) NULL,
+    `isVerified` BOOLEAN NOT NULL DEFAULT false,
+    `bannerUrl` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -110,6 +114,7 @@ CREATE TABLE `Conversation` (
     `user1Id` VARCHAR(191) NULL,
     `user2Id` VARCHAR(191) NULL,
     `teamId` VARCHAR(191) NULL,
+    `lastMessageid` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -126,7 +131,6 @@ CREATE TABLE `Message` (
     `updatedAt` DATETIME(3) NOT NULL,
     `offerPostId` VARCHAR(191) NULL,
 
-    UNIQUE INDEX `Message_conversationId_key`(`conversationId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -211,10 +215,10 @@ ALTER TABLE `Conversation` ADD CONSTRAINT `Conversation_user2Id_fkey` FOREIGN KE
 ALTER TABLE `Conversation` ADD CONSTRAINT `Conversation_teamId_fkey` FOREIGN KEY (`teamId`) REFERENCES `Team`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Message` ADD CONSTRAINT `Message_senderId_fkey` FOREIGN KEY (`senderId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Conversation` ADD CONSTRAINT `Conversation_lastMessageid_fkey` FOREIGN KEY (`lastMessageid`) REFERENCES `Message`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Message` ADD CONSTRAINT `Message_conversationId_fkey` FOREIGN KEY (`conversationId`) REFERENCES `Conversation`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Message` ADD CONSTRAINT `Message_senderId_fkey` FOREIGN KEY (`senderId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Message` ADD CONSTRAINT `Message_offerPostId_fkey` FOREIGN KEY (`offerPostId`) REFERENCES `OfferPost`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
