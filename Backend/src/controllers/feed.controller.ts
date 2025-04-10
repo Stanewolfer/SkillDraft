@@ -18,29 +18,39 @@ export const generateFeed = async (req: Request, res: Response) => {
   // On récupère les regular posts
   const regularPosts = await prisma.regularPost.findMany({
     where: {
-      posterId: { 
+      posterId: {
         in: followedIds
       }
     },
     include: { poster: true },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'desc' }
   })
 
   // Et les offer posts
   const offerPosts = await prisma.offerPost.findMany({
     where: { teamId: { in: followedIds } },
     include: { team: true },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'desc' }
   })
 
   // On combine et trie tous les posts selon leur date de création
-  const allPosts = [...regularPosts.map(p => ({ ...p, type: 'regular' })), ...offerPosts.map(p => ({ ...p, type: 'offer' }))]
+  const allPosts = [
+    ...regularPosts.map(p => ({ ...p, type: 'regular' })),
+    ...offerPosts.map(p => ({ ...p, type: 'offer' }))
+  ]
 
-  allPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  allPosts.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )
 
-  const startIndex = cursor ? allPosts.findIndex(post => post.id === cursor) + 1 : 0
+  const startIndex = cursor
+    ? allPosts.findIndex(post => post.id === cursor) + 1
+    : 0
   const paginatedPosts = allPosts.slice(startIndex, startIndex + limit)
-  const nextCursor = paginatedPosts.length + startIndex < allPosts.length ? paginatedPosts[paginatedPosts.length - 1].id : null
+  const nextCursor =
+    paginatedPosts.length + startIndex < allPosts.length
+      ? paginatedPosts[paginatedPosts.length - 1].id
+      : null
 
   res.json({
     posts: paginatedPosts,
@@ -48,5 +58,3 @@ export const generateFeed = async (req: Request, res: Response) => {
     hasMore: nextCursor !== null
   })
 }
-
-
