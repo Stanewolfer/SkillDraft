@@ -10,7 +10,7 @@ import {
   NotificationType,
 } from "../components/NotificationCard";
 
-const notificationData = [
+export const notificationData = [
   {
     id: 1,
     type: NotificationType.LIKE,

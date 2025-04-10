@@ -4,6 +4,7 @@ import { COLORS } from "../(tabs)/styles/colors";
 import { View, TouchableOpacity, Image, Text, TextInput } from "react-native";
 import * as Unicons from "@iconscout/react-native-unicons";
 import { LinearGradient } from "expo-linear-gradient";
+import { notificationData } from "../(tabs)/notifications";
 
 interface CustomStackScreenProps {
   title: string;
@@ -13,7 +14,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
 
-  const notificationsCount = 2;
+  const notificationsCount = notificationData.length;
 
   return (
     <Stack.Screen
