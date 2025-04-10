@@ -4,4 +4,6 @@ export const COLORS = {
     link_yellow: '#FCC943', // Jaune
     text_white: '#FFFFFF', // Blanc
     dark_main_blue: '#2F4047', // Bleu foncé
+
+    gentle_mates: '#B8F600' // Gentle Mates
 };

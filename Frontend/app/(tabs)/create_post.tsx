@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
+import * as ImagePicker from 'expo-image-picker';
 import {
   ScrollView,
   Text,
@@ -28,12 +29,7 @@ export default function CreatePost() {
   const [postContent, setPostContent] = useState("");
   const [posterId, setPosterId] = useState<string | null>(null);
   const [isUserTeam, setIsUserTeam] = useState(false);
-
-  const [imageList, setImageList] = useState<string[]>([
-    "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/0fd808037b9c16d9f04cfee0b35b5b3be488f26e-1920x1080.jpg",
-    "https://assets1.ignimgs.com/thumbs/userUploaded/2020/3/2/valorant-blog-1583142940384.jpg",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSa_beocbERzy5FknsCjd705ecwxlvK6RPxJG5IfPufZANLEVRMkD2AyJxnNfrEVP4Bjow&usqp=CAU",
-  ]);
+  const [imageList, setImageList] = useState<string[]>([]);
 
   const logout = async () => {
     await AsyncStorage.clear();
@@ -56,6 +52,16 @@ export default function CreatePost() {
       alert("ID utilisateur introuvable.");
       return;
     }
+    if (!postTitle || !postContent) {
+      alert("Veuillez remplir tous les champs.");
+      return;
+    }
+    console.log("Poster ID:", posterId);
+    console.log("Post Title:", postTitle);
+    console.log("Post Content:", postContent);
+    console.log("Post Mode:", mode);
+    console.log("Image List:", imageList);
+    
     const apiUrl = `${process.env.EXPO_PUBLIC_API_URL}/posts/create`;
     try {
       const response = await fetch(apiUrl, {
@@ -79,21 +85,13 @@ export default function CreatePost() {
       router.push("/feed");
     } catch (error) {
       console.error("Erreur lors de la création du post :", error);
-      alert("Erreur lors de la création du post. Vérifiez votre connexion.");
+      alert("Erreur lors de la création du post, veuillez réessayer.");
     }
   };
 
   const titleCharsCount = `${postTitle.length}/${TITLE_CHAR_LIMIT}`;
   const descCharsCount = `${postContent.length}/${DESC_CHAR_LIMIT}`;
 
-  const editorElements = [
-    { id: "I", isSeparator: false },
-    { id: "B", isSeparator: false },
-    { id: "U", isSeparator: false },
-    { id: "|", isSeparator: true },
-    { id: "A▲", isSeparator: false },
-    { id: "A▼", isSeparator: false },
-  ];
 
   return (
     <>
@@ -122,45 +120,6 @@ export default function CreatePost() {
 
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Description</Text>
-              <View style={styles.editorToolBar}>
-                {editorElements.map((item, index) => {
-                  if (item.isSeparator) {
-                    return (
-                      <View key={index} style={styles.verticalSeparator} />
-                    );
-                  }
-                  if (item.id.startsWith("A")) {
-                    const symbol = item.id.slice(1);
-                    return (
-                      <TouchableOpacity
-                        key={item.id}
-                        style={styles.editorButton}
-                      >
-                        <View style={styles.letterContainer}>
-                          <Text style={styles.editorButtonText}>A</Text>
-                          <Text style={styles.superscript}>{symbol}</Text>
-                        </View>
-                      </TouchableOpacity>
-                    );
-                  }
-                  const flattenedTextStyle: StyleProp<TextStyle> =
-                    StyleSheet.flatten([
-                      styles.editorButtonText,
-                      item.id === "I"
-                        ? { fontStyle: "italic" }
-                        : item.id === "B"
-                        ? { fontWeight: "bold" }
-                        : item.id === "U"
-                        ? { textDecorationLine: "underline" }
-                        : {},
-                    ]);
-                  return (
-                    <TouchableOpacity key={item.id} style={styles.editorButton}>
-                      <Text style={flattenedTextStyle}>{item.id}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
 
               <View style={[styles.inputWrapper, { height: 100 }]}>
                 <TextInput
@@ -181,13 +140,38 @@ export default function CreatePost() {
 
             <View style={styles.imagesContainer}>
               {imageList.map((img, index) => (
-                <View key={index} style={styles.imageWrapper}>
-                  <Image source={{ uri: img }} style={styles.imageThumbnail} />
-                </View>
+              <View key={index} style={styles.imageWrapper}>
+                <Image source={{ uri: img }} style={styles.imageThumbnail} />
+                <TouchableOpacity
+                onPress={() => {
+                  const newList = [...imageList];
+                  newList.splice(index, 1);
+                  setImageList(newList);
+                }}
+                >
+                <Text>×</Text>
+                </TouchableOpacity>
+              </View>
               ))}
-              <TouchableOpacity style={styles.addImageButton}>
+              {imageList.length < 4 && (
+              <TouchableOpacity 
+                style={styles.addImageButton}
+                onPress={async () => {
+                const result = await ImagePicker.launchImageLibraryAsync({
+                  mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                  allowsEditing: true,
+                  aspect: [4, 3],
+                  quality: 0.1,
+                });
+
+                if (!result.canceled && result.assets[0]) {
+                  setImageList([...imageList, result.assets[0].uri]);
+                }
+                }}
+              >
                 <Text style={styles.addImageText}>+</Text>
               </TouchableOpacity>
+              )}
             </View>
 
             <View style={styles.sectionSpacer} />
