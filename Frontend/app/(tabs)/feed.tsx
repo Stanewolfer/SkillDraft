@@ -26,6 +26,7 @@ LogBox.ignoreLogs([
   "Warning: UilBell: Support for defaultProps will be removed",
   "Warning: UilNewspaper: Support for defaultProps will be removed",
   "Warning: UilSearch: Support for defaultProps will be removed",
+  "Warning: UilArrowLeft: Support for defaultProps will be removed",
 ]);
 
 export default function FeedScreen() {
@@ -64,7 +65,7 @@ export default function FeedScreen() {
 
   return (
     <>
-      <CustomStackScreen title="Feed" />
+      <CustomStackScreen title="feed" />
       <ScrollView contentContainerStyle={styles.container}>
         {feed.posts &&
           feed.posts.map((post, index) => {
