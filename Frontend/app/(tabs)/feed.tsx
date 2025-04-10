@@ -77,7 +77,7 @@ export default function FeedScreen() {
               return <OfferPostCard key={index} />
             }
           })}
-        <BottomNavbar activeScreen='feed' />
+        <BottomNavbar />
       </ScrollView>
     </>
   )

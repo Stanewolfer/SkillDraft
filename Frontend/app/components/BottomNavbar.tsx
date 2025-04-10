@@ -5,9 +5,9 @@ import { useRouter } from "expo-router";
 import { COLORS } from "../(tabs)/styles/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type NavScreen = "feed" | "quick_search" | "create_post" | "offers" | "messaging";
+type NavScreen = "feed" | "fast_search" | "create_post" | "offers" | "messaging";
 
-type RouteType = "/feed" | "/quick_search" | "/create_post" | "/offers" | "/mailbox";
+type RouteType = "/feed" | "/fast_search" | "/create_post" | "/offers" | "/mailbox";
 
 interface NavButton {
   id: NavScreen;
@@ -38,9 +38,9 @@ export const BottomNavbar: React.FC = () => {
       icon: <Unicons.UilHome size={28} />,
     },
     {
-      id: "quick_search",
+      id: "fast_search",
       label: "Recherches rapides",
-      route: "/quick_search",
+      route: "/fast_search",
       icon: <Unicons.UilSearch size={28} />,
     },
     {

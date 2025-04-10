@@ -18,6 +18,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
 
   const segments: string[] = useSegments();
+  const mustShow: string[] = ['feed', 'fast_search', 'create_post', 'offers', 'mailbox'];
 
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
@@ -34,6 +35,7 @@ export default function RootLayout() {
     return null;
   }
 
+  console.log('Segments:', segments);
   return (
     <GluestackUIProvider mode="light"><ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
@@ -42,7 +44,7 @@ export default function RootLayout() {
         </Stack>
         <StatusBar style="auto" />
         
-        {!segments.includes('index') || !segments.includes('connexion') ? (
+        {!mustShow.some((item) => segments.includes(item)) ? (
           null
         ) : (
           <BottomNavbar /> 

@@ -89,7 +89,6 @@ const Mailbox = () => {
             )
           })}
       </View>
-      <BottomNavbar activeScreen="messaging" />
     </>
   )
 }

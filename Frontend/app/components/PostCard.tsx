@@ -49,7 +49,7 @@ export default function PostCard({
       {/* Display poster information */}
       <View>
         <Image
-        source={{ uri: poster.avatarUrl }} // Display the poster's avatar
+        source={{ uri: poster.avatarUrl }}
         />
         <View>
         <View>
