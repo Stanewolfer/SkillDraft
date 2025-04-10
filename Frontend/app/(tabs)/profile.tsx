@@ -1,6 +1,14 @@
 import React from "react";
 import { useRouter } from "expo-router";
-import { ScrollView, StyleSheet, View, Text, Image } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Linking,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { COLORS } from "./styles/colors";
 import CustomStackScreen from "../components/CustomStackScreen";
@@ -17,6 +25,14 @@ export default function ProfileScreen() {
   const logout = async () => {
     await AsyncStorage.clear();
     router.push("/");
+  };
+
+  const openYouTube = () => {
+    Linking.openURL("https://www.youtube.com/@beyAzkorpe");
+  };
+
+  const openTwitch = () => {
+    Linking.openURL("https://www.twitch.tv/beyaz");
   };
 
   return (
@@ -40,6 +56,21 @@ export default function ProfileScreen() {
               Ex-Joueur Professionnel dans la section VALORANT de l'équipe
               GentleMates
             </Text>
+          </View>
+        </View>
+
+        <View style={styles.socialContainer}>
+          <TouchableOpacity style={styles.socialItemRed} onPress={openYouTube}>
+            <Text style={styles.socialItemText}>YouTube</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.socialItemPurple}
+            onPress={openTwitch}
+          >
+            <Text style={styles.socialItemText}>Twitch</Text>
+          </TouchableOpacity>
+          <View style={styles.socialItemTeal}>
+            <Text style={styles.socialItemTealText}>+</Text>
           </View>
         </View>
 
@@ -124,8 +155,49 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     paddingTop: 20,
   },
+  socialContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginTop: 15,
+  },
+  socialItemRed: {
+    backgroundColor: "#FF0000",
+    borderRadius: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    marginRight: 10,
+  },
+  socialItemPurple: {
+    backgroundColor: "#9146FF",
+    borderRadius: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    marginRight: 10,
+  },
+  socialItemTeal: {
+    backgroundColor: "#99FFCC",
+    width: 36,
+    height: 36,
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  socialItemText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontStyle: "italic",
+    textDecorationLine: "underline",
+    fontSize: 15,
+  },
+  socialItemTealText: {
+    color: "#000",
+    fontSize: 30,
+    fontWeight: "700",
+  },
   extraInfoContainer: {
     paddingHorizontal: 20,
+    marginTop: 20,
     marginBottom: 20,
   },
   extraInfoTitle: {
