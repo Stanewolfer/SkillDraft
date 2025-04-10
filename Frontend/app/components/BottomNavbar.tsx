@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { COLORS } from "../(tabs)/styles/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export type NavScreen = "feed" | "fast_search" | "create_post" | "offers" | "messaging";
+export type NavScreen = "feed" | "fast_search" | "create_post" | "offers" | "mailbox";
 
 type RouteType = "/feed" | "/fast_search" | "/create_post" | "/offers" | "/mailbox";
 
@@ -57,7 +57,7 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab }) => {
       icon: <Unicons.UilBag size={28} />,
     },
     {
-      id: "messaging",
+      id: "mailbox",
       label: "Messagerie",
       route: "/mailbox",
       icon: <Unicons.UilEnvelopeAlt size={28} />,
