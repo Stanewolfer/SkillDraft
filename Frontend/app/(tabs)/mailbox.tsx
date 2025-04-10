@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import CustomStackScreen from '../components/CustomStackScreen'
 import { mailboxStyles } from '@/app/(tabs)/styles/mailboxStyles'
-import { View } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import PlayerConversation from '../components/PlayerConversation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { BottomNavbar } from '../components/BottomNavbar'
+import { router } from 'expo-router'
 
 const Mailbox = () => {
   const [convData, setConvData] = useState([])
@@ -27,7 +28,6 @@ const Mailbox = () => {
 
       setConvData(conversations)
 
-      // Préchargement des autres utilisateurs
       const usersToFetch = conversations.map((conv: any) =>
         conv.user1Id === userId ? conv.user2Id : conv.user1Id
       )
@@ -70,27 +70,44 @@ const Mailbox = () => {
             const otherUser = otherUsers[otherUserId]
 
             return (
-              <PlayerConversation
+              <TouchableOpacity
                 key={index}
-                pseudonym={otherUser?.username || 'Utilisateur inconnu'}
-                lastMessage={
-                  conversation.lastMessage?.content || 'Aucun message'
-                }
-                date={
-                  new Date(conversation.updatedAt).toLocaleDateString('fr-FR', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  }) || ''
-                }
-                profilePicture={otherUser?.avatarUrl}
-              />
+                onPress={() => {
+                  console.log('ID de conversation envoyé:', conversation.id)
+                  router.push({
+                    pathname: '/(tabs)/messaging',
+                    params: {
+                      conversationId: conversation.id,
+                      otherUsername: otherUser.username
+                    }
+                  })
+                }}
+              >
+                <PlayerConversation
+                  key={index}
+                  pseudonym={otherUser?.username || 'Utilisateur inconnu'}
+                  lastMessage={
+                    conversation.lastMessage?.content || 'Aucun message'
+                  }
+                  date={
+                    new Date(conversation.updatedAt).toLocaleDateString(
+                      'fr-FR',
+                      {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }
+                    ) || ''
+                  }
+                  profilePicture={otherUser?.avatarUrl}
+                />
+              </TouchableOpacity>
             )
           })}
       </View>
-      <BottomNavbar activeScreen="messaging" logout={() => {}} />
+      <BottomNavbar activeScreen='messaging' logout={() => {}} />
     </>
   )
 }
