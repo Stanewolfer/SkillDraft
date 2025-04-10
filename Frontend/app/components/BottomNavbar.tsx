@@ -1,59 +1,52 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
 import * as Unicons from "@iconscout/react-native-unicons";
 import { useRouter } from "expo-router";
 import { COLORS } from "../(tabs)/styles/colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export type NavScreen =
-  | "feed"
-  | "quick_search"
-  | "create_post"
-  | "offers"
-  | "messaging";
+type NavScreen = "feed" | "fast_search" | "create_post" | "offers" | "messaging";
 
-type RouteType =
-  | "/feed"
-  | "/quick_search"
-  | "/create_post"
-  | "/offers"
-  | "/mailbox";
-
-interface BottomNavbarProps {
-  activeScreen: NavScreen;
-  logout: () => void;
-}
+type RouteType = "/feed" | "/fast_search" | "/create_post" | "/offers" | "/mailbox";
 
 interface NavButton {
   id: NavScreen;
-  label: string;
+  label?: string;
   route: RouteType;
   icon: JSX.Element;
 }
 
-export const BottomNavbar: React.FC<BottomNavbarProps> = ({
-  activeScreen,
-  logout,
-}) => {
+export const BottomNavbar: React.FC = () => {
   const router = useRouter();
+  const [activeScreen, setActiveScreen] = useState<NavScreen>("feed");
+
+  const handlePress = (screen: NavScreen, route: RouteType) => {
+    setActiveScreen(screen);
+    router.push(route as any);
+  };
+
+  const logout = async () => {
+    await AsyncStorage.clear();
+    router.push("/");
+  };
 
   const navButtons: NavButton[] = [
     {
       id: "feed",
       label: "Fil d'actualité",
       route: "/feed",
-      icon: <Unicons.UilNewspaper size={28} />,
+      icon: <Unicons.UilHome size={28} />,
     },
     {
-      id: "quick_search",
+      id: "fast_search",
       label: "Recherches rapides",
-      route: "/quick_search",
+      route: "/fast_search",
       icon: <Unicons.UilSearch size={28} />,
     },
     {
       id: "create_post",
-      label: "Ajouter un post",
       route: "/create_post",
-      icon: <Unicons.UilPlusCircle size={28} />,
+      icon: <Unicons.UilPlus size={40} />,
     },
     {
       id: "offers",
@@ -78,18 +71,20 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({
           <TouchableOpacity
             key={button.id}
             style={[styles.bottomButton, isActive && styles.activeBottomButton]}
-            onPress={() => router.push(button.route as any)}
+            onPress={() => handlePress(button.id, button.route)}
           >
             <View style={styles.bottomButtonContent}>
               {React.cloneElement(button.icon, { color: iconColor })}
-              <Text
-                style={[
-                  styles.bottomButtonLabel,
-                  isActive && styles.activeBottomButtonLabel,
-                ]}
-              >
-                {button.label}
-              </Text>
+              {button.label && (
+                <Text
+                  style={[
+                    styles.bottomButtonLabel,
+                    isActive && styles.activeBottomButtonLabel,
+                  ]}
+                >
+                  {button.label}
+                </Text>
+              )}
             </View>
           </TouchableOpacity>
         );
@@ -115,8 +110,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
     borderColor: COLORS.main_blue,
     zIndex: 999,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    overflow: "hidden",
   },
   bottomButton: {
     flex: 1,
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   bottomButtonLabel: {
     marginTop: 4,
-    fontSize: 12,
+    fontSize: 6, // Change to 8 once logout is moved away
     color: COLORS.main_blue,
   },
   activeBottomButton: {

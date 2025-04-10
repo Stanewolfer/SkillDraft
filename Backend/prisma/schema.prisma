@@ -16,6 +16,8 @@ model User {
   password    String // Password will be hashed
   description String?
   avatarUrl   String?
+  bannerUrl   String?
+  isVerified  Boolean @default(false)
 
   // Relations
   team   Team?   @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -55,6 +57,8 @@ model Team {
   rosterList   Json?
   teamColor    String
   logoUrl      String?
+  isVerified   Boolean @default(false)
+  bannerUrl    String?
 
   // Relations
   members    User[]
@@ -118,7 +122,8 @@ model FeedItem {
 model RegularPost {
   id          String @id @default(uuid())
   title       String
-  description String
+  description String @db.Text
+
   imageList   Json?
   likes       Int    @default(0)
   likesList   Json?
