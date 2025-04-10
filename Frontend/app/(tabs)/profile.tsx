@@ -20,7 +20,6 @@ const BANNER_URL =
   "https://i.ytimg.com/vi/Fxm2cUNas1k/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDAV7W1ADVrw5Vr9p3_v9zomhDIlw";
 const AVATAR_URL =
   "https://e.sport.fr/wp-content/uploads/2024/06/Gentle_Mates_beyAz_at_VCT_2024_EMEA_Kickoff.jpg";
-
 const VALO_THUMB_URL =
   "https://gamecover.fr/wp-content/uploads/Tejo-Act-1-Wallpaper.png";
 
@@ -105,8 +104,8 @@ export default function ProfileScreen() {
               />
               <LinearGradient
                 colors={["rgba(184, 246, 0, 1)", "rgba(108, 194, 53, 0)"]}
-                start={[0.5, 0]}
-                end={[1, 0]}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 1, y: 0 }}
                 style={styles.postGreenOverlay}
               />
               <View style={styles.postCornerIcon}>
@@ -138,6 +137,28 @@ export default function ProfileScreen() {
               </View>
             </View>
 
+            <View style={styles.recruitCard}>
+              <Unicons.UilRepeat
+                size={15}
+                color={COLORS.main_blue}
+                style={styles.recruitBackground}
+              />
+              <View style={styles.recruitOverlay} />
+              <View style={styles.recruitContent}>
+                <Text style={styles.recruitTitle}>
+                  Notre équipe VALORANT recrute !
+                </Text>
+                <TouchableOpacity style={styles.recruitButton}>
+                  <Text style={styles.recruitButtonText}>CANDIDATER</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          <Text style={[styles.postsTitle, { marginTop: 20 }]}>
+            Candidatures récentes
+          </Text>
+          <View style={styles.postsRow}>
             <View style={styles.recruitCard}>
               <Unicons.UilRepeat
                 size={15}
