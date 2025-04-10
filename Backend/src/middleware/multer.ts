@@ -29,11 +29,11 @@ export const upload = multer({ storage, fileFilter })
 // Middlewares personnalisés pour chaque type
 export const uploadAvatar = upload.single('avatar')
 export const uploadBanner = upload.single('banner')
-export const uploadPostImages = upload.array('images', 5)
+export const uploadPostImages = upload.array('images', 10)
 export const uploadUserFiles = upload.fields([
   { name: 'avatar', maxCount: 1 },
   { name: 'banner', maxCount: 1 }
 ])
 export const uploadPostWithTextAndImages = upload.fields([
-  { name: 'images', maxCount: 5 }
+  { name: 'images', maxCount: 10 }
 ])
