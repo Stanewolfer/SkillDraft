@@ -179,7 +179,7 @@ export default function ProfileScreen() {
         </View>
       </ScrollView>
 
-      <BottomNavbar activeScreen="feed" logout={logout} />
+      <BottomNavbar />
     </View>
   );
 }

@@ -65,7 +65,7 @@ export default function Notification() {
           />
         ))}
       </ScrollView>
-      <BottomNavbar activeScreen="feed" logout={logout} />
+      <BottomNavbar />
     </>
   );
 }
