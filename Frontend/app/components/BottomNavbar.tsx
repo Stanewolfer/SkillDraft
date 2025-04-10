@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { COLORS } from "../(tabs)/styles/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type NavScreen = "feed" | "fast_search" | "create_post" | "offers" | "messaging";
+export type NavScreen = "feed" | "fast_search" | "create_post" | "offers" | "messaging";
 
 type RouteType = "/feed" | "/fast_search" | "/create_post" | "/offers" | "/mailbox";
 
@@ -16,12 +16,14 @@ interface NavButton {
   icon: JSX.Element;
 }
 
-export const BottomNavbar: React.FC = () => {
+interface BottomNavbarProps {
+  activeTab?: NavScreen;
+}
+
+export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab }) => {
   const router = useRouter();
-  const [activeScreen, setActiveScreen] = useState<NavScreen>("feed");
 
   const handlePress = (screen: NavScreen, route: RouteType) => {
-    setActiveScreen(screen);
     router.push(route as any);
   };
 
@@ -65,8 +67,9 @@ export const BottomNavbar: React.FC = () => {
   return (
     <View style={styles.bottomButtonsContainer}>
       {navButtons.map((button) => {
-        const isActive = button.id === activeScreen;
+        const isActive = button.id === activeTab;
         const iconColor = isActive ? COLORS.background_blue : COLORS.main_blue;
+
         return (
           <TouchableOpacity
             key={button.id}
