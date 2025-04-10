@@ -56,8 +56,6 @@ export default function Offers() {
             description="Notre équipe VALORANT recrute ! Nous avons besoin de créateurs de contenu afin de maintenir notre communauté occupée, même hors VCT. Nous cherchons un profil intéressant et motivé."
           />
         </ScrollView>
-
-        <BottomNavbar activeScreen="offers" logout={logout} />
       </View>
     </>
   );

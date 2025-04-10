@@ -1,7 +1,7 @@
 import React from "react";
 import { Stack } from "expo-router";
 import { COLORS } from "../(tabs)/styles/colors";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 interface CustomStackScreenProps {
     title: string;
@@ -28,9 +28,11 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
                             overflow: "hidden",
                             zIndex: 999,
                         }}
-                    />
+                    >
+                    </View>
                 ),
             }}
         />
+    
     );
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import CustomStackScreen from '../components/CustomStackScreen'
 import { mailboxStyles } from '@/app/(tabs)/styles/mailboxStyles'
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import PlayerConversation from '../components/PlayerConversation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { BottomNavbar } from '../components/BottomNavbar'
@@ -89,8 +89,9 @@ const Mailbox = () => {
             )
           })}
       </View>
+      <BottomNavbar activeScreen="messaging" />
     </>
-  )  
+  )
 }
 
 export default Mailbox

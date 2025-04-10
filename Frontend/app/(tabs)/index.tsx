@@ -90,9 +90,6 @@ function HomeScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-        <Link href="/feed" style={styles.link}>
-          <ThemedText type="link">Vers le feed</ThemedText>
-        </Link>
       </View>
     </>
   )
