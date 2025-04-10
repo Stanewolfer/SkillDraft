@@ -13,11 +13,15 @@ export const generateFeed = async (req: Request, res: Response) => {
   })
 
   const followedIds = followings.map(follow => follow.followed.id)
-  followedIds.push(userId) // Include own posts
+  followedIds.push(userId)
 
   // On récupère les regular posts
   const regularPosts = await prisma.regularPost.findMany({
-    where: { posterId: { in: followedIds } },
+    where: {
+      posterId: { 
+        in: followedIds
+      }
+    },
     include: { poster: true },
     orderBy: { createdAt: 'desc' },
   })

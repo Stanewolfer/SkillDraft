@@ -62,6 +62,9 @@ export const getMessagesByConvId = async (req: Request, res: Response) => {
       },
       include: {
         sender: true
+      },
+      orderBy: {
+        createdAt: 'asc'
       }
     })
 

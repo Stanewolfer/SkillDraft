@@ -202,8 +202,6 @@ export default function CreatePost() {
             </TouchableOpacity>
           </ScrollView>
         </View>
-
-        <BottomNavbar activeScreen="create_post" logout={logout} />
       </View>
     </>
   );
