@@ -11,6 +11,7 @@ import { COLORS } from './styles/colors'
 import { Button, NativeBaseProvider } from 'native-base'
 import { useSearchParams } from 'expo-router/build/hooks'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import CustomStackScreen from '../components/CustomStackScreen'
 
 const Messaging = () => {
   const conversationId = useSearchParams().get('conversationId')
@@ -83,82 +84,85 @@ const Messaging = () => {
   }, [])
 
   return (
-    <NativeBaseProvider>
-      <View style={styles.container}>
-        <Text style={styles.title}>
-          Bienvenue dans le début de votre conversation épique avec{' '}
-          {otherUsername} !
-        </Text>
-        {messages.length === 0 ? (
-          <Text>Aucun message pour le moment.</Text>
-        ) : (
-          <ScrollView style={styles.messagesContainer}>
-            {messages.map(message => (
-              <View key={message.id} style={styles.message}>
-                <Text>{message.content}</Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginBottom: 5
-                  }}
-                >
-                  <Image
-                    source={{ uri: message.sender.avatarUrl }}
+    <>
+      <CustomStackScreen title={otherUsername || 'Utilisateur inconnu'} />
+      <NativeBaseProvider>
+        <View style={styles.container}>
+          <Text style={styles.title}>
+            Bienvenue dans le début de votre conversation épique avec{' '}
+            {otherUsername} !
+          </Text>
+          {messages.length === 0 ? (
+            <Text>Aucun message pour le moment.</Text>
+          ) : (
+            <ScrollView style={styles.messagesContainer}>
+              {messages.map(message => (
+                <View key={message.id} style={styles.message}>
+                  <Text>{message.content}</Text>
+                  <View
                     style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 12,
-                      marginRight: 5
-                    }}
-                  />
-                  <Text style={{ fontSize: 10, color: COLORS.background_blue }}>
-                    {message.sender.username}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 10,
-                      color: COLORS.background_blue,
-                      marginLeft: 5
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      marginBottom: 5
                     }}
                   >
-                    {new Date(message.createdAt).toLocaleDateString(
-                      'fr-FR',
-                      {
-                        year: 'numeric',
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      }
-                    )}
-                  </Text>
+                    <Image
+                      source={{ uri: message.sender.avatarUrl }}
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: 12,
+                        marginRight: 5
+                      }}
+                    />
+                    <Text style={{ fontSize: 10, color: COLORS.background_blue }}>
+                      {message.sender.username}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        color: COLORS.background_blue,
+                        marginLeft: 5
+                      }}
+                    >
+                      {new Date(message.createdAt).toLocaleDateString(
+                        'fr-FR',
+                        {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }
+                      )}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            ))}
-          </ScrollView>
-        )}
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputWrapper}
-          placeholder='Écrire un message...'
-          placeholderTextColor={COLORS.main_blue}
-          value={messageContent}
-          onChangeText={text => setMessageContent(text)}
-          multiline={true}
-          onKeyPress={(e) => {
-            if (e.nativeEvent.key === 'Enter' && !e.nativeEvent.shiftKey) {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-        />
-        <Button style={styles.sendButton} onPress={sendMessage}>
-          <Text>Envoyer</Text>
-        </Button>
-      </View>
-    </NativeBaseProvider>
+              ))}
+            </ScrollView>
+          )}
+        </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.inputWrapper}
+            placeholder='Écrire un message...'
+            placeholderTextColor={COLORS.main_blue}
+            value={messageContent}
+            onChangeText={text => setMessageContent(text)}
+            multiline={true}
+            onKeyPress={(e) => {
+              if (e.nativeEvent.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
+          />
+          <Button style={styles.sendButton} onPress={sendMessage}>
+            <Text>Envoyer</Text>
+          </Button>
+        </View>
+      </NativeBaseProvider>
+    </>
   )
 }
 

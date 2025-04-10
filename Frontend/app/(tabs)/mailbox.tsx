@@ -32,12 +32,12 @@ const Mailbox = () => {
         conv.user1Id === userId ? conv.user2Id : conv.user1Id
       )
 
-      const uniqueUserIds = [...new Set(usersToFetch)]
+      const uniqueUserIds: string[] = [...new Set(usersToFetch as string[])]
 
       const usersData: Record<string, any> = {}
 
       await Promise.all(
-        uniqueUserIds.map(async id => {
+        uniqueUserIds.map(async (id: string) => {
           const res = await fetch(
             `${process.env.EXPO_PUBLIC_API_URL}/users/get-user-by-id/${id}`
           )

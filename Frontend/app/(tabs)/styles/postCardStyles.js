@@ -17,9 +17,9 @@ export const styles = StyleSheet.create({
     },
 
     buttonsContainer: {
+        width: '50%',
         flexDirection: 'row',
-        justifyContent: 'flex-start',
-        marginHorizontal: 10,
+        justifyContent: 'space-between',
+        paddingVertical: 10,
     }
-
 })
