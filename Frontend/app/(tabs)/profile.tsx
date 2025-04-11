@@ -41,7 +41,7 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.mainContainer}>
-      <CustomStackScreen title="Mon Profil" />
+      <CustomStackScreen title="profile" />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.bannerContainer}>
           <Image source={{ uri: BANNER_URL }} style={styles.bannerImage} />
