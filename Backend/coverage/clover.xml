@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1744295148994" clover="3.2.0">
-  <project timestamp="1744295148994" name="All files">
-    <metrics statements="520" coveredstatements="63" conditionals="178" coveredconditionals="35" methods="81" coveredmethods="6" elements="779" coveredelements="104" complexity="0" loc="520" ncloc="520" packages="3" files="23" classes="23"/>
+<coverage generated="1744357536443" clover="3.2.0">
+  <project timestamp="1744357536443" name="All files">
+    <metrics statements="524" coveredstatements="83" conditionals="178" coveredconditionals="41" methods="81" coveredmethods="13" elements="783" coveredelements="137" complexity="0" loc="524" ncloc="524" packages="3" files="23" classes="23"/>
     <package name="controllers">
-      <metrics statements="365" coveredstatements="63" conditionals="153" coveredconditionals="35" methods="69" coveredmethods="6"/>
+      <metrics statements="369" coveredstatements="83" conditionals="153" coveredconditionals="41" methods="69" coveredmethods="13"/>
       <file name="auth.controller.ts" path="C:\Users\seiya\OneDrive\Documents\Github\SkillDraft\Backend\src\controllers\auth.controller.ts">
         <metrics statements="63" coveredstatements="63" conditionals="43" coveredconditionals="35" methods="6" coveredmethods="6"/>
         <line num="2" count="1" type="stmt"/>
@@ -109,23 +109,27 @@
         <line num="122" count="0" type="stmt"/>
       </file>
       <file name="feed.controller.ts" path="C:\Users\seiya\OneDrive\Documents\Github\SkillDraft\Backend\src\controllers\feed.controller.ts">
-        <metrics statements="16" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="7" coveredmethods="0"/>
-        <line num="2" count="0" type="stmt"/>
-        <line num="5" count="0" type="stmt"/>
-        <line num="6" count="0" type="stmt"/>
-        <line num="7" count="0" type="stmt"/>
-        <line num="8" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="10" count="0" type="stmt"/>
-        <line num="15" count="0" type="stmt"/>
-        <line num="16" count="0" type="stmt"/>
-        <line num="19" count="0" type="stmt"/>
-        <line num="30" count="0" type="stmt"/>
-        <line num="37" count="0" type="stmt"/>
-        <line num="39" count="0" type="stmt"/>
-        <line num="41" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="42" count="0" type="stmt"/>
-        <line num="43" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="45" count="0" type="stmt"/>
+        <metrics statements="20" coveredstatements="20" conditionals="6" coveredconditionals="6" methods="7" coveredmethods="7"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="5" count="6" type="stmt"/>
+        <line num="6" count="6" type="stmt"/>
+        <line num="7" count="6" type="stmt"/>
+        <line num="8" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="10" count="6" type="stmt"/>
+        <line num="15" count="5" type="stmt"/>
+        <line num="16" count="5" type="stmt"/>
+        <line num="19" count="5" type="stmt"/>
+        <line num="30" count="5" type="stmt"/>
+        <line num="37" count="5" type="stmt"/>
+        <line num="38" count="30" type="stmt"/>
+        <line num="39" count="7" type="stmt"/>
+        <line num="42" count="5" type="stmt"/>
+        <line num="43" count="49" type="stmt"/>
+        <line num="46" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="47" count="3" type="stmt"/>
+        <line num="49" count="5" type="stmt"/>
+        <line num="51" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="55" count="5" type="stmt"/>
       </file>
       <file name="fileUpload.controller.ts" path="C:\Users\seiya\OneDrive\Documents\Github\SkillDraft\Backend\src\controllers\fileUpload.controller.ts">
         <metrics statements="5" coveredstatements="0" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>

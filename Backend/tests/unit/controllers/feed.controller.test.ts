@@ -3,19 +3,49 @@ import { prisma } from '../../../src/config'
 import { generateFeed } from '../../../src/controllers/feed.controller'
 import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 
-jest.mock('../config', () => ({
-  prisma: {
-    follow: {
-      findMany: jest.fn()
-    },
-    regularPost: {
-      findMany: jest.fn()
-    },
-    offerPost: {
-      findMany: jest.fn()
+// Define interfaces for mock data structures
+interface FollowedUser {
+  id: string;
+}
+
+interface MockFollow {
+  followed: FollowedUser;
+}
+
+interface MockRegularPost {
+  id: string;
+  posterId: string;
+  content: string;
+  createdAt: Date;
+  poster: { id: string; username?: string };
+  type?: string;
+}
+
+interface MockOfferPost {
+  id: string;
+  teamId: string;
+  title: string;
+  createdAt: Date;
+  team: { id: string; teamname?: string };
+  type?: string;
+}
+
+// Mock with simpler approach
+jest.mock('../../../src/config', () => {
+  return {
+    prisma: {
+      follow: {
+        findMany: jest.fn()
+      },
+      regularPost: {
+        findMany: jest.fn()
+      },
+      offerPost: {
+        findMany: jest.fn()
+      }
     }
   }
-}))
+})
 
 describe('Feed Controller', () => {
   beforeEach(() => {
@@ -27,13 +57,13 @@ describe('Feed Controller', () => {
     const userId = 'user-123'
     const followedUser1 = 'user-456'
     const followedUser2 = 'user-789'
-    
-    const mockFollowings = [
+
+    const mockFollowings: MockFollow[] = [
       { followed: { id: followedUser1 } },
       { followed: { id: followedUser2 } }
     ]
-    
-    const mockRegularPosts = [
+
+    const mockRegularPosts: MockRegularPost[] = [
       {
         id: 'post-1',
         posterId: userId,
@@ -49,28 +79,41 @@ describe('Feed Controller', () => {
         poster: { id: followedUser1 }
       }
     ]
-    
-    const mockOfferPosts = [
+
+    const mockOfferPosts: MockOfferPost[] = [
       {
         id: 'offer-1',
         teamId: followedUser2,
-        title: 'Job offer',
+        title: 'Followed user 2 offer',
         createdAt: new Date('2023-03-03'),
         team: { id: followedUser2 }
+      },
+      {
+        id: 'offer-2',
+        teamId: userId,
+        title: 'Self offer',
+        createdAt: new Date('2023-03-04'),
+        team: { id: userId }
       }
     ]
 
-    // Set up mocks
-    ;(prisma.follow.findMany as jest.Mock).mockResolvedValue(mockFollowings)
-    ;(prisma.regularPost.findMany as jest.Mock).mockResolvedValue(mockRegularPosts)
-    ;(prisma.offerPost.findMany as jest.Mock).mockResolvedValue(mockOfferPosts)
+    // Set up mocks - use type assertion to any
+    ;(prisma.follow.findMany as jest.Mock<any>).mockResolvedValue(
+      mockFollowings
+    )
+    ;(prisma.regularPost.findMany as jest.Mock<any>).mockResolvedValue(
+      mockRegularPosts
+    )
+    ;(prisma.offerPost.findMany as jest.Mock<any>).mockResolvedValue(
+      mockOfferPosts
+    )
 
     // Set up request and response
     const req = {
       params: { userId },
       query: { limit: '10' }
     } as unknown as Request
-    
+
     const res = {
       json: jest.fn()
     } as unknown as Response
@@ -96,14 +139,15 @@ describe('Feed Controller', () => {
       orderBy: { createdAt: 'desc' }
     })
 
-    // Check response
+    // Sort posts by date, newest first, just like the controller would
+    const allPosts = [
+      ...mockRegularPosts.map(p => ({ ...p, type: 'regular' })),
+      ...mockOfferPosts.map(p => ({ ...p, type: 'offer' }))
+    ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    // Check response with correctly sorted posts
     expect(res.json).toHaveBeenCalledWith({
-      posts: [
-        // Should be sorted by date (newest first)
-        { ...mockOfferPosts[0], type: 'offer' },
-        { ...mockRegularPosts[1], type: 'regular' },
-        { ...mockRegularPosts[0], type: 'regular' }
-      ],
+      posts: allPosts,
       nextCursor: null,
       hasMore: false
     })
@@ -112,39 +156,46 @@ describe('Feed Controller', () => {
   it('should handle pagination with cursor and limit', async () => {
     // Mock data for pagination testing
     const userId = 'user-123'
-    const mockFollowings = []
-    
+    // Fix this line specifically mentioned in the error:
+    const mockFollowings: MockFollow[] = []
+
     // Create 15 mock posts with sequential dates for easy testing
-    const mockRegularPosts = Array.from({ length: 10 }, (_, i) => ({
+    const mockRegularPosts: MockRegularPost[] = Array.from({ length: 10 }, (_, i) => ({
       id: `post-${i + 1}`,
       posterId: userId,
       content: `Content ${i + 1}`,
       createdAt: new Date(`2023-03-${15 - i}`), // Newest first
       poster: { id: userId, username: 'self' }
     }))
-    
-    const mockOfferPosts = Array.from({ length: 5 }, (_, i) => ({
+
+    const mockOfferPosts: MockOfferPost[] = Array.from({ length: 5 }, (_, i) => ({
       id: `offer-${i + 1}`,
       teamId: userId,
       title: `Offer ${i + 1}`,
       createdAt: new Date(`2023-03-${20 - i}`), // Newest first
       team: { id: userId, teamname: 'self' }
     }))
-
+    
     // Set up mocks
-    ;(prisma.follow.findMany as jest.Mock).mockResolvedValue(mockFollowings)
-    ;(prisma.regularPost.findMany as jest.Mock).mockResolvedValue(mockRegularPosts)
-    ;(prisma.offerPost.findMany as jest.Mock).mockResolvedValue(mockOfferPosts)
+    ;(prisma.follow.findMany as jest.Mock<any>).mockResolvedValue(
+      mockFollowings  // This line is mentioned in the error
+    )
+    ;(prisma.regularPost.findMany as jest.Mock<any>).mockResolvedValue(
+      mockRegularPosts
+    )
+    ;(prisma.offerPost.findMany as jest.Mock<any>).mockResolvedValue(
+      mockOfferPosts
+    )
 
     // Set up request with cursor and limit
     const req = {
       params: { userId },
-      query: { 
+      query: {
         cursor: 'offer-3', // Start after this post
-        limit: '5'         // Get only 5 posts
+        limit: '5' // Get only 5 posts
       }
     } as unknown as Request
-    
+
     const res = {
       json: jest.fn()
     } as unknown as Response
@@ -155,9 +206,11 @@ describe('Feed Controller', () => {
     // offer-1, offer-2, offer-3, offer-4, offer-5, post-1, post-2, ...
     // With cursor 'offer-3', we should get offer-4, offer-5, post-1, post-2, post-3
 
-    const allSortedPosts = [
-      ...mockOfferPosts.map(p => ({ ...p, type: 'offer' })),
-      ...mockRegularPosts.map(p => ({ ...p, type: 'regular' }))
+    type CombinedPost = (MockRegularPost | MockOfferPost) & { type: string };
+    
+    const allSortedPosts: CombinedPost[] = [
+      ...mockOfferPosts.map(p => ({ ...p, type: 'offer' } as CombinedPost)),
+      ...mockRegularPosts.map(p => ({ ...p, type: 'regular' } as CombinedPost))
     ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
     const cursorIndex = allSortedPosts.findIndex(post => post.id === 'offer-3')
@@ -167,37 +220,44 @@ describe('Feed Controller', () => {
     // Check response
     expect(res.json).toHaveBeenCalledWith({
       posts: expectedPosts,
-      nextCursor: expectedNextCursor, 
+      nextCursor: expectedNextCursor,
       hasMore: true
     })
   })
 
   it('should handle the case when there are no more posts after the current page', async () => {
     const userId = 'user-123'
-    const mockFollowings = []
-    
+    // Fix this line specifically mentioned in the error:
+    const mockFollowings: MockFollow[] = []
+
     // Only 3 posts total
-    const mockRegularPosts = Array.from({ length: 3 }, (_, i) => ({
+    const mockRegularPosts: MockRegularPost[] = Array.from({ length: 3 }, (_, i) => ({
       id: `post-${i + 1}`,
       posterId: userId,
       content: `Content ${i + 1}`,
       createdAt: new Date(`2023-03-${3 - i}`),
       poster: { id: userId, username: 'self' }
     }))
-    
-    const mockOfferPosts = []
 
+    const mockOfferPosts: MockOfferPost[] = []
+    
     // Set up mocks
-    ;(prisma.follow.findMany as jest.Mock).mockResolvedValue(mockFollowings)
-    ;(prisma.regularPost.findMany as jest.Mock).mockResolvedValue(mockRegularPosts)
-    ;(prisma.offerPost.findMany as jest.Mock).mockResolvedValue(mockOfferPosts)
+    ;(prisma.follow.findMany as jest.Mock<any>).mockResolvedValue(
+      mockFollowings
+    )
+    ;(prisma.regularPost.findMany as jest.Mock<any>).mockResolvedValue(
+      mockRegularPosts
+    )
+    ;(prisma.offerPost.findMany as jest.Mock<any>).mockResolvedValue(
+      mockOfferPosts
+    )
 
     // Set up request with limit of 5 (more than our total of 3)
     const req = {
       params: { userId },
       query: { limit: '5' }
     } as unknown as Request
-    
+
     const res = {
       json: jest.fn()
     } as unknown as Response
@@ -216,15 +276,15 @@ describe('Feed Controller', () => {
     const userId = 'user-123'
     
     // Set up mocks for empty results
-    ;(prisma.follow.findMany as jest.Mock).mockResolvedValue([])
-    ;(prisma.regularPost.findMany as jest.Mock).mockResolvedValue([])
-    ;(prisma.offerPost.findMany as jest.Mock).mockResolvedValue([])
+    ;(prisma.follow.findMany as jest.Mock<any>).mockResolvedValue([])
+    ;(prisma.regularPost.findMany as jest.Mock<any>).mockResolvedValue([])
+    ;(prisma.offerPost.findMany as jest.Mock<any>).mockResolvedValue([])
 
     const req = {
       params: { userId },
       query: {}
     } as unknown as Request
-    
+
     const res = {
       json: jest.fn()
     } as unknown as Response
@@ -242,27 +302,29 @@ describe('Feed Controller', () => {
   it('should use default limit if not provided', async () => {
     const userId = 'user-123'
     const defaultLimit = 10
-    
+
     // Create more posts than the default limit
-    const mockRegularPosts = Array.from({ length: 15 }, (_, i) => ({
+    const mockRegularPosts: MockRegularPost[] = Array.from({ length: 15 }, (_, i) => ({
       id: `post-${i + 1}`,
       posterId: userId,
       content: `Content ${i + 1}`,
       createdAt: new Date(`2023-03-${15 - i}`),
       poster: { id: userId, username: 'self' }
-    }))
+    })) 
     
     // Set up mocks
-    ;(prisma.follow.findMany as jest.Mock).mockResolvedValue([])
-    ;(prisma.regularPost.findMany as jest.Mock).mockResolvedValue(mockRegularPosts)
-    ;(prisma.offerPost.findMany as jest.Mock).mockResolvedValue([])
+    ;(prisma.follow.findMany as jest.Mock<any>).mockResolvedValue([])
+    ;(prisma.regularPost.findMany as jest.Mock<any>).mockResolvedValue(
+      mockRegularPosts
+    )
+    ;(prisma.offerPost.findMany as jest.Mock<any>).mockResolvedValue([])
 
     // Request without specifying limit
     const req = {
       params: { userId },
       query: {}
     } as unknown as Request
-    
+
     const res = {
       json: jest.fn()
     } as unknown as Response
@@ -270,7 +332,9 @@ describe('Feed Controller', () => {
     await generateFeed(req, res)
 
     // Should return default limit (10) posts
-    const expectedPosts = mockRegularPosts.slice(0, defaultLimit).map(p => ({ ...p, type: 'regular' }))
+    const expectedPosts = mockRegularPosts
+      .slice(0, defaultLimit)
+      .map(p => ({ ...p, type: 'regular' }))
     const expectedNextCursor = expectedPosts[expectedPosts.length - 1].id
 
     expect(res.json).toHaveBeenCalledWith({
@@ -284,13 +348,15 @@ describe('Feed Controller', () => {
     const userId = 'user-123'
     
     // Mock to throw an error
-    ;(prisma.follow.findMany as jest.Mock).mockRejectedValue(new Error('Database error'))
+    ;(prisma.follow.findMany as jest.Mock<any>).mockRejectedValue(
+      new Error('Database error')
+    )
 
     const req = {
       params: { userId },
       query: {}
     } as unknown as Request
-    
+
     const res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn()
@@ -298,7 +364,7 @@ describe('Feed Controller', () => {
 
     // We need to add try/catch to the controller before testing this
     // This test will fail until error handling is added to the controller
-    
+
     try {
       await generateFeed(req, res)
       // If we get here without an error, the test should fail
