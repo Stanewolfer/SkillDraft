@@ -33,11 +33,6 @@ export default function FeedScreen() {
   const router = useRouter();
   const [feed, setFeed] = React.useState<{ posts: any[] }>({ posts: [] });
 
-  const logout = async () => {
-    await AsyncStorage.clear();
-    router.push("/");
-  };
-
   const generateFeed = async () => {
     try {
       const response = await fetch(

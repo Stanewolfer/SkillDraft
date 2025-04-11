@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native'
 import * as Unicons from '@iconscout/react-native-unicons'
 import { LinearGradient } from 'expo-linear-gradient'
 import { COLORS } from '../(tabs)/styles/colors'
+// eslint-disable-next-line import/no-unresolved
 import { styles } from '@/app/(tabs)/styles/postCardStyles'
 
 interface RegularPostCardProps {
@@ -36,12 +37,11 @@ export default function PostCard({
 
   return (
     <View>
-      {/* If there is a background image, display it */}
       {backgroundImage && (
       <>
         <Image
-        source={{ uri: backgroundImage }} // Set the background image source
-        resizeMode='cover' // Ensure the image covers the container
+        source={{ uri: backgroundImage }}
+        resizeMode='cover'
         />
       </>
       )}
@@ -67,14 +67,13 @@ export default function PostCard({
         </View>
       </View>
 
-      {/* If there is a background image, show an option to view images */}
       {backgroundImage && (
         <View>
         <Unicons.UilAirplay
-          size={18} // Icon size
-          color={COLORS.main_blue} // Icon color
+          size={18}
+          color={COLORS.main_blue}
         />
-        <Text>Regarder les images</Text> {/* Text to view images */}
+        <Text>Regarder les images</Text>
         </View>
       )}
 
@@ -82,7 +81,6 @@ export default function PostCard({
       <Text style={styles.postTitle}>{title}</Text>
       <Text style={styles.postDescription}>{description}</Text>
 
-      {/* Display action buttons */}
       <View>
         {backgroundImage ? (
         <View style={styles.buttonsContainer}>

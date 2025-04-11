@@ -8,12 +8,11 @@ import {
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Unicons from '@iconscout/react-native-unicons'
-import { Link, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { COLORS } from './styles/colors'
 
 import { styles } from './styles/indexStyles'
 import CustomStackScreen from '../components/CustomStackScreen'
-import { ThemedText } from '@/components/ThemedText'
 LogBox.ignoreLogs([
   'Warning: UilSignin: Support for defaultProps will be removed from function components',
   'Warning: UilUser: Support for defaultProps will be removed from function components'
@@ -60,7 +59,7 @@ function HomeScreen() {
     }
 
     checkUserSession()
-  }, [])
+  })
 
   return (
     <>

@@ -17,7 +17,7 @@ const minimalHeaderTitlesMap: { [key: string]: string } = {
   notifications: "Notifications",
   profile: "Mon Profil",
   messaging: "Messagerie",
-  skilldraft: "Bienvenur sur Skilldraft !",
+  skilldraft: "Bienvenue sur Skilldraft !",
 };
 
 export default function CustomStackScreen({ title }: CustomStackScreenProps) {
@@ -88,14 +88,13 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
                 alignItems: "center",
                 backgroundColor: COLORS.background_blue,
                 borderRadius: 25,
-                paddingHorizontal: 30,
-                paddingVertical: 5,
+                paddingHorizontal: 10,
+                paddingVertical: 1,
               }}
             >
               <Unicons.UilSearch color={COLORS.main_blue} size={20} />
               <TextInput
                 style={{
-                  marginLeft: 8,
                   color: COLORS.main_blue,
                   fontSize: 14,
                   flex: 1,
@@ -109,12 +108,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
           ),
         headerLeft: () =>
           title.toLowerCase() === "skilldraft" ? null : isMinimalHeader ? (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{ marginLeft: 5 }}
-            >
-              <Unicons.UilArrowLeft size={24} color={COLORS.background_blue} />
-            </TouchableOpacity>
+            null
           ) : (
             <TouchableOpacity
               onPress={() => router.push("/profile")}
@@ -130,7 +124,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
                 }}
                 style={{ width: 32, height: 32, borderRadius: 16 }}
               />
-              <View style={{ marginLeft: 8 }}>
+              <View style={{ marginLeft: 8, marginRight: 12 }}>
                 <Text
                   style={{
                     fontWeight: "bold",
@@ -158,7 +152,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
               onPress={() => router.push("/notifications")}
               style={{ marginRight: 5 }}
             >
-              <View style={{ position: "relative" }}>
+              <View style={{ position: "relative", marginLeft: 12 }}>
                 <Unicons.UilBell size={24} color={COLORS.background_blue} />
                 {notificationsCount > 0 && (
                   <View

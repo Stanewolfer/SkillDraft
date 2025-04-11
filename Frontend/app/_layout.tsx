@@ -1,5 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+// eslint-disable-next-line import/no-unresolved
 import "@/global.css";
+// eslint-disable-next-line import/no-unresolved
 import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { useFonts } from 'expo-font';
 import { Stack, useSegments } from 'expo-router';
@@ -8,6 +10,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
+// eslint-disable-next-line import/no-unresolved
 import { useColorScheme } from '@/hooks/useColorScheme';
 import React from 'react';
 import { BottomNavbar } from './components/BottomNavbar';
