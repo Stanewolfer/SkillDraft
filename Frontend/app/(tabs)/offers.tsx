@@ -1,18 +1,13 @@
 import React from 'react'
-import { useRouter } from 'expo-router'
 import {
   ScrollView,
   View,
   Text,
-  StyleSheet,
-  TouchableOpacity
+  StyleSheet
 } from 'react-native'
-import * as Unicons from '@iconscout/react-native-unicons'
 import { COLORS } from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import OfferCard from '../components/OfferCard'
-import { BottomNavbar } from '../components/BottomNavbar'
 
 export default function Offers() {
   return (
