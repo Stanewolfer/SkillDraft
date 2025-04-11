@@ -35,8 +35,6 @@ model User {
   // Follow teams
   teamFollows TeamFollow[]
 
-  // Feed
-  feed FeedItem[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -103,21 +101,6 @@ model TeamFollow {
   @@unique([userId, teamId])
 }
 
-// Feed
-model FeedItem {
-  id String @id @default(uuid())
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
-
-  contentType String
-  contentId   String
-
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  @@index([userId, createdAt(sort: Desc)])
-}
 
 model RegularPost {
   id          String @id @default(uuid())
