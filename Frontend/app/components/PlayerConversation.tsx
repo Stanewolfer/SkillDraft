@@ -20,7 +20,7 @@ export default function PlayerConversation(PlayerConversationProps: PlayerConver
           <View style={styles.informations}>
               <View style={styles.profile}>
                   <Text style={styles.title}>{pseudonym || 'Pseudonyme'}</Text>
-                  <Text style={styles.teamTitle}>[ {team || 'Equipe'} ]</Text>
+                  <Text style={styles.teamTitle}>[ {team || 'Aucune équipe'} ]</Text>
               </View>
               <Text style={styles.lastMessage}>{lastMessage || 'Lorem Ipsum'}</Text>
               <Text style={styles.dateText}>{date || '01/12'}</Text>

@@ -2,7 +2,6 @@ import React, { useEffect } from 'react'
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
   ScrollView,
   Image
@@ -12,6 +11,7 @@ import { Button, NativeBaseProvider } from 'native-base'
 import { useSearchParams } from 'expo-router/build/hooks'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import CustomStackScreen from '../components/CustomStackScreen'
+import { styles } from './styles/messageStyles'
 
 const Messaging = () => {
   const conversationId = useSearchParams().get('conversationId')
@@ -51,6 +51,18 @@ const Messaging = () => {
     }
   }
 
+  const groupMessagesByDate = (messages: Message[]) => {
+    const groups = messages.reduce((acc: { [key: string]: Message[] }, message) => {
+      const date = new Date(message.createdAt).toLocaleDateString('fr-FR');
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(message);
+      return acc;
+    }, {});
+    return groups;
+  };
+
   const sendMessage = async () => {
     try {
       const response = await fetch(
@@ -83,6 +95,8 @@ const Messaging = () => {
     fetchMessages()
   }, [])
 
+  const messageGroups = groupMessagesByDate(messages);
+
   return (
     <>
       <CustomStackScreen title={otherUsername || 'Utilisateur inconnu'} />
@@ -96,47 +110,64 @@ const Messaging = () => {
             <Text>Aucun message pour le moment.</Text>
           ) : (
             <ScrollView style={styles.messagesContainer}>
-              {messages.map(message => (
-                <View key={message.id} style={styles.message}>
-                  <Text>{message.content}</Text>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      marginBottom: 5
-                    }}
-                  >
-                    <Image
-                      source={{ uri: message.sender.avatarUrl }}
-                      style={{
-                        width: 24,
-                        height: 24,
-                        borderRadius: 12,
-                        marginRight: 5
-                      }}
-                    />
-                    <Text style={{ fontSize: 10, color: COLORS.background_blue }}>
-                      {message.sender.username}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 10,
-                        color: COLORS.background_blue,
-                        marginLeft: 5
-                      }}
+              {Object.entries(messageGroups).map(([date, dateMessages]) => (
+                <View key={date} style={styles.dateGroup}>
+                  <View style={styles.dateHeader}>
+                    <Text style={styles.dateText}>{date}</Text>
+                  </View>
+                  
+                  {dateMessages.map(message => (
+                    <View
+                      key={message.id}
+                      style={
+                        message.sender.username === otherUsername
+                          ? styles.messageWrapperOther
+                          : styles.messageWrapperMe
+                      }
                     >
-                      {new Date(message.createdAt).toLocaleDateString(
-                        'fr-FR',
-                        {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
+                      <Image
+                        source={{ uri: message.sender.avatarUrl }}
+                        style={styles.profilePic}
+                      />
+                      <View
+                        style={
+                          message.sender.username === otherUsername
+                            ? styles.messageContentOther
+                            : styles.messageContentMe
+                        }
+                      >
+                        <Text
+                          style={
+                            message.sender.username === otherUsername
+                              ? {
+                                  color: COLORS.main_blue,
+                                  fontSize: 15,
+                                  paddingHorizontal: 10
+                                }
+                              : {
+                                  fontSize: 15,
+                                  paddingHorizontal: 10
+                                }
+                          }
+                        >
+                          {message.content}
+                        </Text>
+                      </View>
+                      <Text
+                        style={{
+                          color: COLORS.main_blue,
+                          fontSize: 12,
+                          marginTop: 5,
+                          marginHorizontal: 5
+                        }}
+                      >
+                        {new Date(message.createdAt).toLocaleTimeString('fr-FR', {
                           hour: '2-digit',
                           minute: '2-digit'
-                        }
-                      )}
-                    </Text>
-                  </View>
+                        })}
+                      </Text>
+                    </View>
+                  ))}
                 </View>
               ))}
             </ScrollView>
@@ -150,10 +181,10 @@ const Messaging = () => {
             value={messageContent}
             onChangeText={text => setMessageContent(text)}
             multiline={true}
-            onKeyPress={(e) => {
+            onKeyPress={e => {
               if (e.nativeEvent.key === 'Enter') {
-                e.preventDefault();
-                sendMessage();
+                e.preventDefault()
+                sendMessage()
               }
             }}
           />
@@ -165,61 +196,5 @@ const Messaging = () => {
     </>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.background_blue,
-    paddingBottom: 60,
-    borderWidth: 1,
-    borderColor: COLORS.main_blue
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: COLORS.main_blue,
-    textAlign: 'center'
-  },
-  messagesContainer: {
-    flex: 1,
-    width: '100%',
-    padding: 10,
-    marginTop: 10
-  },
-  message: {
-    backgroundColor: COLORS.main_blue,
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 8
-  },
-  inputContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    backgroundColor: COLORS.background_blue
-  },
-  inputWrapper: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: COLORS.main_blue,
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    marginRight: 10,
-    color: COLORS.main_blue
-  },
-  sendButton: {
-    backgroundColor: COLORS.main_blue,
-    padding: 10,
-    alignItems: 'center',
-    borderRadius: 8
-  }
-})
 
 export default Messaging
