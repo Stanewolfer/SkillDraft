@@ -19,5 +19,5 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "nativewind-env.d.ts"
-, "app/(tabs)/styles/indexStyles.js"  ]
+, "app/(tabs)/styles/indexStyles.js", "jest.config.js", "jest.setup.js"  ]
 }

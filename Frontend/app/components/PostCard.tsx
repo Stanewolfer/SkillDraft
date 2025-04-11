@@ -54,10 +54,10 @@ export default function PostCard({
         />
         <View>
         <View>
-          <Text style={styles.nameTitle}>{poster.username}</Text> {/* Display the poster's username */}
+          <Text style={styles.nameTitle}>{poster.username}</Text> 
           {poster.isVerified && (
           <View>
-            <Text>✔</Text> {/* Display a checkmark if the user is verified */}
+            <Text>✔</Text>
           </View>
           )}
         </View>
@@ -82,23 +82,6 @@ export default function PostCard({
       <Text style={styles.postDescription}>{description}</Text>
 
       <View>
-        {backgroundImage ? (
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity>
-            <Unicons.UilHeart size={25} color={COLORS.main_blue} /> {/* Like button */}
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Unicons.UilCommentAlt size={25} color={COLORS.main_blue} /> {/* Comment button */}
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Unicons.UilRepeat size={25} color={COLORS.main_blue} /> {/* Repost button */}
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Unicons.UilCornerUpRight size={25} color={COLORS.main_blue} /> {/* Share button */}
-          </TouchableOpacity>
-        </View>
-        ) : (
-        // Buttons for posts without images
         <View style={styles.buttonsContainer}>
           <TouchableOpacity>
           <Unicons.UilHeart size={25} color={COLORS.main_blue} /> {/* Like button */}
@@ -113,10 +96,9 @@ export default function PostCard({
           <Unicons.UilCornerUpRight size={25} color={COLORS.main_blue} /> {/* Share button */}
           </TouchableOpacity>
         </View>
-        )}
       </View>
       </View>
-      <View /> {/* Empty view for spacing or layout purposes */}
+      <View />
     </View>
   )
 }
