@@ -5,5 +5,6 @@ export const mailboxStyles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.background_blue,
+        
     },
 })

@@ -65,7 +65,6 @@ export default function Notification() {
           />
         ))}
       </ScrollView>
-      <BottomNavbar />
     </>
   );
 }

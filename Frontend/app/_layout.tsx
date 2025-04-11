@@ -11,8 +11,8 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import React from 'react';
 import { BottomNavbar } from './components/BottomNavbar';
+import { NavScreen } from './components/BottomNavbar';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -47,7 +47,7 @@ export default function RootLayout() {
         {!mustShow.some((item) => segments.includes(item)) ? (
           null
         ) : (
-          <BottomNavbar /> 
+          <BottomNavbar activeTab={mustShow.includes(segments[1]) ? (segments[1] as NavScreen) : undefined} />
         )}
       </ThemeProvider></GluestackUIProvider>
   );

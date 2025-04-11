@@ -47,9 +47,10 @@ export default function PostCard({
       )}
       <View style={styles.cardWrapper}>
       {/* Display poster information */}
-      <View>
+      <View style={styles.posterInfo}>
         <Image
         source={{ uri: poster.avatarUrl }}
+        style={styles.avatar} // Style for the avatar image
         />
         <View>
         <View>
@@ -78,8 +79,8 @@ export default function PostCard({
       )}
 
       {/* Display the post title and description */}
-      <Text>{title}</Text>
-      <Text>{description}</Text>
+      <Text style={styles.postTitle}>{title}</Text>
+      <Text style={styles.postDescription}>{description}</Text>
 
       {/* Display action buttons */}
       <View>

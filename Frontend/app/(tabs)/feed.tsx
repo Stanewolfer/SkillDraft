@@ -84,7 +84,6 @@ export default function FeedScreen() {
               return <OfferPostCard key={index} />;
             }
           })}
-        <BottomNavbar />
       </ScrollView>
     </>
   );
