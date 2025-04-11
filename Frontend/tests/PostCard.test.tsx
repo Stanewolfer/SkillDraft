@@ -7,10 +7,10 @@ const mockPost = {
   id: '123',
   title: 'Titre du post',
   description: 'Description du post.',
-  imageList: ['https://placekitten.com/200/300'],
+  imageList: ['https://cdn.futura-sciences.com/sources/images/dossier/773/01-intro-773.jpg'],
   poster: {
     username: 'OS_XIV',
-    avatarUrl: 'https://placekitten.com/100/100',
+    avatarUrl: 'https://cdn.futura-sciences.com/sources/images/dossier/773/01-intro-773.jpg',
     teamName: 'OS Team',
     isVerified: true,
   },
