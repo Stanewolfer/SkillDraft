@@ -15,7 +15,8 @@ export default function OfferCard({
   logoUrl = 'https://pbs.twimg.com/profile_images/1864400903316389888/61aizUvr_400x400.jpg',
   orgName = 'Team Name',
   gameName = 'Game',
-  description = `Text Description`
+  description = `Text Description`,
+  colorTeam = '#fff'
 }) {
   return (
     <ImageBackground
@@ -35,7 +36,12 @@ export default function OfferCard({
           <View style={styles.offerCardInfo}>
             <View style={styles.offerCardTitleRow}>
               <Text style={styles.offerCardTitle}>{orgName}</Text>
-              <View style={styles.offerCardVerified}>
+              <View
+                style={[
+                  styles.offerCardVerified,
+                  { backgroundColor: colorTeam }
+                ]}
+              >
                 <Text style={styles.offerCardVerifiedText}>✔</Text>
               </View>
             </View>
@@ -98,7 +104,6 @@ const styles = StyleSheet.create({
     color: COLORS.text_white
   },
   offerCardVerified: {
-    backgroundColor: '#B8F600',
     width: 18,
     height: 18,
     borderRadius: 9,

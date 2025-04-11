@@ -5,5 +5,7 @@ export const COLORS = {
     text_white: '#FFFFFF', // Blanc
     dark_main_blue: '#2F4047', // Bleu foncé
 
-    gentle_mates: '#B8F600' // Gentle Mates
+    gentle_mates: '#B8F600', // Gentle Mates
+    vitality: '#FFC72C', // Vitality
+    karmine_corp: '#126EAC' // Karmine Corp
 };
