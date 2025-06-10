@@ -12,8 +12,9 @@ export const styles = StyleSheet.create({
 
     nameTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontWeight: '300',
         color: COLORS.text_white,
+        marginBottom: 2,
     },
 
     buttonsContainer: {

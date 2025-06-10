@@ -75,8 +75,10 @@ export default function PostCard({
         </View>
       )}
 
-      <Text>{title}</Text>
-      <Text>{description}</Text>
+      <View style={{ height: 1, backgroundColor: COLORS.main_blue, marginVertical: 10 }} />
+
+      <Text style={{ color: COLORS.text_white, fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>{title}</Text>
+      <Text style={{ color: COLORS.text_white, marginBottom: 5 }}>{description}</Text>
 
       <View>
         <View style={styles.buttonsContainer}>
