@@ -60,7 +60,8 @@ export const updateTeam = async (
       dataToUpdate.ceoFirstName = updateData.ceoFirstName
     if (updateData.ceoLastName !== undefined)
       dataToUpdate.ceoLastName = updateData.ceoLastName
-    if (updateData.email !== undefined) dataToUpdate.email = updateData.email
+    if (updateData.email !== undefined)
+      dataToUpdate.email = updateData.email
     if (updateData.description !== undefined)
       dataToUpdate.description = updateData.description
     if (updateData.teamColor !== undefined)
@@ -70,6 +71,11 @@ export const updateTeam = async (
 
     if (updateData.password) {
       dataToUpdate.password = await bcrypt.hash(updateData.password, 10)
+    }
+
+    // Gestion de l'upload de logo
+    if (req.file) {
+      dataToUpdate.logoUrl = req.file.filename
     }
 
     if (Object.keys(dataToUpdate).length === 0) {

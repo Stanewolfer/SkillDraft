@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import { prisma } from '../config'
-import { uploadFile } from './fileUpload.controller'
 
 // Récupération de tous les posts en BDD
 export const getPosts = async (req: Request, res: Response): Promise<void> => {
@@ -81,55 +80,26 @@ export const getPostsByPosterId = async (
 }
 
 // Création d'un post
-export const createPost = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const createPost = async (req: Request, res: Response): Promise<void> => {
+  const type = req.header('type')
+  const { posterId, description, title } = req.body
+
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[]
+  }
+
+  const imageList = files?.images?.map(file => `/uploads/${file.filename}`) || []
+
   try {
-    // Récupérer le type depuis le body au lieu du header
-    const { posterId, description, title, type } = req.body
-
-    // Validation des champs requis
-    if (!posterId || !description || !title || !type) {
-      res.status(400).json({
-        message: 'Missing required fields',
-        required: ['posterId', 'description', 'title', 'type']
-      })
-      return
-    }
-
-    // Validation du type
-    if (type !== 'regular' && type !== 'offer') {
-      res
-        .status(400)
-        .json({ message: 'Invalid post type. Must be "regular" or "offer"' })
-      return
-    }
-
-    // Gestion des fichiers uploadés
-    let imageList: string[] = []
-    if (req.files && Array.isArray(req.files)) {
-      for (const file of req.files) {
-        try {
-          const fileData = await uploadFile(file as unknown as Request)
-          if (fileData && fileData.url) {
-            imageList.push(fileData.url)
-          }
-        } catch (uploadError) {
-          console.error('Error uploading file:', uploadError)
-        }
-      }
-    }
-
     let newPost
 
     if (type === 'regular') {
       newPost = await prisma.regularPost.create({
         data: {
-          description,
-          imageList,
-          title,
           posterId,
+          description,
+          title,
+          imageList,
           likes: 0,
           likesList: [],
           reposts: 0,
@@ -140,60 +110,49 @@ export const createPost = async (
     } else if (type === 'offer') {
       newPost = await prisma.offerPost.create({
         data: {
-          description,
           teamId: posterId,
+          description,
           title,
           imageList,
           applyingUserList: []
         }
       })
+    } else {
+      res.status(400).json({ message: 'Invalid post type' })
+      return
     }
 
     res.status(201).json(newPost)
   } catch (error) {
-    console.error('Error creating post:', error)
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
-    res
-      .status(500)
-      .json({ message: 'Internal Server Error', error: errorMessage })
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    res.status(500).json({ message: 'Internal Server Error', error: errorMessage })
   }
 }
 
-// Suppression d'un post
-export const deletePost = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const postId = req.params.id
+// suppression d'un post
+export const deletePost = async (req: Request, res: Response): Promise<void> => {
+  const postId = req.params.id;
 
   try {
     // Vérifier si le post existe dans l'une des deux tables
-    const regularPost = await prisma.regularPost.findUnique({
-      where: { id: postId }
-    })
-    const offerPost = await prisma.offerPost.findUnique({
-      where: { id: postId }
-    })
+    const regularPost = await prisma.regularPost.findUnique({ where: { id: postId } });
+    const offerPost = await prisma.offerPost.findUnique({ where: { id: postId } });
 
     if (!regularPost && !offerPost) {
-      res.status(404).json({ message: 'Post not found' })
-      return
+      res.status(404).json({ message: 'Post not found' });
+      return;
     }
 
     // Supprimer dans la table correspondante
     if (regularPost) {
-      await prisma.regularPost.delete({ where: { id: postId } })
+      await prisma.regularPost.delete({ where: { id: postId } });
     } else {
-      await prisma.offerPost.delete({ where: { id: postId } })
+      await prisma.offerPost.delete({ where: { id: postId } });
     }
 
-    res.json({ message: 'Post deleted successfully' })
+    res.json({ message: 'Post deleted successfully' });
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    res
-      .status(500)
-      .json({ message: 'Internal Server Error', error: errorMessage })
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    res.status(500).json({ message: 'Internal Server Error', error: errorMessage });
   }
-}
+};

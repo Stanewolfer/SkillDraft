@@ -8,183 +8,207 @@ datasource db {
 }
 
 model User {
-  id               String         @id @default(uuid())
-  username         String         @unique
-  firstName        String
-  lastName         String
-  email            String         @unique
-  password         String         // Password will be hashed
-  description      String?
-  avatarUrl        String?
-  
+  id          String  @id @default(uuid())
+  username    String  @unique
+  firstName   String
+  lastName    String
+  email       String  @unique
+  password    String // Password will be hashed
+  description String?
+  avatarUrl   String?
+  bannerUrl   String?
+  isVerified  Boolean @default(false)
+
   // Relations
-  team             Team?          @relation(fields: [teamId], references: [id])
-  teamId           String?
-  
+  team   Team?   @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  teamId String?
+
   // Posts et contenus
-  posts            RegularPost[]
-  notifications    Notification[]
-  sentMessages     Message[]      @relation("SenderMessages")
-  receivedMessages Message[]      @relation("ReceiverMessages")
-  
+  posts         RegularPost[]
+  notifications Notification[]
+  sentMessages  Message[]      @relation("SenderMessages")
+
   // Système de follow
-  followedBy       Follow[]       @relation("Follower")
-  following        Follow[]       @relation("Following")
-  
+  followedBy Follow[] @relation("Follower")
+  following  Follow[] @relation("Following")
+
   // Follow teams
-  teamFollows      TeamFollow[]
+  teamFollows TeamFollow[]
 
-  // Feed
-  feed             FeedItem[]
 
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Comment   Comment[]
+
+  conversationsAsUser1 Conversation[] @relation("User1")
+  conversationsAsUser2 Conversation[] @relation("User2")
 }
 
 model Team {
-  id           String       @id @default(uuid())
-  teamname     String       @unique
+  id           String  @id @default(uuid())
+  teamname     String  @unique
   ceoFirstName String
   ceoLastName  String
-  email        String       @unique
+  email        String  @unique
   password     String
   description  String?
   rosterList   Json?
   teamColor    String
   logoUrl      String?
-  
-  // Relations
-  members      User[]
-  offerPosts   OfferPost[]
-  
-  // Followers
-  followers    TeamFollow[]
+  isVerified   Boolean @default(false)
+  bannerUrl    String?
 
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  // Relations
+  members    User[]
+  offerPosts OfferPost[]
+
+  // Followers
+  followers TeamFollow[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Conversation Conversation[]
 }
 
 // Relation many-to-many entre utilisateurs (follow)
 model Follow {
-  id          String   @id @default(uuid())
-  
-  follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
-  followerId  String
-  
-  followed    User     @relation("Follower", fields: [followedId], references: [id], onDelete: Cascade)
-  followedId  String
-  
-  createdAt   DateTime @default(now())
-  
+  id String @id @default(uuid())
+
+  follower   User   @relation("Following", fields: [followerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  followerId String
+
+  followed   User   @relation("Follower", fields: [followedId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  followedId String
+
+  createdAt DateTime @default(now())
+
   @@unique([followerId, followedId])
 }
 
 // Relation many-to-many entre utilisateurs et équipes
 model TeamFollow {
-  id        String   @id @default(uuid())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  
-  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId    String
-  
+  id String @id @default(uuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  teamId String
+
   createdAt DateTime @default(now())
-  
+
   @@unique([userId, teamId])
 }
 
-// Feed
-model FeedItem {
-  id            String   @id @default(uuid())
-  
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String
-  
-  contentType   String
-  contentId     String
-  
-  isRead        Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  
-  @@index([userId, createdAt(sort: Desc)])
-}
 
 model RegularPost {
-  id          String   @id @default(uuid())
+  id          String @id @default(uuid())
   title       String
-  description String
+  description String @db.Text
+
   imageList   Json?
-  likes       Int      @default(0)
+  likes       Int    @default(0)
   likesList   Json?
-  reposts     Int      @default(0)
+  reposts     Int    @default(0)
   repostsList Json?
   comments    Json?
-  
-  poster      User     @relation(fields: [posterId], references: [id], onDelete: Cascade)
-  posterId    String
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  poster   User   @relation(fields: [posterId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  posterId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model OfferPost {
-  id               String    @id @default(uuid())
+  id               String @id @default(uuid())
   title            String
   description      String
   imageList        Json?
   applyingUserList Json?
-  
-  team             Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  teamId           String
-  
-  messages         Message[]
 
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  teamId String
+
+  messages Message[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Comment   Comment[]
 }
 
-model Notification {
-  id               String   @id @default(uuid())
-  notificationType String
-  
-  receiver         User     @relation(fields: [receiverId], references: [id], onDelete: Cascade)
-  receiverId       String
+model Conversation {
+  id String @id @default(uuid())
 
-  createdAt        DateTime @default(now())
+  // Soit une conversation User <-> User
+  user1Id String?
+  user2Id String?
+  user1   User?   @relation("User1", fields: [user1Id], references: [id])
+  user2   User?   @relation("User2", fields: [user2Id], references: [id])
+
+  // Soit une conversation User <-> Team
+  teamId String?
+  team   Team?   @relation(fields: [teamId], references: [id])
+
+  lastMessage   Message? @relation(fields: [lastMessageid], references: [id])
+  lastMessageid String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Message {
-  id          String     @id @default(uuid())
-  content     String
-  
-  sender      User       @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  senderId    String
-  
-  receiver    User       @relation("ReceiverMessages", fields: [receiverId], references: [id], onDelete: Cascade)
-  receiverId  String
-  
-  offerPost   OfferPost? @relation(fields: [offerPostId], references: [id])
-  offerPostId String?
-  
+  id             String @id @default(uuid())
+  content        String
+  senderId       String
+  conversationId String
+
+  sender User @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  OfferPost   OfferPost? @relation(fields: [offerPostId], references: [id])
+  offerPostId String?
+
+  Conversation Conversation[]
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  content     String
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  offerPostId String
+  offerPost   OfferPost @relation(fields: [offerPostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Notification {
+  id               String @id @default(uuid())
+  notificationType String
+
+  receiver   User   @relation(fields: [receiverId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  receiverId String
+
+  createdAt DateTime @default(now())
 }
 
 model FastSearching {
-  id           String   @id @default(uuid())
+  id           String  @id @default(uuid())
   swiperId     String?
   acceptedList Json?
   refusedList  Json?
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Game {
-  id       String   @id @default(uuid())
-  gameName String   @unique
-  gameLogo String   @unique
-  
+  id       String @id @default(uuid())
+  gameName String @unique
+  gameLogo String @unique
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

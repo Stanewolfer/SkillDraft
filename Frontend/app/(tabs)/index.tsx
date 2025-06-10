@@ -1,10 +1,10 @@
+import 'setimmediate'
 import React, { useEffect, useState } from 'react'
 import {
   LogBox,
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Unicons from '@iconscout/react-native-unicons'
@@ -13,7 +13,6 @@ import { COLORS } from './styles/colors'
 
 import { styles } from './styles/indexStyles'
 import CustomStackScreen from '../components/CustomStackScreen'
-
 LogBox.ignoreLogs([
   'Warning: UilSignin: Support for defaultProps will be removed from function components',
   'Warning: UilUser: Support for defaultProps will be removed from function components'
@@ -22,7 +21,7 @@ LogBox.ignoreLogs([
 const IconUser = Unicons.UilSignin
 const IconSignIn = Unicons.UilUser
 
-export default function HomeScreen() {
+function HomeScreen() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
 
@@ -35,12 +34,12 @@ export default function HomeScreen() {
         if (userId) {
           console.log('Fast login instancié')
           const response = await fetch(
-            `${process.env.API_URL}/auth/fast-login/${userId}`,
+            `${process.env.EXPO_PUBLIC_API_URL}/auth/fast-login/${userId}`,
             {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                type // Will never be `null`
+                type
               }
             }
           )
@@ -60,11 +59,11 @@ export default function HomeScreen() {
     }
 
     checkUserSession()
-  }, [])
+  })
 
   return (
     <>
-      <CustomStackScreen title='Bienvenue sur Skilldraft' />
+      <CustomStackScreen title="Skilldraft" />
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Bienvenue sur Skilldraft !</Text>
@@ -94,3 +93,5 @@ export default function HomeScreen() {
     </>
   )
 }
+
+export default HomeScreen;

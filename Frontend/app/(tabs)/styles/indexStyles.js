@@ -55,5 +55,10 @@ export const styles = StyleSheet.create({
     cardTextInverted: {
       color: COLORS.main_blue,
     },
+    link: {
+      color: COLORS.link_yellow,
+      fontSize: 16,
+      fontWeight: '600',
+      marginBottom: 8,
+    }
   });
-  
