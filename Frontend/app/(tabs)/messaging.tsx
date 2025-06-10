@@ -1,38 +1,51 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import {
   View,
   Text,
   TextInput,
   ScrollView,
-  Image
+  Image,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native'
 import { COLORS } from './styles/colors'
 import { Button, NativeBaseProvider } from 'native-base'
 import { useSearchParams } from 'expo-router/build/hooks'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import CustomStackScreen from '../components/CustomStackScreen'
-import { styles } from './styles/messageStyles'
+import { messageStyles as styles } from './styles/messageStyles'
 
-const Messaging = () => {
+interface Message {
+  id: string
+  content: string
+  createdAt: string
+  updatedAt: string
+  sender: {
+    id: string
+    username: string
+    avatarUrl: string
+  }
+}
+
+const Messaging: React.FC = () => {
   const conversationId = useSearchParams().get('conversationId')
   const otherUsername = useSearchParams().get('otherUsername')
-  console.log('Messaging route params:', conversationId)
-  console.log('Other user :', otherUsername)
-  interface Message {
-    id: string
-    content: string
-    createdAt: string
-    updatedAt: string
-    sender: {
-      id: string
-      username: string
-      avatarUrl: string
-    }
-  }
 
-  const [messages, setMessages] = React.useState<Message[]>([])
-  const [messageContent, setMessageContent] = React.useState('')
-  const fetchMessages = async () => {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [messageContent, setMessageContent] = useState<string>('')
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+
+  const scrollViewRef = useRef<ScrollView>(null)
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      const userId = await AsyncStorage.getItem('userId')
+      setCurrentUserId(userId)
+    }
+    loadUserData()
+  }, [])
+
+  const fetchMessages = async (): Promise<void> => {
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/messages/get-messages/${conversationId}`,
@@ -44,31 +57,45 @@ const Messaging = () => {
         }
       )
       const data = await response.json()
-      console.log('Messages data:', data)
-      setMessages(data)
+      if (response.ok) {
+        setMessages(data.messages || [])
+      }
     } catch (error) {
       console.error('Error fetching messages:', error)
+      setMessages([])
+      console.error(
+        'Failed to fetch messages, setting messages to empty array.'
+      )
+      console.error(
+        'Error details:',
+        error instanceof Error ? error.message : error
+      )
     }
   }
 
-  const groupMessagesByDate = (messages: Message[]) => {
-    const groups = messages.reduce((acc: { [key: string]: Message[] }, message) => {
-      const date = new Date(message.createdAt).toLocaleDateString('fr-FR');
-      if (!acc[date]) {
-        acc[date] = [];
+  const groupMessagesByDate = (
+    messagesToGroup: Message[]
+  ): { [key: string]: Message[] } => {
+    return messagesToGroup.reduce((groups, message) => {
+      const date = new Date(message.createdAt).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+      if (!groups[date]) {
+        groups[date] = []
       }
-      acc[date].push(message);
-      return acc;
-    }, {});
-    return groups;
-  };
+      groups[date].push(message)
+      return groups
+    }, {} as Record<string, Message[]>)
+  }
 
-  const sendMessage = async () => {
+  const sendMessage = async (): Promise<void> => {
+    if (!messageContent.trim() || !conversationId || !currentUserId) return
+
     try {
       const response = await fetch(
-        `${
-          process.env.EXPO_PUBLIC_API_URL
-        }/messages/send/${await AsyncStorage.getItem('userId')}`,
+        `${process.env.EXPO_PUBLIC_API_URL}/messages/send/${currentUserId}`,
         {
           method: 'POST',
           headers: {
@@ -80,6 +107,7 @@ const Messaging = () => {
           })
         }
       )
+
       if (response.ok) {
         setMessageContent('')
         fetchMessages()
@@ -93,105 +121,141 @@ const Messaging = () => {
 
   useEffect(() => {
     fetchMessages()
-  }, [])
+    const interval = setInterval(fetchMessages, 60000)
+    return () => clearInterval(interval)
+  }, [conversationId])
 
-  const messageGroups = groupMessagesByDate(messages);
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true })
+    }
+  }, [messages])
+
+  const messageGroups = groupMessagesByDate(messages)
 
   return (
     <>
       <CustomStackScreen title={otherUsername || 'Utilisateur inconnu'} />
       <NativeBaseProvider>
-        <View style={styles.container}>
-          <Text style={styles.title}>
-            Bienvenue dans le début de votre conversation épique avec{' '}
-            {otherUsername} !
-          </Text>
-          {messages.length === 0 ? (
-            <Text>Aucun message pour le moment.</Text>
-          ) : (
-            <ScrollView style={styles.messagesContainer}>
-              {Object.entries(messageGroups).map(([date, dateMessages]) => (
-                <View key={date} style={styles.dateGroup}>
-                  <View style={styles.dateHeader}>
-                    <Text style={styles.dateText}>{date}</Text>
-                  </View>
-                  
-                  {dateMessages.map(message => (
-                    <View
-                      key={message.id}
-                      style={
-                        message.sender.username === otherUsername
-                          ? styles.messageWrapperOther
-                          : styles.messageWrapperMe
-                      }
-                    >
-                      <Image
-                        source={{ uri: message.sender.avatarUrl }}
-                        style={styles.profilePic}
-                      />
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        >
+          <View style={styles.container}>
+            <Text style={styles.title}>
+              Bienvenue dans le début de votre conversation épique avec{' '}
+              {otherUsername} !
+            </Text>
+
+            {messages.length === 0 ? (
+              <Text
+                style={{
+                  color: COLORS.main_blue,
+                  textAlign: 'center',
+                  marginTop: 20
+                }}
+              >
+                Aucun message pour le moment.
+              </Text>
+            ) : (
+              <ScrollView
+                style={styles.messagesContainer}
+                ref={scrollViewRef}
+                onContentSizeChange={() =>
+                  scrollViewRef.current?.scrollToEnd({ animated: true })
+                }
+              >
+                {Object.entries(messageGroups).map(([date, dateMessages]) => (
+                  <View key={date} style={styles.dateGroup}>
+                    <View style={styles.dateHeader}>
+                      <Text style={styles.dateText}>{date}</Text>
+                    </View>
+
+                    {dateMessages.map(message => (
                       <View
+                        key={message.id}
                         style={
                           message.sender.username === otherUsername
-                            ? styles.messageContentOther
-                            : styles.messageContentMe
+                            ? styles.messageWrapperOther
+                            : styles.messageWrapperMe
                         }
                       >
-                        <Text
+                        <Image
+                          source={{ uri: message.sender.avatarUrl }}
+                          style={styles.profilePic}
+                        />
+                        <View
                           style={
                             message.sender.username === otherUsername
-                              ? {
-                                  color: COLORS.main_blue,
-                                  fontSize: 15,
-                                  paddingHorizontal: 10
-                                }
-                              : {
-                                  fontSize: 15,
-                                  paddingHorizontal: 10
-                                }
+                              ? styles.messageContentOther
+                              : styles.messageContentMe
                           }
                         >
-                          {message.content}
+                          <Text
+                            style={
+                              message.sender.username === otherUsername
+                                ? {
+                                    color: COLORS.main_blue,
+                                    fontSize: 15,
+                                    paddingHorizontal: 10
+                                  }
+                                : {
+                                    color: COLORS.background_blue,
+                                    fontSize: 15,
+                                    paddingHorizontal: 10
+                                  }
+                            }
+                          >
+                            {message.content}
+                          </Text>
+                        </View>
+                        <Text
+                          style={{
+                            color: COLORS.main_blue,
+                            fontSize: 12,
+                            marginTop: 5,
+                            marginHorizontal: 5
+                          }}
+                        >
+                          {new Date(message.createdAt).toLocaleTimeString(
+                            'fr-FR',
+                            {
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }
+                          )}
                         </Text>
                       </View>
-                      <Text
-                        style={{
-                          color: COLORS.main_blue,
-                          fontSize: 12,
-                          marginTop: 5,
-                          marginHorizontal: 5
-                        }}
-                      >
-                        {new Date(message.createdAt).toLocaleTimeString('fr-FR', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              ))}
-            </ScrollView>
-          )}
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.inputWrapper}
-            placeholder='Écrire un message...'
-            placeholderTextColor={COLORS.main_blue}
-            value={messageContent}
-            onChangeText={text => setMessageContent(text)}
-            multiline={true}
-            onKeyPress={e => {
-              if (e.nativeEvent.key === 'Enter') {
-                e.preventDefault()
-                sendMessage()
-              }
-            }}
-          />
-          <Button style={styles.sendButton} onPress={sendMessage}>
-            <Text>Envoyer</Text>
-          </Button>
-        </View>
+                    ))}
+                  </View>
+                ))}
+              </ScrollView>
+            )}
+          </View>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.inputWrapper}
+              placeholder='Écrire un message...'
+              placeholderTextColor={COLORS.main_blue}
+              value={messageContent}
+              onChangeText={(text: string) => setMessageContent(text)}
+              multiline={true}
+              onSubmitEditing={sendMessage}
+              blurOnSubmit={false}
+              onKeyPress={e => {
+                if (e.nativeEvent.key === 'Enter') {
+                  e.preventDefault()
+                  sendMessage()
+                }
+              }}
+            />
+            <Button style={styles.sendButton} onPress={sendMessage}>
+              <Text>Envoyer</Text>
+            </Button>
+          </View>
+        </KeyboardAvoidingView>
       </NativeBaseProvider>
     </>
   )

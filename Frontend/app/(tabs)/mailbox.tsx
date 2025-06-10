@@ -54,6 +54,8 @@ const Mailbox = () => {
 
   useEffect(() => {
     fetchConversations()
+    const timer = setInterval(fetchConversations, 60000)
+    return () => clearInterval(timer)
   }, [])
 
   return (
@@ -95,7 +97,7 @@ const Mailbox = () => {
                       {
                         year: 'numeric',
                         month: 'short',
-                        day: 'numeric',
+                        day: 'numeric'
                       }
                     ) || ''
                   }
