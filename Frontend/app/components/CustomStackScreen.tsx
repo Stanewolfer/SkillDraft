@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import { COLORS } from "../(tabs)/styles/colors";
 import { View, TouchableOpacity, Image, Text, TextInput } from "react-native";
 import * as Unicons from "@iconscout/react-native-unicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { notificationData } from "../(tabs)/notifications";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface CustomStackScreenProps {
   title: string;
@@ -23,6 +24,23 @@ const minimalHeaderTitlesMap: { [key: string]: string } = {
 export default function CustomStackScreen({ title }: CustomStackScreenProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
+
+  const [username, setUsername] = useState<string>("Utilisateur");
+  React.useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem("userId");
+        if (storedUserId) {
+          const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/get-user-by-id/${storedUserId}`);
+          const data = await response.json();
+          setUsername(data.username);
+        }
+      } catch (error) {
+        setUsername("Nom d'utilisateur introuvable");
+      }
+    };
+    fetchUsername();
+  }, []);
 
   const isMinimalHeader = minimalHeaderTitlesMap.hasOwnProperty(
     title.toLowerCase()
@@ -132,7 +150,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
                     color: "#000",
                   }}
                 >
-                  beyAz
+                  {username}
                 </Text>
                 <Text
                   style={{
