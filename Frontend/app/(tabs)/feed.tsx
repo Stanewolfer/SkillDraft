@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "expo-router";
 import { ScrollView, StyleSheet, LogBox } from "react-native";
 import { COLORS } from "./styles/colors";
@@ -38,7 +38,7 @@ export default function FeedScreen() {
       const response = await fetch(
         `${
           process.env.EXPO_PUBLIC_API_URL
-        }/feed/generate/${await AsyncStorage.getItem("userId")}`,
+        }/feed/fetch/${await AsyncStorage.getItem("userId")}`,
         {
           method: "GET",
           headers: {
@@ -54,7 +54,7 @@ export default function FeedScreen() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     generateFeed();
   }, []);
 
@@ -69,9 +69,9 @@ export default function FeedScreen() {
                 <PostCard
                   key={index}
                   id={post.id}
-                  title={post.title}
-                  description={post.description}
-                  imageList={post.imageList}
+                  title={post.post.title}
+                  description={post.post.description}
+                  imageList={post.post.imageList}
                   poster={post.poster}
                 />
               );
@@ -91,3 +91,4 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background_blue,
   },
 });
+

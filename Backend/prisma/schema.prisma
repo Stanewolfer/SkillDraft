@@ -27,6 +27,7 @@ model User {
   posts         RegularPost[]
   notifications Notification[]
   sentMessages  Message[]      @relation("SenderMessages")
+  feeds         Feed[] // Link to the new Feed table
 
   // Système de follow
   followedBy Follow[] @relation("Follower")
@@ -34,7 +35,6 @@ model User {
 
   // Follow teams
   teamFollows TeamFollow[]
-
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -101,16 +101,15 @@ model TeamFollow {
   @@unique([userId, teamId])
 }
 
-
 model RegularPost {
   id          String @id @default(uuid())
   title       String
   description String @db.Text
 
   imageList   Json?
-  likes       Int    @default(0)
+  likes       Int   @default(0)
   likesList   Json?
-  reposts     Int    @default(0)
+  reposts     Int   @default(0)
   repostsList Json?
   comments    Json?
 
@@ -119,6 +118,7 @@ model RegularPost {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Feed      Feed[] // Link to the new Feed table
 }
 
 model OfferPost {
@@ -136,6 +136,7 @@ model OfferPost {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   Comment   Comment[]
+  Feed      Feed[] // Link to the new Feed table
 }
 
 model Conversation {
@@ -211,4 +212,20 @@ model Game {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Feed {
+  id            String       @id @default(uuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  regularPostId String?
+  regularPost   RegularPost? @relation(fields: [regularPostId], references: [id], onDelete: Cascade)
+  offerPostId   String?
+  offerPost     OfferPost?   @relation(fields: [offerPostId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now())
+
+  // To ensure that a feed entry is unique for a user and a specific post
+  @@unique([userId, regularPostId, offerPostId])
+  // This allows for a quick lookup of a user's feed, ordered by creation time
+  @@index([userId, createdAt(sort: Desc)])
 }

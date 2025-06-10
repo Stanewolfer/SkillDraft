@@ -38,65 +38,75 @@ export default function PostCard({
   return (
     <View>
       {backgroundImage && (
-      <>
-        <Image
-        source={{ uri: backgroundImage }}
-        resizeMode='cover'
-        />
-      </>
+        <>
+          <Image source={{ uri: backgroundImage }} resizeMode='cover' />
+        </>
       )}
       <View style={styles.cardWrapper}>
-      {/* Display poster information */}
-      <View style={styles.posterInfo}>
-        <Image
-        source={{ uri: poster.avatarUrl }}
-        style={styles.avatar} // Style for the avatar image
-        />
         <View>
-        <View>
-          <Text style={styles.nameTitle}>{poster.username}</Text> 
-          {poster.isVerified && (
           <View>
-            <Text>✔</Text>
+            <View style={styles.posterInfo}>
+              <Image source={{ uri: poster.avatarUrl }} style={styles.avatar} />
+              <Text style={styles.nameTitle}>{poster.username}</Text>
+              {poster.isVerified && (
+                <View>
+                  <Text>✔</Text>
+                </View>
+              )}
+            </View>
+            {poster.teamName && <Text>[{poster.teamName}]</Text>}
           </View>
-          )}
         </View>
-        {poster.teamName && (
-          <Text>[{poster.teamName}]</Text>
+
+        {backgroundImage && (
+          <View>
+            <Unicons.UilAirplay size={18} color={COLORS.main_blue} />
+            <Text>Regarder les images</Text>
+          </View>
         )}
-        </View>
-      </View>
 
-      {backgroundImage && (
-        <View>
-        <Unicons.UilAirplay
-          size={18}
-          color={COLORS.main_blue}
+        <View
+          style={{
+            height: 1,
+            backgroundColor: COLORS.main_blue,
+            marginVertical: 10
+          }}
         />
-        <Text>Regarder les images</Text>
-        </View>
-      )}
 
-      {/* Display the post title and description */}
-      <Text style={styles.postTitle}>{title}</Text>
-      <Text style={styles.postDescription}>{description}</Text>
+        <Text
+          style={{
+            color: COLORS.text_white,
+            fontWeight: 'bold',
+            fontSize: 20,
+            marginBottom: 5
+          }}
+        >
+          {title}
+        </Text>
+        <Text style={{ color: COLORS.text_white, marginBottom: 5 }}>
+          {description}
+        </Text>
 
-      <View>
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity>
-          <Unicons.UilHeart size={25} color={COLORS.main_blue} /> {/* Like button */}
-          </TouchableOpacity>
-          <TouchableOpacity>
-          <Unicons.UilCommentAlt size={25} color={COLORS.main_blue} /> {/* Comment button */}
-          </TouchableOpacity>
-          <TouchableOpacity>
-          <Unicons.UilRepeat size={25} color={COLORS.main_blue} /> {/* Repost button */}
-          </TouchableOpacity>
-          <TouchableOpacity>
-          <Unicons.UilCornerUpRight size={25} color={COLORS.main_blue} /> {/* Share button */}
-          </TouchableOpacity>
+        <View>
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity>
+              <Unicons.UilHeart size={25} color={COLORS.main_blue} />{' '}
+              {/* Like button */}
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Unicons.UilCommentAlt size={25} color={COLORS.main_blue} />{' '}
+              {/* Comment button */}
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Unicons.UilRepeat size={25} color={COLORS.main_blue} />{' '}
+              {/* Repost button */}
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Unicons.UilCornerUpRight size={25} color={COLORS.main_blue} />{' '}
+              {/* Share button */}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
       </View>
       <View />
     </View>
