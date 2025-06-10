@@ -1,27 +1,44 @@
 import { Request, Response } from 'express'
 import { prisma } from '../config'
 
-// route pour envoyer des messages
-export const sendMessage = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { senderId, receiverId, content, offerPostId } = req.body
+// Envoyer un message
+export const sendMessage = async (req: Request, res: Response) => {
+  const { content, conversationId } = req.body
+  const userId = req.params.userId
 
-  if (!senderId || !receiverId || !content) {
-    res.status(400).json({ message: 'Missing required fields' })
-    return
+  if (!content || !conversationId) {
+    return res
+      .status(400)
+      .json({ message: 'Content and conversationId are required' })
   }
 
   try {
     const message = await prisma.message.create({
       data: {
-        senderId,
-        receiverId,
-        offerPostId: offerPostId || null, // Si non fourni, reste null
-        content
+        content,
+        conversationId,
+        senderId: userId,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      include: {
+        sender: true
       }
     })
+
+    await prisma.conversation.update({
+      where: { id: conversationId },
+      data: {
+        updatedAt: new Date(),
+        lastMessageid: message.id
+      }
+    })
+
+    // Émet le nouveau message aux clients connectés à cette conversation
+    req.io.to(conversationId).emit('new_message', message)
+    console.log(
+      `WebSocket: New message emitted to conversation ${conversationId}`
+    )
 
     res.status(201).json(message)
   } catch (error) {
@@ -33,35 +50,15 @@ export const sendMessage = async (
   }
 }
 
-// route pour récupérer tous les messages
-export const getAllMessages = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const messages = await prisma.message.findMany()
-
-    res.json(messages)
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    res
-      .status(500)
-      .json({ message: 'Internal Server Error', error: errorMessage })
-  }
-}
-
-// route pour récupérer un message d'une offre
-export const getMessagesForOffer = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const offerPostId = req.params.offerPostId
+// Récupérer tous les messages d'une conversation
+export const getMessagesByConvId = async (req: Request, res: Response) => {
+  const convId = req.params.convId
 
   try {
     const messages = await prisma.message.findMany({
-      where: { offerPostId },
-      include: { sender: true, receiver: true }
+      where: { conversationId: convId },
+      include: { sender: true },
+      orderBy: { createdAt: 'asc' }
     })
 
     res.json(messages)
@@ -74,22 +71,37 @@ export const getMessagesForOffer = async (
   }
 }
 
-// route pour récupérer un message entre deux users
-export const getMessagesBetweenUsers = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { user1Id, user2Id } = req.params
+// Récupérer un message par son ID
+export const getMessageById = async (req: Request, res: Response) => {
+  const messageId = req.params.messageId
 
   try {
-    const messages = await prisma.message.findMany({
-      where: {
-        OR: [
-          { senderId: user1Id, receiverId: user2Id },
-          { senderId: user2Id, receiverId: user1Id }
-        ]
-      },
-      orderBy: { createdAt: 'asc' } // Trie les messages du plus ancien au plus récent
+    const message = await prisma.message.findUnique({
+      where: { id: messageId },
+      include: { sender: true }
+    })
+
+    if (!message) {
+      return res.status(404).json({ message: 'Message not found' })
+    }
+
+    res.json(messages)
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: errorMessage })
+  }
+}
+
+// Supprimer un message
+export const deleteMessage = async (req: Request, res: Response) => {
+  const messageId = req.params.messageId
+
+  try {
+    const message = await prisma.message.delete({
+      where: { id: messageId }
     })
 
     res.json(messages)
