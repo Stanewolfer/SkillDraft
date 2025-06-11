@@ -4,6 +4,7 @@ import * as Unicons from "@iconscout/react-native-unicons";
 import { useRouter } from "expo-router";
 import { COLORS } from "../(tabs)/styles/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export type NavScreen = "feed" | "fast_search" | "create_post" | "offers" | "mailbox";
 
@@ -22,6 +23,7 @@ interface BottomNavbarProps {
 
 export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab }) => {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handlePress = (screen: NavScreen, route: RouteType) => {
     router.push(route as any);
@@ -65,10 +67,10 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab }) => {
   ];
 
   return (
-    <View style={styles.bottomButtonsContainer}>
+    <View style={[styles.bottomButtonsContainer, { paddingBottom: insets.bottom, backgroundColor: COLORS.main_blue, }]}>
       {navButtons.map((button) => {
         const isActive = button.id === activeTab;
-        const iconColor = isActive ? COLORS.background_blue : COLORS.main_blue;
+        const iconColor = isActive ? COLORS.main_blue : COLORS.background_blue;
 
         return (
           <TouchableOpacity
@@ -94,7 +96,7 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab }) => {
       })}
       <TouchableOpacity style={styles.bottomButton} onPress={logout}>
         <View style={styles.bottomButtonContent}>
-          <Unicons.UilSignout size={28} color={COLORS.main_blue} />
+          <Unicons.UilSignout size={28} color={COLORS.background_blue} />
           <Text style={styles.bottomButtonLabel}>Déconnexion</Text>
         </View>
       </TouchableOpacity>
@@ -133,13 +135,13 @@ const styles = StyleSheet.create({
   bottomButtonLabel: {
     marginTop: 4,
     fontSize: 6, // Change to 8 once logout is moved away
-    color: COLORS.main_blue,
+    color: COLORS.background_blue,
   },
   activeBottomButton: {
-    backgroundColor: COLORS.main_blue,
+    backgroundColor: COLORS.background_blue,
     paddingVertical: 10,
   },
   activeBottomButtonLabel: {
-    color: COLORS.background_blue,
+    color: COLORS.main_blue,
   },
 });
