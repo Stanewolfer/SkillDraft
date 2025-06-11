@@ -149,13 +149,14 @@ export const fetchUserFeed = async (req: Request, res: Response) => {
   }
 
   // Assurer que le fil d'actualité est généré avant de le récupérer
-  await prisma.feed.count({ where: { userId: userId } })
-  .then(count => {
+  await prisma.feed.count({ where: { userId: userId } }).then(count => {
     if (count === 0) {
-      console.log(`Aucun fil d'actualité trouvé pour l'utilisateur ${userId}. Génération en cours...`)
+      console.log(
+        `Aucun fil d'actualité trouvé pour l'utilisateur ${userId}. Génération en cours...`
+      )
     }
   })
-  generateAndStoreFeed(userId) // Assertion que le fil d'actualité est généré avant de le récupérer
+  await generateAndStoreFeed(userId) // Assertion que le fil d'actualité est généré avant de le récupérer
     .catch(error => {
       console.error(
         `Erreur lors de la génération du fil d'actualité pour l'utilisateur ${userId}:`,
