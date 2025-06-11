@@ -121,7 +121,7 @@ const Messaging: React.FC = () => {
 
   useEffect(() => {
     fetchMessages()
-    const interval = setInterval(fetchMessages, 60000)
+    const interval = setInterval(fetchMessages, 30000)
     return () => clearInterval(interval)
   }, [conversationId])
 
