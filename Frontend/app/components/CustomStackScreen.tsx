@@ -24,8 +24,9 @@ const minimalHeaderTitlesMap: { [key: string]: string } = {
 export default function CustomStackScreen({ title }: CustomStackScreenProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [username, setUsername] = useState<string>("Chargement...");
+  const [inTeam, setInTeam] = useState<string>("Chargement...");
 
-  const [username, setUsername] = useState<string>("Utilisateur");
   React.useEffect(() => {
     const fetchUsername = async () => {
       try {
@@ -34,9 +35,16 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
           const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/get-user-by-id/${storedUserId}`);
           const data = await response.json();
           setUsername(data.username);
+
+          const teamResponse = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${data.teamId}`);
+          const teamData = await teamResponse.json();
+
+          setInTeam(teamData.teamname ? teamData.teamname : "Aucune équipe");
         }
+
       } catch (error) {
         setUsername("Nom d'utilisateur introuvable");
+        setInTeam("Aucune équipe trouvée");
       }
     };
     fetchUsername();
@@ -155,7 +163,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
                     color: "#000",
                   }}
                 >
-                  [GentleMates]
+                  [{inTeam}]
                 </Text>
               </View>
             </TouchableOpacity>
