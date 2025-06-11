@@ -22,6 +22,12 @@ export const styles = StyleSheet.create({
     borderRadius: 25,
     marginRight: 10
   },
+    nameTitle: {
+        fontSize: 18,
+        fontWeight: '300',
+        color: COLORS.main,
+        marginBottom: 2,
+    },
 
   nameTitle: {
     fontSize: 20,

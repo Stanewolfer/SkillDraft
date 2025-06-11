@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Stack, useRouter } from "expo-router";
 import { COLORS } from "../(tabs)/styles/colors";
 import { View, TouchableOpacity, Image, Text, TextInput } from "react-native";
 import * as Unicons from "@iconscout/react-native-unicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { notificationData } from "../(tabs)/notifications";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface CustomStackScreenProps {
   title: string;
@@ -23,6 +24,31 @@ const minimalHeaderTitlesMap: { [key: string]: string } = {
 export default function CustomStackScreen({ title }: CustomStackScreenProps) {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [username, setUsername] = useState<string>("Chargement...");
+  const [inTeam, setInTeam] = useState<string>("Chargement...");
+
+  React.useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem("userId");
+        if (storedUserId) {
+          const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/get-user-by-id/${storedUserId}`);
+          const data = await response.json();
+          setUsername(data.username);
+
+          const teamResponse = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${data.teamId}`);
+          const teamData = await teamResponse.json();
+
+          setInTeam(teamData.teamname ? teamData.teamname : "Aucune équipe");
+        }
+
+      } catch (error) {
+        setUsername("Nom d'utilisateur introuvable");
+        setInTeam("Aucune équipe trouvée");
+      }
+    };
+    fetchUsername();
+  }, []);
 
   const isMinimalHeader = minimalHeaderTitlesMap.hasOwnProperty(
     title.toLowerCase()
@@ -50,8 +76,6 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
               style={{
                 flex: 1,
                 backgroundColor: COLORS.main_blue,
-                borderBottomLeftRadius: 12,
-                borderBottomRightRadius: 12,
                 overflow: "hidden",
                 zIndex: 999,
               }}
@@ -63,8 +87,6 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
               end={{ x: 1, y: 0.5 }}
               style={{
                 flex: 1,
-                borderBottomLeftRadius: 12,
-                borderBottomRightRadius: 12,
                 overflow: "hidden",
                 zIndex: 999,
               }}
@@ -132,7 +154,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
                     color: "#000",
                   }}
                 >
-                  beyAz
+                  {username}
                 </Text>
                 <Text
                   style={{
@@ -141,7 +163,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
                     color: "#000",
                   }}
                 >
-                  [GentleMates]
+                  [{inTeam}]
                 </Text>
               </View>
             </TouchableOpacity>

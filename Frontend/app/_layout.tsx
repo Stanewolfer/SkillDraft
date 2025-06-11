@@ -20,6 +20,8 @@ import React from 'react'
 import { BottomNavbar } from './components/BottomNavbar'
 import { NavScreen } from './components/BottomNavbar'
 import { NativeBaseProvider, theme } from 'native-base'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { COLORS } from './(tabs)/styles/colors'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -50,21 +52,29 @@ export default function RootLayout() {
 
   console.log('Segments:', segments)
   return (
-    <NativeBaseProvider theme={theme}>
-      <Stack>
-        <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-      </Stack>
-      <StatusBar style='auto' />
+    <SafeAreaProvider style={globalStyles.safeAreaStyle}>
+      <GluestackUIProvider mode="light">
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          </Stack>
+          <StatusBar style="auto" />
 
-      {!mustShow.some(item => segments.includes(item)) ? null : (
-        <BottomNavbar
-          activeTab={
-            mustShow.includes(segments[1])
-              ? (segments[1] as NavScreen)
-              : undefined
-          }
-        />
-      )}
-    </NativeBaseProvider>
-  )
+          {mustShow.some((item) => segments.includes(item)) && (
+            <BottomNavbar
+              activeTab={
+                mustShow.includes(segments[1]) ? (segments[1] as NavScreen) : undefined
+              }
+            />
+          )}
+        </ThemeProvider>
+      </GluestackUIProvider>
+    </SafeAreaProvider>
+  );
+}
+
+const globalStyles = {
+  safeAreaStyle: {
+    backgroundColor: COLORS.background_blue,
+  }
 }
