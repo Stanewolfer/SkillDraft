@@ -48,27 +48,32 @@ export const getTeamByName = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const teamName = req.body.name
+  const teamNameRaw = req.query.name;
+  if (typeof teamNameRaw !== "string" || !teamNameRaw.trim()) {
+    res.status(400).json({ message: "Le paramètre 'name' est requis et doit être une chaîne non vide." });
+    return;
+  }
+
+const teamName = teamNameRaw.trim();
+
 
   try {
     const team = await prisma.team.findUnique({
       where: { teamname: teamName }
-    })
+    });
 
     if (!team) {
-      res.status(404).json({ message: 'Team not found' })
-      return
+      res.status(404).json({ message: 'Équipe non trouvée.' });
+      return;
     }
 
-    res.json(team)
+    res.status(200).json({ teamId: team.id, teamName: team.teamname });
   } catch (error) {
     const errorMessage =
-      error instanceof Error ? error.message : 'An unknown error occurred'
-    res
-      .status(500)
-      .json({ message: 'Internal Server Error', error: errorMessage })
+      error instanceof Error ? error.message : 'Erreur inconnue';
+    res.status(500).json({ message: 'Erreur interne du serveur', error: errorMessage });
   }
-}
+};
 
 // Modification des informations d'une équipe
 export const updateTeam = async (

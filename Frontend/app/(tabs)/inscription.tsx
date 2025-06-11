@@ -196,6 +196,60 @@ export default function InscriptionScreen() {
   const previewColor = parseColorInput(colorInput) || teamColor;
   const previewRGB = hexToRgb(previewColor);
 
+
+
+
+
+  const fetchTeamIdByName = async (teamName: string) => {
+    const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+    const encodedTeamName = teamName.replace(/ /g, "%20");
+
+    if (!baseUrl) {
+      console.error("EXPO_PUBLIC_API_URL est undefined.");
+      alert("Configuration API manquante.");
+      return;
+    }
+    console.log("Recherche de l'équipe :", encodedTeamName);
+
+    if (!encodedTeamName.trim()) return;
+
+    try {
+      const url = `${baseUrl}/teams/get-team-by-name?name=${encodedTeamName}`;
+      console.log("URL de la requête :", url);
+      const response = await fetch(url);
+
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.includes("application/json")) {
+        const text = await response.text();
+        console.error("Réponse non JSON :", text);
+        throw new Error("Réponse invalide du serveur");
+      }
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Impossible de trouver l'équipe");
+      }
+
+      if (result?.teamId) {
+        setTeamId(result.teamId);
+        console.log("Équipe trouvée :", result.teamId);
+        alert(
+          `Équipe trouvée : ${result.teamName} (ID: ${result.teamId})`
+        );
+      } else {
+        alert("Aucune équipe trouvée avec ce nom.");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la recherche d'équipe :", error);
+      alert("Erreur lors de la recherche de l'équipe. Veuillez réessayer.");
+    }
+  };
+
+
+
+
+
   // Submit function that prepares data to be sent to the backend
   const handleSubmit = async () => {
     const apiUrl = `${process.env.EXPO_PUBLIC_API_URL}/auth/register`;
@@ -344,11 +398,26 @@ export default function InscriptionScreen() {
                   value={description}
                   onChangeText={setDescription}
                 />
-                <CustomInput
-                  placeholder="Equipe dont vous faites partie (Optionnel)"
-                  value={teamId}
-                  onChangeText={setTeamId}
-                />
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <View style={{ flex: 1 }}>
+                    <CustomInput
+                      placeholder="Entrez l'équipe dont vous faites partie (Optionnel)"
+                      value={teamId? teamId : teamName}
+                      onChangeText={setTeamName}
+                    />
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => fetchTeamIdByName(teamName)}
+                    style={{
+                      marginLeft: 8,
+                      backgroundColor: COLORS.main_blue,
+                      padding: 10,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Text style={{ color: "white", fontWeight: "bold" }}>Rechercher</Text>
+                  </TouchableOpacity>
+                </View>
               </>
             ) : (
               <>
