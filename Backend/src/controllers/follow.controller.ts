@@ -7,26 +7,54 @@ export const createFollow = async (
   res: Response
 ): Promise<void> => {
   const { followerId, followedId } = req.body
-
+  let existingFollow = null
   try {
-    const existingFollow = await prisma.follow.findFirst({
+    // Vérifier si la relation de suivi existe déjà dans la table Follow pour les utilisateurs
+    existingFollow = await prisma.follow.findFirst({
       where: {
         followerId,
         followedId
       }
     })
 
+    // vérifier si la relation de suivi existe déjà dans la table Follow pour les teams
+    if (!existingFollow) {
+      existingFollow = await prisma.teamFollow.findFirst({
+        where: {
+          userId: followerId,
+          teamId: followedId
+        }
+      })
+    }
+
     if (existingFollow) {
       res.status(400).json({ message: 'Follow relationship already exists' })
       return
     }
 
-    const follow = await prisma.follow.create({
-      data: {
-        followerId,
-        followedId
-      }
+    let follow
+    // Check si followedId correspond à une équipe ou un utilisateur
+    const team = await prisma.team.findUnique({
+      where: { id: followedId }
     })
+
+    if (team) {
+      // Créer une relation de suivi pour une équipe
+      follow = await prisma.teamFollow.create({
+        data: {
+          userId: followerId,
+          teamId: followedId
+        }
+      })
+    } else {
+      // Créer une relation de suivi pour un utilisateur
+      follow = await prisma.follow.create({
+        data: {
+          followerId,
+          followedId
+        }
+      })
+    }
     res.status(201).json(follow)
   } catch (error) {
     const errorMessage =

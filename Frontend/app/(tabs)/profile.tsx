@@ -24,12 +24,35 @@ const VALO_THUMB_URL =
   "https://gamecover.fr/wp-content/uploads/Tejo-Act-1-Wallpaper.png";
 
 export default function ProfileScreen() {
-  const router = useRouter();
 
-  const logout = async () => {
-    await AsyncStorage.clear();
-    router.push("/");
-  };
+  const [username, setUsername] = React.useState("Chargement...");
+  const [userDescription, setUserDescription] = React.useState("Chargement...");
+  const [inTeam, setInTeam] = React.useState("Chargement...");
+
+  React.useEffect(() => {
+    const fetchUsername = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem("userId");
+        if (storedUserId) {
+          const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/get-user-by-id/${storedUserId}`);
+          const data = await response.json();
+          const teamResponse = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${data.teamId}`);
+          const teamData = await teamResponse.json();
+
+          setUsername(data.username);
+          setUserDescription(data.description ? data.description : "Aucune description");
+          setInTeam(teamData.teamname ? teamData.teamname : "Aucune équipe");
+        }
+
+      } catch (error) {
+        setUsername("Nom d'utilisateur introuvable");
+        setInTeam("Aucune équipe trouvée");
+      }
+    };
+    fetchUsername();
+  }, []);
+
+  const router = useRouter();
 
   const openYouTube = () => {
     Linking.openURL("https://www.youtube.com/@beyAzkorpe");
@@ -51,9 +74,9 @@ export default function ProfileScreen() {
         <View style={styles.profileInfoContainer}>
           <Image source={{ uri: AVATAR_URL }} style={styles.avatarLarge} />
           <View style={styles.profileTextContainer}>
-            <Text style={styles.profileName}>beyAz</Text>
+            <Text style={styles.profileName}>{username}</Text>
             <Text style={styles.profileTeam}>
-              Équipe : <Text style={styles.highlightTeam}>GentleMates</Text>
+              Équipe : <Text style={styles.highlightTeam}>{inTeam}</Text>
             </Text>
             <Text style={styles.profileDescription}>
               Content Creator - VALORANT{"\n"}
@@ -63,34 +86,12 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        <View style={styles.socialContainer}>
-          <TouchableOpacity style={styles.socialItemRed} onPress={openYouTube}>
-            <Text style={styles.socialItemText}>YouTube</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.socialItemPurple}
-            onPress={openTwitch}
-          >
-            <Text style={styles.socialItemText}>Twitch</Text>
-          </TouchableOpacity>
-          <View style={styles.socialItemTeal}>
-            <Text style={styles.socialItemTealText}>+</Text>
-          </View>
-        </View>
-
         <View style={styles.extraInfoContainer}>
-          <Text style={styles.extraInfoTitle}>
-            Peak Rank :{" "}
-            <Text style={styles.extraInfoHighlight}>RADIANT #158</Text>
-          </Text>
           <Text style={styles.extraInfoSubtitle}>
-            Liens utiles :{" "}
-            <Text style={styles.linkHighlight}>Valorant Tracker</Text>
+            Description
           </Text>
           <Text style={styles.extraDescription}>
-            Joueur déterminé et ex-chef d’équipe de la section VALORANT de
-            GentleMates, je suis prêt à rendre vos parties exhaltantes tout en
-            maintenant votre communauté vivante et amusée constamment !
+            {userDescription}
           </Text>
         </View>
 
@@ -201,6 +202,7 @@ const styles = StyleSheet.create({
   bannerImage: {
     width: "100%",
     height: "100%",
+    backgroundColor: COLORS.main_blue,
     resizeMode: "cover",
   },
   bannerOverlay: {
@@ -304,7 +306,8 @@ const styles = StyleSheet.create({
     color: COLORS.text_white,
   },
   extraInfoSubtitle: {
-    fontSize: 14,
+    fontSize: 20,
+    fontWeight: "700",
     color: COLORS.text_white,
   },
   linkHighlight: {

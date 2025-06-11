@@ -1,9 +1,8 @@
-import { Router } from 'express'
-import { generateFeed } from '../controllers/feed.controller'
-
+import { Router, RequestHandler } from 'express'
+import { fetchUserFeed } from '../controllers/feed.controller'
 
 const feedRouter = Router()
 
-feedRouter.get('/generate/:userId', generateFeed)
+feedRouter.get('/fetch/:userId', fetchUserFeed as RequestHandler)
 
 export default feedRouter
