@@ -43,6 +43,33 @@ export const getTeamById = async (
   }
 }
 
+// Récupération d'une équipe précise via son nom
+export const getTeamByName = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const teamName = req.body.name
+
+  try {
+    const team = await prisma.team.findUnique({
+      where: { teamname: teamName }
+    })
+
+    if (!team) {
+      res.status(404).json({ message: 'Team not found' })
+      return
+    }
+
+    res.json(team)
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: errorMessage })
+  }
+}
+
 // Modification des informations d'une équipe
 export const updateTeam = async (
   req: Request,
@@ -60,8 +87,7 @@ export const updateTeam = async (
       dataToUpdate.ceoFirstName = updateData.ceoFirstName
     if (updateData.ceoLastName !== undefined)
       dataToUpdate.ceoLastName = updateData.ceoLastName
-    if (updateData.email !== undefined)
-      dataToUpdate.email = updateData.email
+    if (updateData.email !== undefined) dataToUpdate.email = updateData.email
     if (updateData.description !== undefined)
       dataToUpdate.description = updateData.description
     if (updateData.teamColor !== undefined)
