@@ -79,8 +79,6 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
               end={{ x: 1, y: 0.5 }}
               style={{
                 flex: 1,
-                borderBottomLeftRadius: 12,
-                borderBottomRightRadius: 12,
                 overflow: "hidden",
                 zIndex: 999,
               }}
