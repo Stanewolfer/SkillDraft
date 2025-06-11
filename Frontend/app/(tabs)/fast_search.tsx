@@ -4,12 +4,28 @@ import { useRouter } from 'expo-router'
 import { COLORS } from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
 
-const AVATAR_URL =
+const DEFAULT_AVATAR_URL =
   'https://e.sport.fr/wp-content/uploads/2024/06/Gentle_Mates_beyAz_at_VCT_2024_EMEA_Kickoff.jpg'
+const DEFAULT_PSEUDO = 'beyAz'
+const DEFAULT_TEAM = 'Gentlemates'
+const DEFAULT_TEAM_COLOR = COLORS.gentle_mates
+const DEFAULT_DESC_FIRST = 'Content Creator - VALORANT'
+const DEFAULT_DESC_SECOND =
+  'Ex-Joueur Professionnel dans la section VALORANT de l’équipe GentleMates'
+const DEFAULT_DESC_THIRD =
+  'Joueur déterminé et ex-chef d’équipe de la section VALORANT de GentleMates, je suis prêt à rendre vos parties exhaltantes tout en maintenant votre communauté vivante et amusée constamment !'
 const HIGHLIGHT_IMAGE_URL =
   'https://cdn.arstechnica.net/wp-content/uploads/2020/04/FirstLook_Smoke_VALORANT-scaled.jpg'
 
-const FastSearch = () => {
+const FastSearch = ({
+  avatarUrl = DEFAULT_AVATAR_URL,
+  pseudo = DEFAULT_PSEUDO,
+  team = DEFAULT_TEAM,
+  teamColor = DEFAULT_TEAM_COLOR,
+  descFirst = DEFAULT_DESC_FIRST,
+  descSecond = DEFAULT_DESC_SECOND,
+  descThird = DEFAULT_DESC_THIRD
+}) => {
   const router = useRouter()
 
   return (
@@ -23,13 +39,15 @@ const FastSearch = () => {
         <View style={styles.card}>
           <View style={styles.cardContent}>
             <View style={styles.logoContainer}>
-              <Image source={{ uri: AVATAR_URL }} style={styles.logo} />
+              <Image source={{ uri: avatarUrl }} style={styles.logo} />
             </View>
             <View style={styles.textContainer}>
-              <Text style={styles.cardTitle}>beyAz</Text>
+              <Text style={styles.cardTitle}>{pseudo}</Text>
               <Text style={styles.cardSubtitle}>
                 <Text style={styles.bracket}>[</Text>
-                <Text style={styles.subtitleText}>Gentlemates</Text>
+                <Text style={[styles.subtitleText, { color: teamColor }]}>
+                  {team}
+                </Text>
                 <Text style={styles.bracket}>]</Text>
               </Text>
             </View>
@@ -37,19 +55,12 @@ const FastSearch = () => {
 
           <View style={styles.separator} />
 
-          <Text style={styles.descUser}>Content Creator - VALORANT</Text>
-          <Text style={styles.descUser}>
-            Ex-Joueur Professionnel dans la section VALORANT de l’équipe
-            GentleMates
-          </Text>
+          <Text style={styles.descUser}>{descFirst}</Text>
+          <Text style={styles.descUser}>{descSecond}</Text>
 
           <View style={styles.separator} />
 
-          <Text style={styles.descUser}>
-            Joueur déterminé et ex-chef d’équipe de la section VALORANT de
-            GentleMates, je suis prêt à rendre vos parties exhaltantes tout en
-            maintenant votre communauté vivante et amusée constamment !
-          </Text>
+          <Text style={styles.descUser}>{descThird}</Text>
 
           <View style={styles.separator} />
 
@@ -67,7 +78,7 @@ const FastSearch = () => {
         </View>
 
         <View style={styles.navContainer}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.push('/')}>
             <Image
               source={require('../../assets/icons/CANCELLING_ARROW.png')}
               style={styles.navIcon}
@@ -149,7 +160,6 @@ const styles = StyleSheet.create({
     fontStyle: 'italic'
   },
   subtitleText: {
-    color: COLORS.gentle_mates,
     fontSize: 14,
     fontStyle: 'italic'
   },
