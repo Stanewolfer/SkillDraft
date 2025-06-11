@@ -3,7 +3,7 @@ import { prisma } from '../config'
 
 // créer une conversation
 export const createConv = async (req: Request, res: Response) => {
-    const { user1Id, user2Id, teamId } = req.body
+  const { user1Id, user2Id, teamId } = req.body
 
   const existingConv = await prisma.conversation.findFirst({
     where: {
@@ -12,7 +12,6 @@ export const createConv = async (req: Request, res: Response) => {
         { user1Id: user2Id, user2Id: user1Id },
         { teamId: teamId, user1Id: user1Id, user2Id: user2Id },
         { teamId: teamId, user1Id: user2Id, user2Id: user1Id }
-        
       ]
     }
   })
@@ -42,17 +41,7 @@ export const getConvsByUserId = async (req: Request, res: Response) => {
       OR: [{ user1Id: userId }, { user2Id: userId }]
     },
     include: {
-      user1: true,
-      user2: true,
-      team: true,
-      messages: {
-        orderBy: {
-          createdAt: 'asc'
-        },
-        include: {
-          sender: true
-        }
-      }
+      lastMessage: true,
     }
   })
 
@@ -68,17 +57,7 @@ export const getConvById = async (req: Request, res: Response) => {
       id: convId
     },
     include: {
-      user1: true,
-      user2: true,
-      team: true,
-        messages: {
-            orderBy: {
-            createdAt: 'asc'
-            },
-            include: {
-            sender: true
-            }
-        }
+      lastMessage: true
     }
   })
 
@@ -96,19 +75,6 @@ export const getConvsByTeamId = async (req: Request, res: Response) => {
   const conversations = await prisma.conversation.findMany({
     where: {
       teamId: teamId
-    },
-    include: {
-      user1: true,
-      user2: true,
-      team: true,
-        messages: {
-            orderBy: {
-            createdAt: 'asc'
-            },
-            include: {
-            sender: true
-            }
-        }
     }
   })
 

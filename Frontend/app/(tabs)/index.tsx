@@ -8,14 +8,11 @@ import {
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Unicons from '@iconscout/react-native-unicons'
-import { Link, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { COLORS } from './styles/colors'
 
 import { styles } from './styles/indexStyles'
 import CustomStackScreen from '../components/CustomStackScreen'
-import { ThemedText } from '@/components/ThemedText'
-import BottomNavbar from '../components/BottomNavbar'
-
 LogBox.ignoreLogs([
   'Warning: UilSignin: Support for defaultProps will be removed from function components',
   'Warning: UilUser: Support for defaultProps will be removed from function components'
@@ -62,7 +59,7 @@ function HomeScreen() {
     }
 
     checkUserSession()
-  }, [])
+  })
 
   return (
     <>
@@ -92,9 +89,6 @@ function HomeScreen() {
             </Text>
           </TouchableOpacity>
         </View>
-        <Link href="/feed" style={styles.link}>
-          <ThemedText type="link">Vers le feed</ThemedText>
-        </Link>
       </View>
     </>
   )

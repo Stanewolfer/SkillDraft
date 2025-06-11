@@ -16,15 +16,18 @@ model User {
   password    String // Password will be hashed
   description String?
   avatarUrl   String?
+  bannerUrl   String?
+  isVerified  Boolean @default(false)
 
   // Relations
   team   Team?   @relation(fields: [teamId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   teamId String?
 
   // Posts et contenus
-  posts            RegularPost[]
-  notifications    Notification[]
-  sentMessages     Message[]      @relation("SenderMessages")
+  posts         RegularPost[]
+  notifications Notification[]
+  sentMessages  Message[]      @relation("SenderMessages")
+  feeds         Feed[] // Link to the new Feed table
 
   // Système de follow
   followedBy Follow[] @relation("Follower")
@@ -32,9 +35,6 @@ model User {
 
   // Follow teams
   teamFollows TeamFollow[]
-
-  // Feed
-  feed FeedItem[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -55,6 +55,8 @@ model Team {
   rosterList   Json?
   teamColor    String
   logoUrl      String?
+  isVerified   Boolean @default(false)
+  bannerUrl    String?
 
   // Relations
   members    User[]
@@ -99,30 +101,15 @@ model TeamFollow {
   @@unique([userId, teamId])
 }
 
-// Feed
-model FeedItem {
-  id String @id @default(uuid())
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId String
-
-  contentType String
-  contentId   String
-
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-
-  @@index([userId, createdAt(sort: Desc)])
-}
-
 model RegularPost {
   id          String @id @default(uuid())
   title       String
-  description String
+  description String @db.Text
+
   imageList   Json?
-  likes       Int    @default(0)
+  likes       Int   @default(0)
   likesList   Json?
-  reposts     Int    @default(0)
+  reposts     Int   @default(0)
   repostsList Json?
   comments    Json?
 
@@ -131,6 +118,7 @@ model RegularPost {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Feed      Feed[] // Link to the new Feed table
 }
 
 model OfferPost {
@@ -148,26 +136,27 @@ model OfferPost {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   Comment   Comment[]
+  Feed      Feed[] // Link to the new Feed table
 }
 
 model Conversation {
-  id        String   @id @default(uuid())
+  id String @id @default(uuid())
 
   // Soit une conversation User <-> User
-  user1Id   String?
-  user2Id   String?
-  user1     User?    @relation("User1", fields: [user1Id], references: [id])
-  user2     User?    @relation("User2", fields: [user2Id], references: [id])
+  user1Id String?
+  user2Id String?
+  user1   User?   @relation("User1", fields: [user1Id], references: [id])
+  user2   User?   @relation("User2", fields: [user2Id], references: [id])
 
   // Soit une conversation User <-> Team
-  teamId    String?
-  team      Team?    @relation(fields: [teamId], references: [id])
+  teamId String?
+  team   Team?   @relation(fields: [teamId], references: [id])
 
-  messages  Message[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  lastMessage   Message? @relation(fields: [lastMessageid], references: [id])
+  lastMessageid String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
-
 
 model Message {
   id             String @id @default(uuid())
@@ -175,13 +164,14 @@ model Message {
   senderId       String
   conversationId String
 
-  sender       User         @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  sender User @relation("SenderMessages", fields: [senderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   OfferPost   OfferPost? @relation(fields: [offerPostId], references: [id])
   offerPostId String?
+
+  Conversation Conversation[]
 }
 
 model Comment {
@@ -222,4 +212,20 @@ model Game {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Feed {
+  id            String       @id @default(uuid())
+  userId        String
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  regularPostId String?
+  regularPost   RegularPost? @relation(fields: [regularPostId], references: [id], onDelete: Cascade)
+  offerPostId   String?
+  offerPost     OfferPost?   @relation(fields: [offerPostId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now())
+
+  // To ensure that a feed entry is unique for a user and a specific post
+  @@unique([userId, regularPostId, offerPostId])
+  // This allows for a quick lookup of a user's feed, ordered by creation time
+  @@index([userId, createdAt(sort: Desc)])
 }

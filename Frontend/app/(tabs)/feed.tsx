@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "expo-router";
 import { ScrollView, StyleSheet, LogBox } from "react-native";
 import { COLORS } from "./styles/colors";
 import CustomStackScreen from "../components/CustomStackScreen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import OfferPostCard from "../components/OfferPostCard";
-import MediaCard from "../components/MediaCard";
+import PostCard from "../components/PostCard";
 import { BottomNavbar } from "../components/BottomNavbar";
 
 LogBox.ignoreLogs([
@@ -20,24 +20,65 @@ LogBox.ignoreLogs([
   "Warning: UilBag: Support for defaultProps will be removed",
   "Warning: UilEnvelopeAlt: Support for defaultProps will be removed",
   "Warning: UilSignout: Support for defaultProps will be removed",
+  "Warning: UilHome: Support for defaultProps will be removed",
+  "Warning: UilPlus: Support for defaultProps will be removed",
+
+  "Warning: UilBell: Support for defaultProps will be removed",
+  "Warning: UilNewspaper: Support for defaultProps will be removed",
+  "Warning: UilSearch: Support for defaultProps will be removed",
+  "Warning: UilArrowLeft: Support for defaultProps will be removed",
 ]);
 
 export default function FeedScreen() {
   const router = useRouter();
+  const [feed, setFeed] = React.useState<{ posts: any[] }>({ posts: [] });
 
-  const logout = async () => {
-    await AsyncStorage.clear();
-    router.push("/");
+  const generateFeed = async () => {
+    try {
+      const response = await fetch(
+        `${
+          process.env.EXPO_PUBLIC_API_URL
+        }/feed/fetch/${await AsyncStorage.getItem("userId")}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      console.log("Feed data:", data);
+      setFeed(data);
+    } catch (error) {
+      console.error("Error fetching feed:", error);
+    }
   };
+
+  useEffect(() => {
+    generateFeed();
+  }, []);
 
   return (
     <>
-      <CustomStackScreen title="Feed" />
+      <CustomStackScreen title="feed" />
       <ScrollView contentContainerStyle={styles.container}>
-        <OfferPostCard />
-        <MediaCard />
-
-        <BottomNavbar activeScreen="feed" logout={logout} />
+        {feed.posts &&
+          feed.posts.map((post, index) => {
+            if (post.type === "regular") {
+              return (
+                <PostCard
+                  key={index}
+                  id={post.id}
+                  title={post.post.title}
+                  description={post.post.description}
+                  imageList={post.post.imageList}
+                  poster={post.poster}
+                />
+              );
+            } else if (post.type === "offer") {
+              return <OfferPostCard key={index} />;
+            }
+          })}
       </ScrollView>
     </>
   );
@@ -50,3 +91,4 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background_blue,
   },
 });
+
