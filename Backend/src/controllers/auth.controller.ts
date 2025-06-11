@@ -114,7 +114,7 @@ export const login = async (req: Request, res: Response) => {
 export const registerEntity = async (req: Request, res: Response) => {
   const entityType = req.header('type')
   const { username, password, email, ...rest } = req.body
-
+  const avatarUrl = req.file?.path || 'http://localhost:5000/uploads/empty_profile.png'
   if (!username || !password) {
     return res
       .status(400)
@@ -155,6 +155,7 @@ export const registerEntity = async (req: Request, res: Response) => {
           teamname: username,
           password: hashedPassword,
           email,
+          logoUrl: avatarUrl,
           createdAt: new Date(),
           updatedAt: new Date(),
           ...rest
@@ -166,6 +167,7 @@ export const registerEntity = async (req: Request, res: Response) => {
           username,
           password: hashedPassword,
           email,
+          avatarUrl,
           createdAt: new Date(),
           updatedAt: new Date(),
           ...rest

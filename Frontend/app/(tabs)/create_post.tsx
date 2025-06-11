@@ -32,11 +32,6 @@ export default function CreatePost() {
   const [isUserTeam, setIsUserTeam] = useState(false)
   const [imageList, setImageList] = useState<string[]>([])
 
-  const logout = async () => {
-    await AsyncStorage.clear()
-    router.push('/')
-  }
-
   // Load user ID and check if it is a "team"
   useEffect(() => {
     const fetchUserData = async () => {
@@ -56,6 +51,12 @@ export default function CreatePost() {
     if (!postTitle || !postContent) {
       alert('Veuillez remplir tous les champs.')
       return
+    }
+
+    if (isUserTeam) {
+      setMode('offer')
+    } else {
+      setMode('regular')
     }
 
     const apiUrl = `${process.env.EXPO_PUBLIC_API_URL}/posts/create`
@@ -196,9 +197,12 @@ export default function CreatePost() {
 
             <View style={styles.sectionSpacer} />
 
-            {isUserTeam && <OffreCheckbox mode={mode} setMode={setMode} />}
             <TouchableOpacity onPress={createPost} style={styles.publishButton}>
-              <Text style={styles.publishButtonText}>PUBLIER</Text>
+              {isUserTeam ? (
+                <Text style={styles.publishButtonText}>Publier l'offre</Text>
+              ) : (
+                <Text style={styles.publishButtonText}>Publier le post</Text>
+              )}
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -214,39 +218,4 @@ const hexToRgba = (hex: string, opacity: number): string => {
   const g = (bigint >> 8) & 255
   const b = bigint & 255
   return `rgba(${r}, ${g}, ${b}, ${opacity})`
-}
-
-const OffreCheckbox = ({
-  mode,
-  setMode
-}: {
-  mode: 'regular' | 'offer'
-  setMode: (mode: 'regular' | 'offer') => void
-}) => {
-  const [isChecked, setIsChecked] = useState(mode === 'offer')
-
-  const handleCheckboxChange = () => {
-    const newMode = isChecked ? 'regular' : 'offer'
-    setIsChecked(!isChecked)
-    setMode(newMode)
-  }
-
-  return (
-    <HStack space={6} alignItems='center'>
-      <Checkbox
-        isChecked={isChecked}
-        onChange={handleCheckboxChange}
-        style={{
-          borderColor: COLORS.main_blue,
-          backgroundColor: hexToRgba(COLORS.main_blue, 0.1),
-          borderRadius: 5,
-          padding: 10,
-          marginBottom: 10,
-        }}
-        value={''}
-      >
-        <Text style={styles.text}>Ce post est une offre.</Text>
-      </Checkbox>
-    </HStack>
-  )
 }

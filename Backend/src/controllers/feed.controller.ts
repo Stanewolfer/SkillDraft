@@ -9,24 +9,33 @@ import { getPost } from './posts.controller'
  */
 export const generateAndStoreFeed = async (userId: string) => {
   try {
+    // Récupérer les utilisateurs suivis directs
     const followings = await prisma.follow.findMany({
       where: { followerId: userId },
       select: { followedId: true }
     })
     const followedUserIds = followings.map(follow => follow.followedId)
-    followedUserIds.push(userId) // Inclure les propres posts de l'utilisateur
 
+    // Récupérer les utilisateurs suivis par les utilisateurs suivis
+    const followers = await prisma.follow.findMany({
+      where: { followedId: userId },
+      select: { followedId: true }
+    })
+    const followedByUserIds = followers.map(follow => follow.followedId) 
+
+    // Combiner tous les IDs d'utilisateurs pertinents
+    const allRelevantUserIds = [...new Set([...followedUserIds, ...followedByUserIds, userId])]
     const teamFollows = await prisma.teamFollow.findMany({
       where: { userId: userId },
       select: { teamId: true }
     })
     const followedTeamIds = teamFollows.map(teamFollow => teamFollow.teamId)
 
-    // Récupérer les regular posts des utilisateurs suivis (et de soi-même)
+    // Récupérer les regular posts des utilisateurs suivis (et de leurs suivis)
     const regularPosts = await prisma.regularPost.findMany({
       where: {
         posterId: {
-          in: followedUserIds
+          in: allRelevantUserIds
         }
       },
       select: {
@@ -88,13 +97,13 @@ export const generateAndStoreFeed = async (userId: string) => {
           newFeedEntries.push({
             userId: userId,
             regularPostId: post.id,
-            createdAt: post.createdAt // Conserver la date de création originale du post
+            createdAt: post.createdAt
           })
         } else if (post.type === 'offer') {
           newFeedEntries.push({
             userId: userId,
             offerPostId: post.id,
-            createdAt: post.createdAt // Conserver la date de création originale du post
+            createdAt: post.createdAt
           })
         }
       }
