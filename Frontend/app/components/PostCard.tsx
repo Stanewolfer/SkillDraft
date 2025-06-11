@@ -93,12 +93,12 @@ export default function PostCard({
   }, [imageList, fadeAnim, slideAnim])
 
   React.useEffect(() => {
-    if (imageList && imageList.length > 1 && modalVisible === false) {
+    if (imageList && imageList.length > 1 && !modalVisible) {
       // Démarrer l'intervalle pour changer les images toutes les 4 secondes
       const interval = setInterval(animateImageChange, 4000)
       return () => clearInterval(interval)
     }
-  }, [imageList, animateImageChange])
+  }, [imageList, animateImageChange, modalVisible])
 
   const ImagesModal = (
     <Modal
@@ -107,41 +107,66 @@ export default function PostCard({
       visible={modalVisible}
       onRequestClose={() => setModalVisible(false)}
     >
-      <View style={styles.modalContainer}>
+      <TouchableOpacity
+        style={styles.modalContainer}
+        activeOpacity={1}
+        onPress={() => setModalVisible(false)}
+      >
         <TouchableOpacity
-          style={styles.closeButton}
-          onPress={() => setModalVisible(false)}
+          activeOpacity={1}
+          onPress={e => e.stopPropagation()}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
         >
-          <Unicons.UilTimes size={30} color={COLORS.text_white} />
-        </TouchableOpacity>
-        <Image
-          source={{ uri: imageList?.[currentImageIndex] }}
-          style={styles.modalImage}
-          resizeMode='contain'
-        />
-        {imageList && imageList.length > 1 && (
-          <View style={styles.navigationButtons}>
+          {imageList && imageList.length > 1 && (
             <TouchableOpacity
-              onPress={() =>
+              style={{
+                backgroundColor: COLORS.background_main_blue,
+                padding: 10,
+                borderRadius: 25,
+                marginRight: -30,
+                zIndex: 1
+              }}
+              onPress={e => {
+                e.stopPropagation()
                 setCurrentImageIndex(prev =>
                   prev === 0 ? imageList.length - 1 : prev - 1
                 )
-              }
+              }}
             >
-              <Unicons.UilAngleLeft size={40} color={COLORS.text_white} />
+              <Unicons.UilAngleLeft size={40} color={COLORS.dark_main_blue} />
             </TouchableOpacity>
+          )}
+
+          <Image
+            source={{ uri: imageList?.[currentImageIndex] }}
+            style={[
+              styles.modalImage,
+              { width: width - 80, height: width - 80 }
+            ]}
+            resizeMode='contain'
+          />
+
+          {imageList && imageList.length > 1 && (
             <TouchableOpacity
-              onPress={() =>
+              style={{
+                backgroundColor: COLORS.background_main_blue,
+                padding: 10,
+                borderRadius: 25,
+                marginLeft: -30,
+                zIndex: 1
+              }}
+              onPress={e => {
+                e.stopPropagation()
                 setCurrentImageIndex(prev =>
                   prev === imageList.length - 1 ? 0 : prev + 1
                 )
-              }
+              }}
             >
-              <Unicons.UilAngleRight size={40} color={COLORS.text_white} />
+              <Unicons.UilAngleRight size={40} color={COLORS.dark_main_blue} />
             </TouchableOpacity>
-          </View>
-        )}
-      </View>
+          )}
+        </TouchableOpacity>
+      </TouchableOpacity>
     </Modal>
   )
 
@@ -248,7 +273,11 @@ export default function PostCard({
                   onPress={() => setModalVisible(true)}
                 >
                   <Unicons.UilAirplay size={18} color={COLORS.main_blue} />
-                  <Text style={styles.watchImageText}>Regarder les images</Text>
+                  <Text style={styles.watchImageText}>
+                    {(imageList?.length ?? 0) > 1
+                      ? `Voir ${imageList?.length} images`
+                      : "Voir l'image"}
+                  </Text>
                 </TouchableOpacity>
                 {ImagesModal}
                 <View
