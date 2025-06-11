@@ -151,6 +151,14 @@ export const fetchUserFeed = async (req: Request, res: Response) => {
     return res.status(400).json({ message: "L'ID utilisateur est requis." })
   }
 
+  generateAndStoreFeed(userId) // Assurez-vous que le fil est à jour avant de le récupérer
+    .catch(error => {
+      console.error(
+        `Erreur lors de la génération du fil d'actualité pour l'utilisateur ${userId}:`,
+        error
+      )
+    })
+
   try {
     const feedOptions: any = {
       where: { userId: userId },
