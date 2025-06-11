@@ -143,15 +143,20 @@ export const triggerFeedGeneration = async (req: Request, res: Response) => {
  */
 export const fetchUserFeed = async (req: Request, res: Response) => {
   const userId = req.params.userId
-  // Cursor pour la pagination
-  const cursor = req.query.cursor as string | undefined
-  const limit = parseInt(req.query.limit as string) || 10
 
   if (!userId) {
     return res.status(400).json({ message: "L'ID utilisateur est requis." })
   }
 
-  generateAndStoreFeed(userId) // Assurez-vous que le fil est à jour avant de le récupérer
+  // Assurer que le fil d'actualité est généré avant de le récupérer
+  await prisma.feed.count({ where: { userId: userId } }).then(count => {
+    if (count === 0) {
+      console.log(
+        `Aucun fil d'actualité trouvé pour l'utilisateur ${userId}. Génération en cours...`
+      )
+    }
+  })
+  await generateAndStoreFeed(userId) // Assertion que le fil d'actualité est généré avant de le récupérer
     .catch(error => {
       console.error(
         `Erreur lors de la génération du fil d'actualité pour l'utilisateur ${userId}:`,
@@ -160,10 +165,9 @@ export const fetchUserFeed = async (req: Request, res: Response) => {
     })
 
   try {
-    const feedOptions: any = {
+    const feedItems = await prisma.feed.findMany({
       where: { userId: userId },
       orderBy: { createdAt: 'desc' },
-      take: limit,
       include: {
         regularPost: {
           include: { poster: true }
@@ -172,23 +176,7 @@ export const fetchUserFeed = async (req: Request, res: Response) => {
           include: { team: true }
         }
       }
-    }
-
-    if (cursor) {
-      const cursorFeedItem = await prisma.feed.findUnique({
-        where: { id: cursor },
-        select: { createdAt: true }
-      })
-
-      if (cursorFeedItem) {
-        // Pour une pagination robuste avec orderBy sur 'createdAt'
-        feedOptions.where.createdAt = {
-          lt: cursorFeedItem.createdAt // Récupère les posts plus anciens que le curseur
-        }
-      }
-    }
-
-    const feedItems = await prisma.feed.findMany(feedOptions)
+    })
 
     // Filtrer les éléments de fil d'actualité qui pourraient faire référence à des posts supprimés
     const validFeedItems = feedItems.filter(
@@ -226,16 +214,7 @@ export const fetchUserFeed = async (req: Request, res: Response) => {
     // Trier les posts par date de création décroissante
     posts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 
-    // Déterminer le prochain curseur
-    const nextCursor =
-      posts.length === limit ? posts[posts.length - 1]?.feedItemId : null
-    const hasMore = posts.length === limit
-
-    res.json({
-      posts,
-      nextCursor,
-      hasMore
-    })
+    res.json({ posts })
   } catch (error) {
     console.error(
       "Erreur lors de la récupération du fil d'actualité de l'utilisateur:",
