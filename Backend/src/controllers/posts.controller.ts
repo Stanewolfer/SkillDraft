@@ -84,6 +84,11 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
   const type = req.header('type')
   const { posterId, description, title } = req.body
 
+// Dans votre controller, avant la logique de création
+console.log('Files received:', req.files)
+console.log('Body received:', req.body)
+console.log('Headers:', req.headers)
+  
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[]
   }
