@@ -1,48 +1,206 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { COLORS } from './styles/colors';
-import * as Unicons from '@iconscout/react-native-unicons'
-import CustomStackScreen from '../components/CustomStackScreen';
+import React from 'react'
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { useRouter } from 'expo-router'
+import { COLORS } from './styles/colors'
+import CustomStackScreen from '../components/CustomStackScreen'
+
+const AVATAR_URL =
+  'https://e.sport.fr/wp-content/uploads/2024/06/Gentle_Mates_beyAz_at_VCT_2024_EMEA_Kickoff.jpg'
+const HIGHLIGHT_IMAGE_URL =
+  'https://cdn.arstechnica.net/wp-content/uploads/2020/04/FirstLook_Smoke_VALORANT-scaled.jpg'
 
 const FastSearch = () => {
-    return (
-        <>
-        <CustomStackScreen title="Recherches rapides" />
-        <View style={styles.container}>
-            <Text style={styles.text}>Nous bossons pour vous préparer cette page dans les plus brefs délais. Merci de votre patience !</Text>
-                <View style={{ position: 'absolute', bottom: 70, right: 10 }}>
-                    <TouchableOpacity
-                        style={{
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            width: 50,
-                            height: 50,
-                            backgroundColor: COLORS.main_blue,
-                            borderRadius: 50,
-                        }}
-                    >
-                        <Unicons.UilSearch size={25} color={COLORS.background_blue} />
-                    </TouchableOpacity>
-                </View>
+  const router = useRouter()
+
+  return (
+    <>
+      <CustomStackScreen title='Recherches rapides' />
+      <View style={styles.container}>
+        <TouchableOpacity onPress={() => router.push('/feed')}>
+          <Text style={styles.topMessage}>Voir mes profils rapides</Text>
+        </TouchableOpacity>
+
+        <View style={styles.card}>
+          <View style={styles.cardContent}>
+            <View style={styles.logoContainer}>
+              <Image source={{ uri: AVATAR_URL }} style={styles.logo} />
+            </View>
+            <View style={styles.textContainer}>
+              <Text style={styles.cardTitle}>beyAz</Text>
+              <Text style={styles.cardSubtitle}>
+                <Text style={styles.bracket}>[</Text>
+                <Text style={styles.subtitleText}>Gentlemates</Text>
+                <Text style={styles.bracket}>]</Text>
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.separator} />
+
+          <Text style={styles.descUser}>Content Creator - VALORANT</Text>
+          <Text style={styles.descUser}>
+            Ex-Joueur Professionnel dans la section VALORANT de l’équipe
+            GentleMates
+          </Text>
+
+          <View style={styles.separator} />
+
+          <Text style={styles.descUser}>
+            Joueur déterminé et ex-chef d’équipe de la section VALORANT de
+            GentleMates, je suis prêt à rendre vos parties exhaltantes tout en
+            maintenant votre communauté vivante et amusée constamment !
+          </Text>
+
+          <View style={styles.separator} />
+
+          <Text style={styles.highlightTitle}>Highlight</Text>
+          <View style={styles.highlightImageContainer}>
+            <Image
+              source={{ uri: HIGHLIGHT_IMAGE_URL }}
+              style={styles.highlightImage}
+            />
+            <Image
+              source={require('../../assets/icons/PLAYING-ICON.png')}
+              style={styles.playIcon}
+            />
+          </View>
         </View>
-        </>
-    );
-};
+
+        <View style={styles.navContainer}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Image
+              source={require('../../assets/icons/CANCELLING_ARROW.png')}
+              style={styles.navIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/')}>
+            <Image
+              source={require('../../assets/icons/VALIDATING_ARROW.png')}
+              style={styles.navIcon}
+            />
+          </TouchableOpacity>
+        </View>
+      </View>
+    </>
+  )
+}
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: COLORS.background_blue,
-        padding: 20,
-    },
-    text: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: COLORS.main_blue,
-    },
-});
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: COLORS.background_blue,
+    paddingTop: 15,
+    paddingHorizontal: 20
+  },
+  topMessage: {
+    marginBottom: 15,
+    color: COLORS.link_yellow,
+    fontSize: 20,
+    fontStyle: 'italic',
+    textDecorationLine: 'underline',
+    alignSelf: 'center'
+  },
+  card: {
+    width: '97.5%',
+    minHeight: 350,
+    backgroundColor: COLORS.background_blue,
+    borderWidth: 1,
+    borderColor: COLORS.main_blue,
+    padding: 20,
+    marginBottom: 20
+  },
+  cardContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start'
+  },
+  logoContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    overflow: 'hidden',
+    borderWidth: 2,
+    backgroundColor: COLORS.link_yellow,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 20
+  },
+  logo: {
+    width: '100%',
+    height: '100%'
+  },
+  textContainer: {
+    justifyContent: 'flex-start'
+  },
+  cardTitle: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: COLORS.text_white,
+    marginBottom: 4
+  },
+  cardSubtitle: {
+    fontSize: 14,
+    flexDirection: 'row'
+  },
+  bracket: {
+    color: COLORS.text_white,
+    fontSize: 14,
+    fontStyle: 'italic'
+  },
+  subtitleText: {
+    color: COLORS.gentle_mates,
+    fontSize: 14,
+    fontStyle: 'italic'
+  },
+  separator: {
+    width: '75%',
+    alignSelf: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.main_blue,
+    margin: 7.5
+  },
+  descUser: {
+    color: COLORS.text_white
+  },
+  highlightTitle: {
+    fontSize: 17.5,
+    fontWeight: 'bold',
+    color: COLORS.text_white,
+    marginBottom: 4,
+    alignSelf: 'center'
+  },
+  highlightImageContainer: {
+    width: '100%',
+    alignItems: 'center'
+  },
+  highlightImage: {
+    width: '100%',
+    height: 150,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLORS.main_blue
+  },
+  playIcon: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -10 }, { translateY: -20 }],
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center'
+  },
+  navContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    paddingHorizontal: 40
+  },
+  navIcon: {
+    width: 150,
+    height: 50,
+    resizeMode: 'contain'
+  }
+})
 
-export default FastSearch;
+export default FastSearch
