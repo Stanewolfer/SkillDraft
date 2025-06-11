@@ -26,25 +26,46 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
   const [search, setSearch] = useState("");
   const [username, setUsername] = useState<string>("Chargement...");
   const [inTeam, setInTeam] = useState<string>("Chargement...");
+  const [teamColor, setTeamColor] = useState<string>("");
 
   React.useEffect(() => {
     const fetchUsername = async () => {
       try {
         const storedUserId = await AsyncStorage.getItem("userId");
+        const storedType = await AsyncStorage.getItem("type");
+
         if (storedUserId) {
-          const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/get-user-by-id/${storedUserId}`);
-          const data = await response.json();
-          setUsername(data.username);
+          if (storedType == "user") {
 
-          const teamResponse = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${data.teamId}`);
-          const teamData = await teamResponse.json();
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/get-user-by-id/${storedUserId}`);
+            const data = await response.json();
+            const teamResponse = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${data.teamId}`);
+            const teamData = await teamResponse.json();
 
-          setInTeam(teamData.teamname ? teamData.teamname : "Aucune équipe");
+            setUsername(data.username);
+            if (teamData !== null && teamData.teamname) { 
+              setInTeam(teamData.teamname);
+              setTeamColor(teamData.teamColor);
+            }
+            else {
+              setInTeam("Aucune équipe");
+              setTeamColor(COLORS.main_blue);
+            }
+
+          } else if (storedType == "team") {
+
+            const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${storedUserId}`);
+            const data = await response.json();
+            setUsername(data.teamname);
+            setInTeam("Équipe");
+            setTeamColor(data.teamColor ? data.teamColor : COLORS.main_blue);
+
+          }
         }
-
       } catch (error) {
         setUsername("Nom d'utilisateur introuvable");
         setInTeam("Aucune équipe trouvée");
+        setTeamColor(COLORS.main_blue);
       }
     };
     fetchUsername();
@@ -82,7 +103,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
             />
           ) : (
             <LinearGradient
-              colors={[COLORS.gentle_mates, COLORS.main_blue]}
+              colors={[teamColor, COLORS.main_blue]}
               start={{ x: 0, y: 0.5 }}
               end={{ x: 1, y: 0.5 }}
               style={{
@@ -117,7 +138,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
               <Unicons.UilSearch color={COLORS.main_blue} size={20} />
               <TextInput
                 style={{
-                  color: COLORS.main_blue,
+                  color: teamColor,
                   fontSize: 14,
                   flex: 1,
                 }}
