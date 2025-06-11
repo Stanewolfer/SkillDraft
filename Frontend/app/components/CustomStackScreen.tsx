@@ -68,8 +68,6 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
               style={{
                 flex: 1,
                 backgroundColor: COLORS.main_blue,
-                borderBottomLeftRadius: 12,
-                borderBottomRightRadius: 12,
                 overflow: "hidden",
                 zIndex: 999,
               }}
