@@ -32,7 +32,7 @@ const FastSearch = ({
     <>
       <CustomStackScreen title='Recherches rapides' />
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => router.push('/feed')}>
+        <TouchableOpacity onPress={() => router.push('/fast_search_list')}>
           <Text style={styles.topMessage}>Voir mes profils rapides</Text>
         </TouchableOpacity>
 
