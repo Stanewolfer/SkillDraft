@@ -32,7 +32,6 @@ export const styles = StyleSheet.create({
 
   imageBackground: {
     width: '100%',
-    minHeight: 400,
     borderRadius: 25,
     overflow: 'hidden',
     position: 'relative'

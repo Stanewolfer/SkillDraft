@@ -97,7 +97,6 @@ export default function PostCard({
     }
   }, [imageList, animateImageChange])
 
-  console.log('PostCard rendered with backgroundImage:', backgroundImage)
 
   return (
     <View>
