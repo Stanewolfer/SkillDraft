@@ -3,19 +3,19 @@ import path from 'path'
 import fs from 'fs'
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, _file, cb) => {
     const uploadDir = path.join(__dirname, '../../uploads')
     if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir)
     cb(null, uploadDir)
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
     const ext = path.extname(file.originalname)
     cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`)
   }
 })
 
-const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (_req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true)

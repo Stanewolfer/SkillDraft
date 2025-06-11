@@ -88,7 +88,7 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
     [fieldname: string]: Express.Multer.File[]
   }
 
-  const imageList = files?.images?.map(file => `/uploads/${file.filename}`) || []
+  const imageList = files?.images?.map(file => `${req.protocol}://localhost:5000/uploads/${file.filename}`) || []
 
   try {
     let newPost
