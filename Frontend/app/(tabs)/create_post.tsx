@@ -17,6 +17,7 @@ import { COLORS } from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { BottomNavbar } from '../components/BottomNavbar'
+import { styles } from './styles/createPostStyles'
 import { Checkbox, HStack, NativeBaseProvider } from 'native-base'
 
 const TITLE_CHAR_LIMIT = 200
@@ -56,31 +57,45 @@ export default function CreatePost() {
       alert('Veuillez remplir tous les champs.')
       return
     }
-    console.log('Poster ID:', posterId)
-    console.log('Post Title:', postTitle)
-    console.log('Post Content:', postContent)
-    console.log('Post Mode:', mode)
-    console.log('Image List:', imageList)
 
     const apiUrl = `${process.env.EXPO_PUBLIC_API_URL}/posts/create`
+
     try {
+      const formData = new FormData()
+
+      formData.append('posterId', posterId)
+      formData.append('title', postTitle)
+      formData.append('description', postContent)
+
+      imageList.forEach((imageUri, index) => {
+        formData.append(
+          'images',
+          JSON.stringify({
+            uri: imageUri,
+            type: 'image/jpeg',
+            name: `image_${index}.jpg`
+          })
+        )
+      })
+
+      // Générer un boundary unique
+      const boundary = `----formdata-react-native-${Date.now()}`
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': `multipart/form-data; boundary=${boundary}`,
           type: mode
         },
-        body: JSON.stringify({
-          posterId,
-          title: postTitle,
-          description: postContent,
-          imageList
-        })
+        body: formData
       })
+
       const result = await response.json()
+
       if (!response.ok) {
         throw new Error(result.message || 'Une erreur est survenue')
       }
+
       alert('Votre post a été créé')
       router.push('/feed')
     } catch (error) {
@@ -140,46 +155,48 @@ export default function CreatePost() {
             <View style={styles.imagesContainer}>
               {imageList.map((img, index) => (
                 <View key={index} style={styles.imageWrapper}>
-                  <Image source={{ uri: img }} style={styles.imageThumbnail} />
                   <TouchableOpacity
+                    style={styles.deleteButton}
                     onPress={() => {
                       const newList = [...imageList]
                       newList.splice(index, 1)
                       setImageList(newList)
                     }}
                   >
-                    <Text>×</Text>
+                    <Text style={styles.deleteButtonText}>×</Text>
                   </TouchableOpacity>
+                  <Image source={{ uri: img }} style={styles.imageThumbnail} />
                 </View>
               ))}
               {imageList.length < 4 && (
-                <TouchableOpacity
-                  style={styles.addImageButton}
-                  onPress={async () => {
-                    const result = await ImagePicker.launchImageLibraryAsync({
-                      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                      allowsEditing: true,
-                      aspect: [4, 3],
-                      quality: 0.1
-                    })
+                <View style={styles.imageWrapper}>
+                  <TouchableOpacity
+                    style={[
+                      styles.addImageButton,
+                      { width: '100%', height: '100%' }
+                    ]}
+                    onPress={async () => {
+                      const result = await ImagePicker.launchImageLibraryAsync({
+                        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                        allowsEditing: true,
+                        aspect: [4, 3],
+                        quality: 0.1
+                      })
 
-                    if (!result.canceled && result.assets[0]) {
-                      setImageList([...imageList, result.assets[0].uri])
-                    }
-                  }}
-                >
-                  <Text style={styles.addImageText}>+</Text>
-                </TouchableOpacity>
+                      if (!result.canceled && result.assets[0]) {
+                        setImageList([...imageList, result.assets[0].uri])
+                      }
+                    }}
+                  >
+                    <Text style={styles.addImageText}>+</Text>
+                  </TouchableOpacity>
+                </View>
               )}
             </View>
 
             <View style={styles.sectionSpacer} />
 
-            {
-              isUserTeam && (
-                <OffreCheckbox mode={mode} setMode={setMode} />
-              ) /* to check because there are problems when putting the front on */
-            }
+            {isUserTeam && <OffreCheckbox mode={mode} setMode={setMode} />}
             <TouchableOpacity onPress={createPost} style={styles.publishButton}>
               <Text style={styles.publishButtonText}>PUBLIER</Text>
             </TouchableOpacity>
@@ -216,145 +233,20 @@ const OffreCheckbox = ({
 
   return (
     <HStack space={6} alignItems='center'>
-      <Checkbox isChecked={isChecked} onChange={handleCheckboxChange} value=''>
+      <Checkbox
+        isChecked={isChecked}
+        onChange={handleCheckboxChange}
+        style={{
+          borderColor: COLORS.main_blue,
+          backgroundColor: hexToRgba(COLORS.main_blue, 0.1),
+          borderRadius: 5,
+          padding: 10,
+          marginBottom: 10,
+        }}
+        value={''}
+      >
         <Text style={styles.text}>Ce post est une offre.</Text>
       </Checkbox>
     </HStack>
   )
 }
-
-const styles = StyleSheet.create({
-  pageContainer: {
-    flex: 1,
-    backgroundColor: COLORS.background_blue
-  },
-  scrollWrapper: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    borderWidth: 1,
-    borderColor: COLORS.main_blue,
-    borderRadius: 25,
-    overflow: 'hidden'
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 80
-  },
-  sectionSpacer: {
-    height: 20
-  },
-  inputContainer: {
-    marginBottom: 24
-  },
-  inputLabel: {
-    color: COLORS.main_blue,
-    fontSize: 14,
-    fontWeight: '600',
-    fontStyle: 'italic',
-    marginBottom: 8
-  },
-  inputWrapper: {
-    position: 'relative'
-  },
-  inputField: {
-    borderWidth: 1,
-    borderColor: COLORS.main_blue,
-    borderRadius: 15,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    color: COLORS.main_blue,
-    fontSize: 14,
-    backgroundColor: hexToRgba(COLORS.main_blue, 0.3)
-  },
-  charCountAbsolute: {
-    position: 'absolute',
-    bottom: 4,
-    right: 8,
-    color: COLORS.main_blue,
-    fontSize: 12
-  },
-  editorToolBar: {
-    flexDirection: 'row',
-    marginBottom: 6,
-    alignItems: 'center'
-  },
-  editorButton: {
-    width: 30,
-    height: 30,
-    borderRadius: 10,
-    borderColor: COLORS.main_blue,
-    borderWidth: 1,
-    backgroundColor: 'transparent',
-    marginRight: 8,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  editorButtonText: {
-    color: COLORS.main_blue,
-    fontWeight: '700',
-    fontSize: 16
-  },
-  verticalSeparator: {
-    width: 1,
-    height: 35,
-    backgroundColor: COLORS.main_blue,
-    marginRight: 8
-  },
-  letterContainer: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  superscript: {
-    position: 'absolute',
-    top: 2,
-    right: 2,
-    fontSize: 10,
-    color: COLORS.main_blue
-  },
-  imagesContainer: {
-    flexDirection: 'row',
-    marginBottom: 24,
-    alignItems: 'center'
-  },
-  imageWrapper: {
-    marginRight: 8,
-    position: 'relative'
-  },
-  imageThumbnail: {
-    width: 60,
-    height: 60,
-    borderRadius: 8
-  },
-  addImageButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.main_blue,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  addImageText: {
-    color: COLORS.main_blue,
-    fontSize: 24,
-    fontWeight: 'bold'
-  },
-  publishButton: {
-    backgroundColor: COLORS.main_blue,
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginBottom: 40
-  },
-  publishButtonText: {
-    color: COLORS.background_blue,
-    fontSize: 16,
-    fontWeight: '700'
-  },
-  text: {
-    color: COLORS.main_blue
-  }
-})

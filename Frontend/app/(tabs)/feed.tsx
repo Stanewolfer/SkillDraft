@@ -98,7 +98,7 @@ export default function FeedScreen() {
                 marginTop: 20
               }}
             >
-              Aucun message pour le moment.
+              Aucun post pour le moment.
             </Text>
           </>
         )}
@@ -111,7 +111,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: COLORS.background_blue
+    backgroundColor: COLORS.background_blue,
+    overflowY: 'scroll',
+    paddingBottom: 60
   },
   title: {
     color: COLORS.main_blue,

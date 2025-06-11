@@ -41,7 +41,7 @@
     "expo-web-browser": "~14.1.6",
     "frontend": "file:",
     "module-resolver": "^1.0.0",
-    "native-base": "^2.15.2",
+    "native-base": "^3.4.28",
     "nativewind": "^4.1.23",
     "normalize-css-color": "^1.0.2",
     "prop-types": "^15.8.1",
