@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
     nameTitle: {
         fontSize: 18,
         fontWeight: '300',
-        color: COLORS.text_white,
+        color: COLORS.main,
         marginBottom: 2,
     },
 
