@@ -33,8 +33,8 @@ app.set('io', io)
 app.use('/api', router)
 app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
 
-server.listen(3000, () => {
-  console.log('Serveur HTTP sur http://localhost:3000')
+server.listen(30096, () => {
+  console.log('Serveur HTTP sur http://localhost:30096')
   console.log('Serveur WebSocket ouvert')
   initiateFeedGeneration()
 })
