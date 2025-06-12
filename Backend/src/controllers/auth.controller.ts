@@ -113,7 +113,7 @@ export const login = async (req: Request, res: Response) => {
 // 🔹 Inscription (user ou team)
 export const registerEntity = async (req: Request, res: Response) => {
   const entityType = req.header('type')
-  const { username, password, email, ...rest } = req.body
+  const { username, password, email, teamId, ...rest } = req.body
   const avatarUrl = req.file?.path || 'http://localhost:5000/uploads/empty_profile.png'
   if (!username || !password) {
     return res
@@ -170,6 +170,7 @@ export const registerEntity = async (req: Request, res: Response) => {
           avatarUrl,
           createdAt: new Date(),
           updatedAt: new Date(),
+          teamId: teamId || null,
           ...rest
         }
       })

@@ -219,12 +219,6 @@ export default function PostCard({
       <TouchableOpacity>
         <Unicons.UilCornerUpRight size={25} color={COLORS.main_blue} />
       </TouchableOpacity>
-      <TouchableOpacity>
-        <Unicons.UilRepeat size={25} color={COLORS.main_blue} />
-      </TouchableOpacity>
-      <TouchableOpacity>
-        <Unicons.UilCornerUpRight size={25} color={COLORS.main_blue} />
-      </TouchableOpacity>
     </View>
   )
 

@@ -156,5 +156,61 @@ export const styles = StyleSheet.create({
   },
   text: {
     color: COLORS.main_blue
-  }
+  },
+  // Styles pour la progression et les erreurs
+  progressContainer: {
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+    marginBottom: 10
+  },
+  progressText: {
+    fontSize: 14,
+    color: COLORS.main_blue,
+    marginBottom: 5
+  },
+  progressBar: {
+    height: 4,
+    backgroundColor: '#ddd',
+    borderRadius: 2,
+    overflow: 'hidden'
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: COLORS.main_blue
+  },
+  errorContainer: {
+    padding: 10,
+    backgroundColor: '#ffebee',
+    borderRadius: 5,
+    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  errorText: {
+    color: '#d32f2f',
+    fontSize: 14,
+    flex: 1
+  },
+  clearErrorButton: {
+    padding: 5
+  },
+  clearErrorText: {
+    color: '#d32f2f',
+    fontWeight: 'bold'
+  },
+  publishButtonDisabled: {
+    opacity: 0.6
+  },
+  uploadStatus: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    right: 10,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center'
+  },
 })
