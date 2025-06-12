@@ -171,6 +171,7 @@ export const registerEntity = async (req: Request, res: Response) => {
           avatarUrl,
           createdAt: new Date(),
           updatedAt: new Date(),
+          teamId: teamId || null,
           ...rest
         }
       })
