@@ -140,8 +140,6 @@ const styles = StyleSheet.create({
   activeBottomButton: {
     backgroundColor: COLORS.background_blue,
     paddingVertical: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
   },
   activeBottomButtonLabel: {
     color: COLORS.main_blue,

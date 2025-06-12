@@ -40,10 +40,12 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
 
             const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/get-user-by-id/${storedUserId}`);
             const data = await response.json();
+            console.log(data)
             const teamResponse = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${data.teamId}`);
             const teamData = await teamResponse.json();
 
             setUsername(data.username);
+            setProfilePicture(data.avatarUrl)
             if (teamData !== null && teamData.teamname) { 
               setInTeam(teamData.teamname);
               setTeamColor(teamData.teamColor);
@@ -58,10 +60,9 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
             const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${storedUserId}`);
             const data = await response.json();
             setUsername(data.teamname);
-            setProfilePicture(data.avatarUrl);
+            setProfilePicture(data.avatarUrl)
             setInTeam("Équipe");
             setTeamColor(data.teamColor ? data.teamColor : COLORS.main_blue);
-
           }
         }
       } catch (error) {
@@ -164,9 +165,8 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
               }}
             >
               <Image
-                source={{
-                  uri: profilePicture,
-                }}
+                source={ { uri: profilePicture }
+                }
                 style={{ width: 32, height: 32, borderRadius: 16 }}
               />
               <View style={{ marginLeft: 8, marginRight: 12 }}>
