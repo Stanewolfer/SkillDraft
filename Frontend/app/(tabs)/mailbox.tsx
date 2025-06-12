@@ -44,6 +44,12 @@ const Mailbox = () => {
           )
           const data = await res.json()
           usersData[id] = data
+
+          const resTeam = await fetch(
+            `${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${data.teamId}`
+          )
+          const teamData = await resTeam.json()
+          usersData[id].teamname = teamData.teamname || 'Aucune équipe'
         })
       )
 
@@ -89,6 +95,7 @@ const Mailbox = () => {
                 <PlayerConversation
                   key={index}
                   pseudonym={otherUser?.username || 'Utilisateur inconnu'}
+                  team={otherUser?.teamname || 'Aucune équipe'}
                   lastMessage={
                     conversation.lastMessage?.content || 'Aucun message'
                   }
