@@ -11,7 +11,7 @@ services:
       - DATABASE_URL=postgresql://XactXray5:b538b73a-e575-4e7e-bd46-7875cb8a127c-9z383@db.ezhost-edu.dev:30096/skilldraft-u0lv2b
 
     depends_on:
-      - mysql
+      - postgres
     command: npm run dev --prefix ./Backend
     networks:
       - skilldraft_network
