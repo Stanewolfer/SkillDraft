@@ -129,7 +129,7 @@ const Messaging: React.FC = () => {
         >
           <View style={styles.container}>
             <Text style={styles.title}>
-              Bienvenue dans la conversation avec {otherUsername} !
+              Bienvenue dans ta conversation avec {otherUsername} !
             </Text>
 
             {messages.length === 0 ? (

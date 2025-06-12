@@ -16,7 +16,7 @@ export const messageStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: COLORS.main_blue,
-    paddingBottom: 10,
+    padding: 10,
     textAlign: 'center',
     borderBottomColor: COLORS.main_blue,
     borderBottomWidth: 1
