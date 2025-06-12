@@ -16,6 +16,9 @@ RUN npm ci --prefix ./Backend --only=development=false
 # Copie le dossier prisma en premier pour la génération du client Prisma
 COPY Backend/prisma ./Backend/prisma
 
+ENV DATABASE_URL="postgresql://XactXray5:b538b73a-e575-4e7e-bd46-7875cb8a127c-9z383@db.ezhost-edu.dev:30096/skilldraft-u0lv2b"
+
+
 # Génère le client Prisma
 RUN npx prisma generate --schema=./Backend/prisma/schema.prisma
 
