@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 services:
   backend:
@@ -6,29 +6,31 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - '80:3000'
     environment:
-      - DATABASE_URL=mysql://root:root@mysql:3306/skilldraft
+      - DATABASE_URL=postgresql://XactXray5:b538b73a-e575-4e7e-bd46-7875cb8a127c-9z383@db.ezhost-edu.dev:30096/skilldraft-u0lv2b
+
     depends_on:
       - mysql
     command: npm run dev --prefix ./Backend
     networks:
       - skilldraft_network
 
-  mysql:
-    image: mysql:8.0
+  postgres:
+    image: postgres:15
     ports:
-      - "3306:3306"
+      - '30096:5432'
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: skilldraft
+      POSTGRES_USER: XactXray5
+      POSTGRES_PASSWORD: b538b73a-e575-4e7e-bd46-7875cb8a127c-9z383
+      POSTGRES_DB: skilldraft-u0lv2b
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - skilldraft_network
 
 volumes:
-  mysql_data:
+  postgres_data:
 
 networks:
   skilldraft_network:
