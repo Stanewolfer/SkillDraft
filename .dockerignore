@@ -1,0 +1,41 @@
+# Node.js dependencies
+Backend/node_modules/
+Backend/npm-debug.log*
+Backend/yarn-debug.log*
+Backend/yarn-error.log*
+
+# Build output
+Backend/dist/
+Backend/build/
+
+# Local env files
+Backend/.env.local
+Backend/.env.development.local
+Backend/.env.test.local
+Backend/.env.production.local
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+
+# Docker files (to avoid recursive copy)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Tests
+Backend/coverage/
+Backend/*.test.js
+Backend/*.spec.js
+
+# Temporary files
+tmp/
+temp/
