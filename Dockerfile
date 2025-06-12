@@ -32,7 +32,7 @@ RUN npx prisma generate --schema=./Backend/prisma/schema.prisma
 COPY Backend ./Backend
 
 # Expose le port de l'application
-EXPOSE 3000
+EXPOSE 30096
 
 # Commande pour démarrer l'application dans Backend
 CMD ["npm", "run", "dev", "--prefix", "./Backend"]
