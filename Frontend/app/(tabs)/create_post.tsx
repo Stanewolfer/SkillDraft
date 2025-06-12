@@ -12,7 +12,8 @@ import {
   Image,
   StyleProp,
   TextStyle,
-  Platform
+  Platform,
+  Alert
 } from 'react-native'
 import { COLORS } from './styles/colors'
 import CustomStackScreen from '../components/CustomStackScreen'
@@ -26,14 +27,17 @@ const DESC_CHAR_LIMIT = 2000
 
 export default function CreatePost() {
   const router = useRouter()
-  const [mode, setMode] = useState<'regular' | 'offer'>('regular') // Mode will be determined by user type
+  const [mode, setMode] = useState<'regular' | 'offer'>('regular')
   const [postTitle, setPostTitle] = useState('')
   const [postContent, setPostContent] = useState('')
   const [posterId, setPosterId] = useState<string | null>(null)
-  const [isUserTeam, setIsUserTeam] = useState(false) // True if user is a 'team', false otherwise
+  const [isUserTeam, setIsUserTeam] = useState(false) // Vrai si l'utilisateur est une 'équipe', faux sinon
   const [imageList, setImageList] = useState<string[]>([])
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadError, setUploadError] = useState<Error | null>(null)
 
-  // Fetch user ID and user type to determine if it's a team or an individual user
+  // Récupère l'ID et le type de l'utilisateur depuis AsyncStorage
   useEffect(() => {
     const fetchUserData = async () => {
       const userId = await AsyncStorage.getItem('userId')
@@ -44,68 +48,22 @@ export default function CreatePost() {
     fetchUserData()
   }, [])
 
-  // Function to create FormData for the API request
-  const createFormData = (images: string[], postData: any) => {
-    const formData = new FormData()
-
-    // Add post data fields
-    formData.append('posterId', postData.posterId)
-    formData.append('title', postData.title)
-    formData.append('description', postData.description)
-
-    // Add each image with the correct field name ('images')
-    images.forEach((imageUri, index) => {
-      console.log(`Processing image ${index}: ${imageUri}`)
-
-      // Clean the URI based on the platform (especially for Android)
-      let cleanUri = imageUri
-      if (Platform.OS === 'android' && !imageUri.startsWith('file://')) {
-        cleanUri = `file://${imageUri}`
-      }
-
-      // Determine the image type from its extension
-      const getTypeFromUri = (uri: string) => {
-        const ext = uri.split('.').pop()?.toLowerCase()
-        switch (ext) {
-          case 'jpg':
-          case 'jpeg':
-            return 'image/jpeg'
-          case 'png':
-            return 'image/png'
-          case 'gif':
-            return 'image/gif'
-          default:
-            return 'image/jpeg' // Default to jpeg if type is unknown
-        }
-      }
-
-      // Create the file object for FormData
-      const imageFile = {
-        uri: cleanUri,
-        type: getTypeFromUri(cleanUri),
-        name: `image_${Date.now()}_${index}.${cleanUri.split('.').pop()}` // Unique name to avoid conflicts
-      } as any
-
-      // Append the image file to FormData
-      formData.append('images', imageFile)
-    })
-
-    return formData
-  }
-
   const createPost = async () => {
     if (!posterId) {
-      alert('ID utilisateur introuvable.') // User ID not found
+      Alert.alert('Erreur', 'ID utilisateur introuvable.')
       return
     }
     if (!postTitle || !postContent) {
-      alert('Veuillez remplir tous les champs.') // Please fill in all fields
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs.')
       return
     }
 
-    // Determine the post mode BEFORE making the request
+    setIsUploading(true)
+    setUploadProgress(0)
+    setUploadError(null)
+
+    // Détermine le mode du post ('offer' ou 'regular')
     const postMode = isUserTeam ? 'offer' : 'regular'
-    const apiUrl = `${process.env.EXPO_PUBLIC_API_URL}/posts/create`
 
     console.log('=== DEBUG UPLOAD ===')
     console.log('PosterId:', posterId)
@@ -114,72 +72,133 @@ export default function CreatePost() {
     console.log('Mode:', postMode)
     console.log('Images count:', imageList.length)
     console.log('Images URIs:', imageList)
-    console.log('API URL:', apiUrl)
 
-    try {
-      const postData = {
-        posterId,
-        title: postTitle,
-        description: postContent
+    return new Promise((resolve, reject) => {
+      try {
+        const formData = new FormData()
+
+        // Ajoute les données du post au FormData
+        formData.append('posterId', posterId)
+        formData.append('title', postTitle)
+        formData.append('description', postContent)
+        formData.append('type', postMode)
+
+        // Ajoute chaque image au FormData
+        imageList.forEach((imageUri, index) => {
+          let cleanUri = imageUri
+          // Prépare l'URI pour Android si nécessaire
+          if (Platform.OS === 'android' && !imageUri.startsWith('file://')) {
+            cleanUri = `file://${imageUri}`
+          }
+
+          // Détermine le type MIME de l'image
+          const getTypeFromUri = (uri: string) => {
+            const ext = uri.split('.').pop()?.toLowerCase()
+            switch (ext) {
+              case 'jpg':
+              case 'jpeg':
+                return 'image/jpeg'
+              case 'png':
+                return 'image/png'
+              case 'gif':
+                return 'image/gif'
+              default:
+                return 'image/jpeg'
+            }
+          }
+
+          formData.append('images', {
+            uri: cleanUri,
+            type: getTypeFromUri(cleanUri),
+            name: `image_${Date.now()}_${index}.${cleanUri.split('.').pop()}`
+          } as any)
+        })
+
+        const xhr = new XMLHttpRequest()
+
+        // Gère la progression de l'upload
+        xhr.upload.onprogress = event => {
+          if (event.lengthComputable) {
+            const progress = (event.loaded / event.total) * 100
+            setUploadProgress(progress)
+            console.log(`Progression: ${Math.round(progress)}%`)
+          }
+        }
+
+        // Gère la réponse de la requête
+        xhr.onload = () => {
+          setIsUploading(false)
+
+          if (xhr.status >= 200 && xhr.status < 300) {
+            console.log('Upload terminé avec succès')
+            setUploadProgress(100)
+            Alert.alert('Succès', 'Votre post a été créé')
+            router.push('/feed')
+            resolve(xhr.response)
+          } else {
+            const error = new Error(`HTTP ${xhr.status}: ${xhr.responseText}`)
+            setUploadError(error)
+            Alert.alert('Erreur', 'Erreur lors de la création du post')
+            reject(error)
+          }
+        }
+
+        // Gère les erreurs réseau
+        xhr.onerror = () => {
+          setIsUploading(false)
+          const error = new Error('Erreur réseau')
+          setUploadError(error)
+          Alert.alert('Erreur', "Erreur réseau lors de l'upload")
+          reject(error)
+        }
+
+        // Gère les timeouts de requête
+        xhr.ontimeout = () => {
+          setIsUploading(false)
+          const error = new Error('Timeout de la requête')
+          setUploadError(error)
+          Alert.alert('Erreur', 'La requête a pris trop de temps')
+          reject(error)
+        }
+
+        // Ouvre la connexion et envoie la requête
+        xhr.open('POST', `${process.env.EXPO_PUBLIC_API_URL}/posts/create`)
+        xhr.timeout = 30000 // 30 secondes de timeout
+        
+        // Définit l'en-tête personnalisé pour le mode du post
+        xhr.setRequestHeader('X-Post-Mode', postMode); 
+        
+        xhr.send(formData)
+      } catch (error) {
+        console.error('=== ERREUR COMPLÈTE ===')
+        console.error(
+          'Error message:',
+          error instanceof Error ? error.message : 'Unknown error'
+        )
+        console.error('Full error:', error)
+
+        setIsUploading(false)
+        setUploadError(
+          error instanceof Error ? error : new Error('Erreur inconnue')
+        )
+        Alert.alert('Erreur', 'Erreur lors de la création du post')
+        reject(error)
       }
-
-      const formData = createFormData(imageList, postData)
-
-      // Detailed FormData debug (note: FormData.entries() might not work on React Native)
-      console.log('=== FORMDATA DEBUG ===')
-      console.log('FormData created with images count:', imageList.length)
-
-      console.log('=== SENDING REQUEST ===')
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          // IMPORTANT: Do NOT set 'Content-Type': 'multipart/form-data'.
-          // fetch will automatically set it correctly, including the boundary,
-          // when the body is a FormData object.
-          type: postMode // Custom header for post type
-        },
-        body: formData // The FormData object
-      })
-
-      console.log('Response status:', response.status)
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Response error text:', errorText)
-        throw new Error(`HTTP ${response.status}: ${errorText}`)
-      }
-
-      const result = await response.json()
-      console.log('Success result:', result)
-      alert('Votre post a été créé') // Your post has been created
-      router.push('/feed') // Navigate to feed after successful post
-    } catch (error) {
-      console.error('=== ERREUR COMPLÈTE ===') // Full Error
-      console.error(
-        'Error message:',
-        error instanceof Error ? error.message : 'Unknown error'
-      )
-      console.error(
-        'Error stack:',
-        error instanceof Error ? error.stack : 'No stack trace'
-      )
-      console.error('Full error:', error)
-      alert('Erreur lors de la création du post, veuillez réessayer.') // Error creating post, please try again.
-    }
+    })
   }
 
   const titleCharsCount = `${postTitle.length}/${TITLE_CHAR_LIMIT}`
   const descCharsCount = `${postContent.length}/${DESC_CHAR_LIMIT}`
-
+  
   return (
     <>
       <View style={styles.pageContainer}>
-        {/* Custom stack screen for header */}
+        {/* En-tête personnalisé */}
         <CustomStackScreen title='Créer un post' />
 
         <View style={styles.scrollWrapper}>
           <ScrollView contentContainerStyle={styles.scrollContent}>
-            {/* Title input section */}
+            {/* Section de saisie du titre */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Titre de votre post</Text>
               <View style={styles.inputWrapper}>
@@ -198,7 +217,7 @@ export default function CreatePost() {
 
             <View style={styles.sectionSpacer} />
 
-            {/* Description input section */}
+            {/* Section de saisie de la description */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Description</Text>
 
@@ -219,7 +238,7 @@ export default function CreatePost() {
 
             <View style={styles.sectionSpacer} />
 
-            {/* Image selection and display section */}
+            {/* Section de sélection et d'affichage des images */}
             <View style={styles.imagesContainer}>
               {imageList.map((img, index) => (
                 <View key={index} style={styles.imageWrapper}>
@@ -227,7 +246,7 @@ export default function CreatePost() {
                     style={styles.deleteButton}
                     onPress={() => {
                       const newList = [...imageList]
-                      newList.splice(index, 1) // Remove image at index
+                      newList.splice(index, 1) // Supprime l'image à l'index
                       setImageList(newList)
                     }}
                   >
@@ -236,7 +255,7 @@ export default function CreatePost() {
                   <Image source={{ uri: img }} style={styles.imageThumbnail} />
                 </View>
               ))}
-              {/* Add image button (only if less than 4 images) */}
+              {/* Bouton pour ajouter une image (visible si moins de 4 images) */}
               {imageList.length < 4 && (
                 <View style={styles.imageWrapper}>
                   <TouchableOpacity
@@ -245,16 +264,16 @@ export default function CreatePost() {
                       { width: '100%', height: '100%' }
                     ]}
                     onPress={async () => {
-                      // Launch image library to pick an image
+                      // Lance la bibliothèque d'images pour choisir une image
                       const result = await ImagePicker.launchImageLibraryAsync({
                         mediaTypes: ImagePicker.MediaTypeOptions.Images,
                         allowsEditing: true,
                         aspect: [4, 3],
-                        quality: 0.8 // Increased quality for better results
+                        quality: 0.8
                       })
 
                       if (!result.canceled && result.assets[0]) {
-                        setImageList([...imageList, result.assets[0].uri]) // Add new image URI to list
+                        setImageList([...imageList, result.assets[0].uri]) // Ajoute la nouvelle URI d'image à la liste
                       }
                     }}
                   >
@@ -266,12 +285,12 @@ export default function CreatePost() {
 
             <View style={styles.sectionSpacer} />
 
-            {/* Publish button */}
+            {/* Bouton de publication */}
             <TouchableOpacity onPress={createPost} style={styles.publishButton}>
               {isUserTeam ? (
-                <Text style={styles.publishButtonText}>Publier l'offre</Text> // Publish offer
+                <Text style={styles.publishButtonText}>Publier l'offre</Text> // Texte pour une offre
               ) : (
-                <Text style={styles.publishButtonText}>Publier le post</Text> // Publish post
+                <Text style={styles.publishButtonText}>Publier le post</Text> // Texte pour un post régulier
               )}
             </TouchableOpacity>
           </ScrollView>

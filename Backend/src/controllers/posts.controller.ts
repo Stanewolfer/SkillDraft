@@ -80,20 +80,25 @@ export const getPostsByPosterId = async (
 }
 
 // Création d'un post
-export const createPost = async (req: Request, res: Response): Promise<void> => {
-  const type = req.header('type')
-  const { posterId, description, title } = req.body
+export const createPost = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { posterId, description, title, type } = req.body
 
-// Dans votre controller, avant la logique de création
-console.log('Files received:', req.files)
-console.log('Body received:', req.body)
-console.log('Headers:', req.headers)
-  
+  // Dans votre controller, avant la logique de création
+  console.log('Files received:', req.files)
+  console.log('Body received:', req.body)
+  console.log('Headers:', req.headers)
+
   const files = req.files as {
     [fieldname: string]: Express.Multer.File[]
   }
 
-  const imageList = files?.images?.map(file => `${req.protocol}://localhost:5000/uploads/${file.filename}`) || []
+  const imageList =
+    files?.images?.map(
+      file => `${req.protocol}://localhost:5000/uploads/${file.filename}`
+    ) || []
 
   try {
     let newPost
@@ -129,35 +134,48 @@ console.log('Headers:', req.headers)
 
     res.status(201).json(newPost)
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    res.status(500).json({ message: 'Internal Server Error', error: errorMessage })
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error'
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: errorMessage })
   }
 }
 
 // suppression d'un post
-export const deletePost = async (req: Request, res: Response): Promise<void> => {
-  const postId = req.params.id;
+export const deletePost = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const postId = req.params.id
 
   try {
     // Vérifier si le post existe dans l'une des deux tables
-    const regularPost = await prisma.regularPost.findUnique({ where: { id: postId } });
-    const offerPost = await prisma.offerPost.findUnique({ where: { id: postId } });
+    const regularPost = await prisma.regularPost.findUnique({
+      where: { id: postId }
+    })
+    const offerPost = await prisma.offerPost.findUnique({
+      where: { id: postId }
+    })
 
     if (!regularPost && !offerPost) {
-      res.status(404).json({ message: 'Post not found' });
-      return;
+      res.status(404).json({ message: 'Post not found' })
+      return
     }
 
     // Supprimer dans la table correspondante
     if (regularPost) {
-      await prisma.regularPost.delete({ where: { id: postId } });
+      await prisma.regularPost.delete({ where: { id: postId } })
     } else {
-      await prisma.offerPost.delete({ where: { id: postId } });
+      await prisma.offerPost.delete({ where: { id: postId } })
     }
 
-    res.json({ message: 'Post deleted successfully' });
+    res.json({ message: 'Post deleted successfully' })
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    res.status(500).json({ message: 'Internal Server Error', error: errorMessage });
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unknown error occurred'
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: errorMessage })
   }
-};
+}
