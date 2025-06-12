@@ -27,6 +27,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
   const [username, setUsername] = useState<string>("Chargement...");
   const [inTeam, setInTeam] = useState<string>("Chargement...");
   const [teamColor, setTeamColor] = useState<string>("");
+  const [profilePicture, setProfilePicture] = useState<string>("");
 
   React.useEffect(() => {
     const fetchUsername = async () => {
@@ -57,6 +58,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
             const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${storedUserId}`);
             const data = await response.json();
             setUsername(data.teamname);
+            setProfilePicture(data.avatarUrl);
             setInTeam("Équipe");
             setTeamColor(data.teamColor ? data.teamColor : COLORS.main_blue);
 
@@ -163,7 +165,7 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
             >
               <Image
                 source={{
-                  uri: "https://e.sport.fr/wp-content/uploads/2024/06/Gentle_Mates_beyAz_at_VCT_2024_EMEA_Kickoff-120x86.jpg",
+                  uri: profilePicture,
                 }}
                 style={{ width: 32, height: 32, borderRadius: 16 }}
               />
