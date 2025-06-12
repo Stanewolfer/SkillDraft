@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { COLORS } from './colors'
 
 export const styles = StyleSheet.create({
@@ -22,12 +22,23 @@ export const styles = StyleSheet.create({
     borderRadius: 25,
     marginRight: 10
   },
-    nameTitle: {
-        fontSize: 18,
-        fontWeight: '300',
-        color: COLORS.main,
-        marginBottom: 2,
-    },
+
+  nameTitle: {
+    fontSize: 18,
+    fontWeight: '300',
+    color: COLORS.main,
+    marginBottom: 2
+  },
+
+  verifiedBadge: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: COLORS.main_blue,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 5
+  },
 
   nameTitle: {
     fontSize: 20,
@@ -73,6 +84,37 @@ export const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     marginLeft: 10
+  },
+
+  modalContainer: {
+    flex: 1,
+    backdropFilter: 'blur(10px)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20
+  },
+
+  modalImage: {
+    width: '100%',
+    height: 300,
+    borderRadius: 25,
+    marginBottom: 20
+  },
+
+  navigationButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 20
+  },
+
+  closeButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    padding: 10,
+    backgroundColor: COLORS.dark_main_blue,
+    borderRadius: 50
   },
 
   buttonsContainer: {
