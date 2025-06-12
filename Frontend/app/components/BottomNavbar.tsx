@@ -134,12 +134,14 @@ const styles = StyleSheet.create({
   },
   bottomButtonLabel: {
     marginTop: 4,
-    fontSize: 6, // Change to 8 once logout is moved away
+    fontSize: 6,
     color: COLORS.background_blue,
   },
   activeBottomButton: {
     backgroundColor: COLORS.background_blue,
     paddingVertical: 10,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   activeBottomButtonLabel: {
     color: COLORS.main_blue,
