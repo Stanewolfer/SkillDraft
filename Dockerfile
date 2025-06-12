@@ -16,6 +16,9 @@ RUN npm ci --prefix ./Backend --only=development=false
 # Copie le dossier prisma en premier pour la génération du client Prisma
 COPY Backend/prisma ./Backend/prisma
 
+# Migre la base de données
+RUN npx prisma migrate deploy --schema=./Backend/prisma/schema.prisma
+
 # Génère le client Prisma
 RUN npx prisma generate --schema=./Backend/prisma/schema.prisma
 
