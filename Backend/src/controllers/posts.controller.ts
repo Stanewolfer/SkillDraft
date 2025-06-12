@@ -85,20 +85,16 @@ export const createPost = async (
   res: Response
 ): Promise<void> => {
   const { posterId, description, title, type } = req.body
+  let imageList: string[] = []
 
-  // Dans votre controller, avant la logique de création
-  console.log('Files received:', req.files)
-  console.log('Body received:', req.body)
-  console.log('Headers:', req.headers)
-
-  const files = req.files as {
-    [fieldname: string]: Express.Multer.File[]
-  }
-
-  const imageList =
-    files?.images?.map(
+  if (req.files) {
+    const files = req.files as {
+      [fieldname: string]: Express.Multer.File[]
+    }
+    imageList = files?.images?.map(
       file => `${req.protocol}://localhost:5000/uploads/${file.filename}`
     ) || []
+  }
 
   try {
     let newPost
@@ -127,12 +123,70 @@ export const createPost = async (
           applyingUserList: []
         }
       })
+      res.status(201).json({
+        message: "Offer post created successfully here's the post's id",
+        postId: newPost.id
+      })
     } else {
       res.status(400).json({ message: 'Invalid post type' })
       return
     }
 
     res.status(201).json(newPost)
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error'
+    res
+      .status(500)
+      .json({ message: 'Internal Server Error', error: errorMessage })
+  }
+}
+
+export const updatePost = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const postId = req.params.id
+  const { title, content } = req.body
+  const files = req.files as {
+    [fieldname: string]: Express.Multer.File[]
+  }
+  const imageList =
+    files?.images?.map(
+      file => `${req.protocol}://localhost:5000/uploads/${file.filename}`
+    ) || []
+
+  try {
+    let updatedPost
+
+    // Rechercher le post dans la table regularPost
+    updatedPost = await prisma.regularPost.findUnique({
+      where: { id: postId }
+    })
+
+    if (updatedPost) {
+      updatedPost = await prisma.regularPost.update({
+        where: { id: postId },
+        data: { title, description: content, imageList: imageList }
+      })
+    } else {
+      // Rechercher le post dans la table offerPost
+      updatedPost = await prisma.offerPost.findUnique({
+        where: { id: postId }
+      })
+
+      if (updatedPost) {
+        updatedPost = await prisma.offerPost.update({
+          where: { id: postId },
+          data: { title, description: content, imageList: imageList }
+        })
+      } else {
+        res.status(404).json({ message: 'Post not found' })
+        return
+      }
+    }
+
+    res.json(updatedPost)
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error'

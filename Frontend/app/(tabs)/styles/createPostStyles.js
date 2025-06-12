@@ -202,5 +202,15 @@ export const styles = StyleSheet.create({
   },
   publishButtonDisabled: {
     opacity: 0.6
-  }
+  },
+  uploadStatus: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    right: 10,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center'
+  },
 })

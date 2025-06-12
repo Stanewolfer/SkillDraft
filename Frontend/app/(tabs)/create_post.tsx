@@ -27,15 +27,11 @@ const DESC_CHAR_LIMIT = 2000
 
 export default function CreatePost() {
   const router = useRouter()
-  const [mode, setMode] = useState<'regular' | 'offer'>('regular')
   const [postTitle, setPostTitle] = useState('')
   const [postContent, setPostContent] = useState('')
   const [posterId, setPosterId] = useState<string | null>(null)
   const [isUserTeam, setIsUserTeam] = useState(false) // Vrai si l'utilisateur est une 'équipe', faux sinon
-  const [imageList, setImageList] = useState<string[]>([])
-  const [isUploading, setIsUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [uploadError, setUploadError] = useState<Error | null>(null)
+  const [images, setImages] = useState<string[]>([])
 
   // Récupère l'ID et le type de l'utilisateur depuis AsyncStorage
   useEffect(() => {
@@ -48,148 +44,75 @@ export default function CreatePost() {
     fetchUserData()
   }, [])
 
-  const createPost = async () => {
-    if (!posterId) {
-      Alert.alert('Erreur', 'ID utilisateur introuvable.')
-      return
-    }
-    if (!postTitle || !postContent) {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs.')
-      return
-    }
-
-    setIsUploading(true)
-    setUploadProgress(0)
-    setUploadError(null)
-
-    // Détermine le mode du post ('offer' ou 'regular')
-    const postMode = isUserTeam ? 'offer' : 'regular'
-
-    console.log('=== DEBUG UPLOAD ===')
-    console.log('PosterId:', posterId)
-    console.log('Title:', postTitle)
-    console.log('Description:', postContent)
-    console.log('Mode:', postMode)
-    console.log('Images count:', imageList.length)
-    console.log('Images URIs:', imageList)
-
-    return new Promise((resolve, reject) => {
-      try {
-        const formData = new FormData()
-
-        // Ajoute les données du post au FormData
-        formData.append('posterId', posterId)
-        formData.append('title', postTitle)
-        formData.append('description', postContent)
-        formData.append('type', postMode)
-
-        // Ajoute chaque image au FormData
-        imageList.forEach((imageUri, index) => {
-          let cleanUri = imageUri
-          // Prépare l'URI pour Android si nécessaire
-          if (Platform.OS === 'android' && !imageUri.startsWith('file://')) {
-            cleanUri = `file://${imageUri}`
-          }
-
-          // Détermine le type MIME de l'image
-          const getTypeFromUri = (uri: string) => {
-            const ext = uri.split('.').pop()?.toLowerCase()
-            switch (ext) {
-              case 'jpg':
-              case 'jpeg':
-                return 'image/jpeg'
-              case 'png':
-                return 'image/png'
-              case 'gif':
-                return 'image/gif'
-              default:
-                return 'image/jpeg'
-            }
-          }
-
-          formData.append('images', {
-            uri: cleanUri,
-            type: getTypeFromUri(cleanUri),
-            name: `image_${Date.now()}_${index}.${cleanUri.split('.').pop()}`
-          } as any)
-        })
-
-        const xhr = new XMLHttpRequest()
-
-        // Gère la progression de l'upload
-        xhr.upload.onprogress = event => {
-          if (event.lengthComputable) {
-            const progress = (event.loaded / event.total) * 100
-            setUploadProgress(progress)
-            console.log(`Progression: ${Math.round(progress)}%`)
-          }
-        }
-
-        // Gère la réponse de la requête
-        xhr.onload = () => {
-          setIsUploading(false)
-
-          if (xhr.status >= 200 && xhr.status < 300) {
-            console.log('Upload terminé avec succès')
-            setUploadProgress(100)
-            Alert.alert('Succès', 'Votre post a été créé')
-            router.push('/feed')
-            resolve(xhr.response)
-          } else {
-            const error = new Error(`HTTP ${xhr.status}: ${xhr.responseText}`)
-            setUploadError(error)
-            Alert.alert('Erreur', 'Erreur lors de la création du post')
-            reject(error)
-          }
-        }
-
-        // Gère les erreurs réseau
-        xhr.onerror = () => {
-          setIsUploading(false)
-          const error = new Error('Erreur réseau')
-          setUploadError(error)
-          Alert.alert('Erreur', "Erreur réseau lors de l'upload")
-          reject(error)
-        }
-
-        // Gère les timeouts de requête
-        xhr.ontimeout = () => {
-          setIsUploading(false)
-          const error = new Error('Timeout de la requête')
-          setUploadError(error)
-          Alert.alert('Erreur', 'La requête a pris trop de temps')
-          reject(error)
-        }
-
-        // Ouvre la connexion et envoie la requête
-        xhr.open('POST', `${process.env.EXPO_PUBLIC_API_URL}/posts/create`)
-        xhr.timeout = 30000 // 30 secondes de timeout
-        
-        // Définit l'en-tête personnalisé pour le mode du post
-        xhr.setRequestHeader('X-Post-Mode', postMode); 
-        
-        xhr.send(formData)
-      } catch (error) {
-        console.error('=== ERREUR COMPLÈTE ===')
-        console.error(
-          'Error message:',
-          error instanceof Error ? error.message : 'Unknown error'
-        )
-        console.error('Full error:', error)
-
-        setIsUploading(false)
-        setUploadError(
-          error instanceof Error ? error : new Error('Erreur inconnue')
-        )
-        Alert.alert('Erreur', 'Erreur lors de la création du post')
-        reject(error)
-      }
-    })
-  }
-
   const titleCharsCount = `${postTitle.length}/${TITLE_CHAR_LIMIT}`
   const descCharsCount = `${postContent.length}/${DESC_CHAR_LIMIT}`
-  
+
+  const apiUrlPost = `${process.env.EXPO_PUBLIC_API_URL}/posts/create`
+  const mode = isUserTeam ? 'offer' : 'regular' // Détermine le mode en fonction du type d'utilisateur
+
+  // Fonction pour créer un post
+  const createPost = async () => {
+    try {
+      let response = await fetch(apiUrlPost, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          title: postTitle,
+          description: postContent,
+          posterId: posterId,
+          type: mode // Envoie le type de post (offre ou régulier)
+        })
+      })
+      const result = await response.json()
+
+      console.log('Résultat de la création du post:', result)
+      console.log("Ajout d'images:", images)
+
+      const formData = new FormData()
+      if (images) {
+        images.forEach((uri, index) => {
+          formData.append('images', {
+            uri,
+            name: `image_${index}.jpg`,
+            type: 'image/jpeg'
+          } as any)
+        })
+      }
+
+      response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_URL}/posts/update/${result.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json'
+          },
+          body: formData
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Erreur lors de la création du post')
+      }
+
+      Alert.alert('Succès', 'Post créé avec succès !')
+      console.log('reponse:', response)
+      // Réinitialise les champs après la création du post
+      setPostTitle('')
+      setPostContent('')
+      setImages([])
+      router.push('/feed')
+    } catch (error) {
+      console.error('Erreur lors de la création du post:', error)
+      Alert.alert(
+        'Erreur',
+        'Une erreur est survenue lors de la création du post.'
+      )
+    }
+  }
+
   return (
     <>
       <View style={styles.pageContainer}>
@@ -240,14 +163,14 @@ export default function CreatePost() {
 
             {/* Section de sélection et d'affichage des images */}
             <View style={styles.imagesContainer}>
-              {imageList.map((img, index) => (
+              {images.map((img, index) => (
                 <View key={index} style={styles.imageWrapper}>
                   <TouchableOpacity
                     style={styles.deleteButton}
                     onPress={() => {
-                      const newList = [...imageList]
+                      const newList = [...images]
                       newList.splice(index, 1) // Supprime l'image à l'index
-                      setImageList(newList)
+                      setImages(newList)
                     }}
                   >
                     <Text style={styles.deleteButtonText}>×</Text>
@@ -256,7 +179,7 @@ export default function CreatePost() {
                 </View>
               ))}
               {/* Bouton pour ajouter une image (visible si moins de 4 images) */}
-              {imageList.length < 4 && (
+              {images.length < 4 && (
                 <View style={styles.imageWrapper}>
                   <TouchableOpacity
                     style={[
@@ -273,7 +196,7 @@ export default function CreatePost() {
                       })
 
                       if (!result.canceled && result.assets[0]) {
-                        setImageList([...imageList, result.assets[0].uri]) // Ajoute la nouvelle URI d'image à la liste
+                        setImages([...images, result.assets[0].uri]) // Ajoute la nouvelle URI d'image à la liste
                       }
                     }}
                   >
