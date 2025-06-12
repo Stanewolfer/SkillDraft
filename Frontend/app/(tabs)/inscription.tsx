@@ -8,7 +8,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  Modal
+  Modal,
+  Image
 } from 'react-native'
 import * as Unicons from '@iconscout/react-native-unicons'
 import { COLORS } from './styles/colors'
@@ -399,21 +400,25 @@ export default function InscriptionScreen() {
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <View style={{ flex: 1 }}>
                     <CustomInput
-                      placeholder="Entrez l'équipe dont vous faites partie (Optionnel)"
-                      value={teamId? teamId : teamName}
+                      placeholder="Votre équipe (ID ou nom)"
+                      value={teamId ? teamId : teamName}
                       onChangeText={setTeamName}
                     />
                   </View>
                   <TouchableOpacity
                     onPress={() => fetchTeamIdByName(teamName)}
                     style={{
-                      marginLeft: 8,
-                      backgroundColor: COLORS.main_blue,
-                      padding: 10,
-                      borderRadius: 8,
+                      marginLeft: 10,
                     }}
                   >
-                    <Text style={{ color: "white", fontWeight: "bold" }}>Rechercher</Text>
+                    <Text
+                      style={{
+                        color: COLORS.main_blue,
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      Recherche
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </>
@@ -632,7 +637,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
-    marginBottom: 12
   },
   input: {
     flex: 1,

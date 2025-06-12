@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import CustomStackScreen from '../components/CustomStackScreen'
 import { mailboxStyles } from '@/app/(tabs)/styles/mailboxStyles'
-import { TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, View, Text } from 'react-native'
 import PlayerConversation from '../components/PlayerConversation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { BottomNavbar } from '../components/BottomNavbar'
 import { router } from 'expo-router'
+import { COLORS } from './styles/colors'
 
 const Mailbox = () => {
   const [convData, setConvData] = useState([])
@@ -106,6 +107,14 @@ const Mailbox = () => {
               </TouchableOpacity>
             )
           })}
+          <TouchableOpacity
+            style={mailboxStyles.floatingButton}
+            onPress={() => router.push('/create_conversation')}
+          >
+            <View style={mailboxStyles.floatingButtonInner}>
+              <Text style={{ color: COLORS.background_blue, fontSize: 24 }}>+</Text>
+            </View>
+          </TouchableOpacity>
       </View>
     </>
   )

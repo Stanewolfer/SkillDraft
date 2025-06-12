@@ -6,6 +6,7 @@ import * as Unicons from "@iconscout/react-native-unicons";
 import { LinearGradient } from "expo-linear-gradient";
 import { notificationData } from "../(tabs)/notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { create } from "react-test-renderer";
 
 interface CustomStackScreenProps {
   title: string;
@@ -18,6 +19,7 @@ const minimalHeaderTitlesMap: { [key: string]: string } = {
   notifications: "Notifications",
   profile: "Mon Profil",
   messaging: "Messagerie",
+  create_conversation: "Créer une conversation",
   skilldraft: "Bienvenue sur Skilldraft !",
 };
 

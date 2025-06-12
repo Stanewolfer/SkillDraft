@@ -3,15 +3,13 @@ import { prisma } from '../config'
 
 // créer une conversation
 export const createConv = async (req: Request, res: Response) => {
-  const { user1Id, user2Id, teamId } = req.body
+  const { user1Id, user2Id } = req.body
 
   const existingConv = await prisma.conversation.findFirst({
     where: {
       OR: [
         { user1Id: user1Id, user2Id: user2Id },
-        { user1Id: user2Id, user2Id: user1Id },
-        { teamId: teamId, user1Id: user1Id, user2Id: user2Id },
-        { teamId: teamId, user1Id: user2Id, user2Id: user1Id }
+        { user1Id: user2Id, user2Id: user1Id }
       ]
     }
   })
@@ -22,9 +20,8 @@ export const createConv = async (req: Request, res: Response) => {
 
   const entity = await prisma.conversation.create({
     data: {
-      user1Id: user1Id,
-      user2Id: user2Id,
-      teamId: teamId,
+      user1Id,
+      user2Id,
       createdAt: new Date(),
       updatedAt: new Date()
     }
@@ -84,19 +81,17 @@ export const getConvsByTeamId = async (req: Request, res: Response) => {
 // mettre à jour une conversation
 export const updateConv = async (req: Request, res: Response) => {
   const convId = req.params.convId
-  const { user1Id, user2Id, teamId } = req.body
+  const { user1Id, user2Id } = req.body
 
   const conversation = await prisma.conversation.update({
-    where: {
-      id: convId
-    },
+    where: { id: convId },
     data: {
-      user1Id: user1Id,
-      user2Id: user2Id,
-      teamId: teamId,
+      user1Id,
+      user2Id,
       updatedAt: new Date()
     }
   })
+
 
   if (!conversation) {
     return res.status(404).json({ message: 'Conversation not found' })
@@ -121,3 +116,44 @@ export const deleteConv = async (req: Request, res: Response) => {
 
   res.status(200).json({ message: 'Conversation deleted successfully' })
 }
+
+export const startOrGetConv = async (req: Request, res: Response) => {
+  const { user1Id, user2Id } = req.body;
+
+  if (!user1Id || !user2Id) {
+    return res.status(400).json({ message: 'Les deux IDs utilisateurs sont requis.' });
+  }
+
+  try {
+    // Cherche une conversation existante entre ces deux utilisateurs (dans les deux sens)
+    const existingConv = await prisma.conversation.findFirst({
+      where: {
+        OR: [
+          { user1Id, user2Id },
+          { user1Id: user2Id, user2Id: user1Id }
+        ]
+      }
+    });
+
+    if (existingConv) {
+      return res.status(200).json(existingConv);
+    }
+
+    // Si elle n'existe pas, on la crée
+    const newConv = await prisma.conversation.create({
+      data: {
+        user1Id,
+        user2Id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    });
+
+    return res.status(201).json(newConv);
+  } catch (error) {
+    console.error('Erreur dans startOrGetConv:', error);
+    return res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
+

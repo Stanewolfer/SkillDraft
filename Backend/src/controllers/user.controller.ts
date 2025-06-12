@@ -41,6 +41,33 @@ export const getUserById = async (
   }
 }
 
+// récupération d'un user via son username
+export const getUserByName = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const username = req.params.username
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        username: username
+      }
+    })
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found' })
+      return
+    }
+
+    res.json(user)
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred'
+    res.status(500).json({ message: 'Internal Server Error', error: errorMessage })
+  }
+}
+
+
 // mise à jour d'un user
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
   const userId = req.params.id
