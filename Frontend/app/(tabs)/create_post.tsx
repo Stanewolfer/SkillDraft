@@ -192,7 +192,8 @@ export default function CreatePost() {
                         mediaTypes: ImagePicker.MediaTypeOptions.Images,
                         allowsEditing: true,
                         aspect: [4, 3],
-                        quality: 0.8
+                        quality: 0.8,
+                        base64: false
                       })
 
                       if (!result.canceled && result.assets[0]) {
