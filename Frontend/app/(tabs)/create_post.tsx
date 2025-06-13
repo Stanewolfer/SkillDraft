@@ -72,7 +72,8 @@ export default function CreatePost() {
       console.log("Ajout d'images:", images)
 
       const formData = new FormData()
-      if (images) {
+      if (images.length > 0) {
+        const formData = new FormData()
         images.forEach((uri, index) => {
           formData.append('images', {
             uri,
@@ -80,22 +81,24 @@ export default function CreatePost() {
             type: 'image/jpeg'
           } as any)
         })
-      }
 
-      response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/posts/update/${result.id}`,
-        {
+        const imageUploadUrl = `${process.env.EXPO_PUBLIC_API_URL}/posts/update/${result.id}`
+        console.log('Envoi images vers:', imageUploadUrl)
+
+        response = await fetch(imageUploadUrl, {
           method: 'PUT',
           headers: {
-            'Accept': 'application/json'
+            'Accept': 'application/json' // PAS DE Content-Type ici
           },
           body: formData
-        }
-      )
+        })
 
-      if (!response.ok) {
-        throw new Error(result.message || 'Erreur lors de la création du post')
+        if (!response.ok) {
+          const errorText = await response.text()
+          throw new Error(`Échec du téléchargement des images: ${errorText}`)
+        }
       }
+
 
       Alert.alert('Succès', 'Post créé avec succès !')
       console.log('reponse:', response)

@@ -17,7 +17,7 @@ const minimalHeaderTitlesMap: { [key: string]: string } = {
   inscription: "Inscription",
   fast_search: "Recherche rapide",
   notifications: "Notifications",
-  profile: "Mon Profil",
+  profile: "Page de Profil",
   messaging: "Messagerie",
   create_conversation: "Créer une conversation",
   skilldraft: "Bienvenue sur Skilldraft !",
@@ -159,7 +159,12 @@ export default function CustomStackScreen({ title }: CustomStackScreenProps) {
             null
           ) : (
             <TouchableOpacity
-              onPress={() => router.push("/profile")}
+              onPress={async () => {
+                const storedUserId = await AsyncStorage.getItem("userId");
+                if (storedUserId) {
+                  router.push(`/profile/${storedUserId}`);
+                }
+              }}
               style={{
                 flexDirection: "row",
                 alignItems: "center",

@@ -69,7 +69,6 @@ const CreateConversation = () => {
         alert('Aucun utilisateur trouvé.');
       }
     } catch (error) {
-      console.error('Erreur recherche utilisateur :', error);
       alert('Erreur lors de la recherche. Veuillez réessayer.');
       setUserFound(null);
     }
@@ -148,7 +147,7 @@ const CreateConversation = () => {
               borderRadius: 8
             }}
           >
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>Envoyer un message</Text>
+            <Text style={{ color: COLORS.background_blue, fontWeight: 'bold' }}>Envoyer un message</Text>
           </TouchableOpacity>
         </View>
       )}

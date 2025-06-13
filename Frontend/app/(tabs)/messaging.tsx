@@ -6,11 +6,12 @@ import {
   ScrollView,
   Image,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  TouchableOpacity
 } from 'react-native'
 import { COLORS } from './styles/colors'
 import { Button, NativeBaseProvider } from 'native-base'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import CustomStackScreen from '../components/CustomStackScreen'
 import { messageStyles as styles } from './styles/messageStyles'
@@ -33,6 +34,7 @@ const Messaging: React.FC = () => {
     otherUsername: string
   }>()
 
+  const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([])
   const [messageContent, setMessageContent] = useState('')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
@@ -157,7 +159,13 @@ const Messaging: React.FC = () => {
                           key={msg.id}
                           style={isOther ? styles.messageWrapperOther : styles.messageWrapperMe}
                         >
-                          <Image source={{ uri: msg.sender.avatarUrl }} style={styles.profilePic} />
+                          {isOther ? (
+                            <TouchableOpacity onPress={() => router.push(`/profile/${msg.sender.id}`)}>
+                              <Image source={{ uri: msg.sender.avatarUrl }} style={styles.profilePic} />
+                            </TouchableOpacity>
+                          ) : (
+                            <Image source={{ uri: msg.sender.avatarUrl }} style={styles.profilePic} />
+                          )}
                           <View style={isOther ? styles.messageContentOther : styles.messageContentMe}>
                             <Text
                               style={{
