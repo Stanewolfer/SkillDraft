@@ -114,7 +114,7 @@ export const login = async (req: Request, res: Response) => {
 export const registerEntity = async (req: Request, res: Response) => {
   const entityType = req.header('type')
   const { username, password, email, teamId, ...rest } = req.body
-  const avatarUrl = req.file?.path || 'http://localhost:5000/uploads/empty_profile.png'
+  const avatarUrl = req.file?.path || 'http://127.0.0.1:4040/uploads/empty_profile.png'
   if (!username || !password) {
     return res
       .status(400)

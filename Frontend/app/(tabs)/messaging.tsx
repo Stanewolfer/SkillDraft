@@ -6,11 +6,12 @@ import {
   ScrollView,
   Image,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  TouchableOpacity
 } from 'react-native'
 import { COLORS } from './styles/colors'
 import { Button, NativeBaseProvider } from 'native-base'
-import { useSearchParams } from 'expo-router/build/hooks'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import CustomStackScreen from '../components/CustomStackScreen'
 import { messageStyles as styles } from './styles/messageStyles'
@@ -28,83 +29,70 @@ interface Message {
 }
 
 const Messaging: React.FC = () => {
-  const conversationId = useSearchParams().get('conversationId')
-  const otherUsername = useSearchParams().get('otherUsername')
+  const { conversationId, otherUsername } = useLocalSearchParams<{
+    conversationId: string
+    otherUsername: string
+  }>()
 
+  const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([])
-  const [messageContent, setMessageContent] = useState<string>('')
+  const [messageContent, setMessageContent] = useState('')
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
-
   const scrollViewRef = useRef<ScrollView>(null)
 
   useEffect(() => {
-    const loadUserData = async () => {
-      const userId = await AsyncStorage.getItem('userId')
-      setCurrentUserId(userId)
+    const loadUser = async () => {
+      const id = await AsyncStorage.getItem('userId')
+      if (id) setCurrentUserId(id)
     }
-    loadUserData()
+    loadUser()
   }, [])
 
-  const fetchMessages = async (): Promise<void> => {
+  const fetchMessages = async () => {
+    if (!conversationId) return
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/messages/get-messages/${conversationId}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
+        `${process.env.EXPO_PUBLIC_API_URL}/messages/get-messages/${conversationId}`
       )
       const data = await response.json()
       if (response.ok) {
         setMessages(data.messages || [])
+      } else {
+        console.error('Erreur API messages:', data.message)
+        setMessages([])
       }
     } catch (error) {
-      console.error('Error fetching messages:', error)
+      console.error('Erreur réseau messages:', error)
       setMessages([])
-      console.error(
-        'Failed to fetch messages, setting messages to empty array.'
-      )
-      console.error(
-        'Error details:',
-        error instanceof Error ? error.message : error
-      )
     }
   }
 
   const groupMessagesByDate = (
     messagesToGroup: Message[]
   ): { [key: string]: Message[] } => {
-    return messagesToGroup.reduce((groups, message) => {
-      const date = new Date(message.createdAt).toLocaleDateString('fr-FR', {
+    return messagesToGroup.reduce((groups, msg) => {
+      const date = new Date(msg.createdAt).toLocaleDateString('fr-FR', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
       })
-      if (!groups[date]) {
-        groups[date] = []
-      }
-      groups[date].push(message)
+      if (!groups[date]) groups[date] = []
+      groups[date].push(msg)
       return groups
     }, {} as Record<string, Message[]>)
   }
 
-  const sendMessage = async (): Promise<void> => {
-    if (!messageContent.trim() || !conversationId || !currentUserId) return
+  const sendMessage = async () => {
+    const trimmed = messageContent.trim()
+    if (!trimmed || !currentUserId || !conversationId) return
 
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/messages/send/${currentUserId}`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            conversationId,
-            content: messageContent
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ conversationId, content: trimmed })
         }
       )
 
@@ -112,10 +100,11 @@ const Messaging: React.FC = () => {
         setMessageContent('')
         fetchMessages()
       } else {
-        console.error('Error sending message:', response.statusText)
+        const error = await response.json()
+        console.error('Erreur envoi message:', error.message)
       }
     } catch (error) {
-      console.error('Error sending message:', error)
+      console.error('Erreur réseau envoi message:', error)
     }
   }
 
@@ -126,16 +115,14 @@ const Messaging: React.FC = () => {
   }, [conversationId])
 
   useEffect(() => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd({ animated: true })
-    }
+    scrollViewRef.current?.scrollToEnd({ animated: true })
   }, [messages])
 
   const messageGroups = groupMessagesByDate(messages)
 
   return (
     <>
-      <CustomStackScreen title={otherUsername || 'Utilisateur inconnu'} />
+      <CustomStackScreen title={otherUsername || 'Utilisateur'} />
       <NativeBaseProvider>
         <KeyboardAvoidingView
           style={{ flex: 1 }}
@@ -144,18 +131,11 @@ const Messaging: React.FC = () => {
         >
           <View style={styles.container}>
             <Text style={styles.title}>
-              Bienvenue dans le début de votre conversation épique avec{' '}
-              {otherUsername} !
+              Bienvenue dans ta conversation avec {otherUsername} !
             </Text>
 
             {messages.length === 0 ? (
-              <Text
-                style={{
-                  color: COLORS.main_blue,
-                  textAlign: 'center',
-                  marginTop: 20
-                }}
-              >
+              <Text style={{ color: COLORS.main_blue, textAlign: 'center', marginTop: 20 }}>
                 Aucun message pour le moment.
               </Text>
             ) : (
@@ -166,68 +146,53 @@ const Messaging: React.FC = () => {
                   scrollViewRef.current?.scrollToEnd({ animated: true })
                 }
               >
-                {Object.entries(messageGroups).map(([date, dateMessages]) => (
+                {Object.entries(messageGroups).map(([date, group]) => (
                   <View key={date} style={styles.dateGroup}>
                     <View style={styles.dateHeader}>
                       <Text style={styles.dateText}>{date}</Text>
                     </View>
 
-                    {dateMessages.map(message => (
-                      <View
-                        key={message.id}
-                        style={
-                          message.sender.username === otherUsername
-                            ? styles.messageWrapperOther
-                            : styles.messageWrapperMe
-                        }
-                      >
-                        <Image
-                          source={{ uri: message.sender.avatarUrl }}
-                          style={styles.profilePic}
-                        />
+                    {group.map(msg => {
+                      const isOther = msg.sender.username === otherUsername
+                      return (
                         <View
-                          style={
-                            message.sender.username === otherUsername
-                              ? styles.messageContentOther
-                              : styles.messageContentMe
-                          }
+                          key={msg.id}
+                          style={isOther ? styles.messageWrapperOther : styles.messageWrapperMe}
                         >
+                          {isOther ? (
+                            <TouchableOpacity onPress={() => router.push(`/profile/${msg.sender.id}`)}>
+                              <Image source={{ uri: msg.sender.avatarUrl }} style={styles.profilePic} />
+                            </TouchableOpacity>
+                          ) : (
+                            <Image source={{ uri: msg.sender.avatarUrl }} style={styles.profilePic} />
+                          )}
+                          <View style={isOther ? styles.messageContentOther : styles.messageContentMe}>
+                            <Text
+                              style={{
+                                color: isOther ? COLORS.main_blue : COLORS.background_blue,
+                                fontSize: 15,
+                                paddingHorizontal: 10
+                              }}
+                            >
+                              {msg.content}
+                            </Text>
+                          </View>
                           <Text
-                            style={
-                              message.sender.username === otherUsername
-                                ? {
-                                    color: COLORS.main_blue,
-                                    fontSize: 15,
-                                    paddingHorizontal: 10
-                                  }
-                                : {
-                                    color: COLORS.background_blue,
-                                    fontSize: 15,
-                                    paddingHorizontal: 10
-                                  }
-                            }
+                            style={{
+                              color: COLORS.main_blue,
+                              fontSize: 12,
+                              marginTop: 5,
+                              marginHorizontal: 5
+                            }}
                           >
-                            {message.content}
-                          </Text>
-                        </View>
-                        <Text
-                          style={{
-                            color: COLORS.main_blue,
-                            fontSize: 12,
-                            marginTop: 5,
-                            marginHorizontal: 5
-                          }}
-                        >
-                          {new Date(message.createdAt).toLocaleTimeString(
-                            'fr-FR',
-                            {
+                            {new Date(msg.createdAt).toLocaleTimeString('fr-FR', {
                               hour: '2-digit',
                               minute: '2-digit'
-                            }
-                          )}
-                        </Text>
-                      </View>
-                    ))}
+                            })}
+                          </Text>
+                        </View>
+                      )
+                    })}
                   </View>
                 ))}
               </ScrollView>
@@ -240,19 +205,19 @@ const Messaging: React.FC = () => {
               placeholder='Écrire un message...'
               placeholderTextColor={COLORS.main_blue}
               value={messageContent}
-              onChangeText={(text: string) => setMessageContent(text)}
-              multiline={true}
-              onSubmitEditing={sendMessage}
+              onChangeText={setMessageContent}
+              multiline
               blurOnSubmit={false}
+              onSubmitEditing={sendMessage}
               onKeyPress={e => {
                 if (e.nativeEvent.key === 'Enter') {
-                  e.preventDefault()
+                  e.preventDefault?.()
                   sendMessage()
                 }
               }}
             />
             <Button style={styles.sendButton} onPress={sendMessage}>
-              <Text>Envoyer</Text>
+              <Text style={{ color: 'white' }}>Envoyer</Text>
             </Button>
           </View>
         </KeyboardAvoidingView>

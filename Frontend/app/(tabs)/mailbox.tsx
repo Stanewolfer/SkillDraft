@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import CustomStackScreen from '../components/CustomStackScreen'
 import { mailboxStyles } from '@/app/(tabs)/styles/mailboxStyles'
-import { TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, View, Text } from 'react-native'
 import PlayerConversation from '../components/PlayerConversation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { BottomNavbar } from '../components/BottomNavbar'
 import { router } from 'expo-router'
+import { COLORS } from './styles/colors'
 
 const Mailbox = () => {
   const [convData, setConvData] = useState([])
@@ -43,6 +44,12 @@ const Mailbox = () => {
           )
           const data = await res.json()
           usersData[id] = data
+
+          const resTeam = await fetch(
+            `${process.env.EXPO_PUBLIC_API_URL}/teams/get-team-by-id/${data.teamId}`
+          )
+          const teamData = await resTeam.json()
+          usersData[id].teamname = teamData.teamname || 'Aucune équipe'
         })
       )
 
@@ -88,6 +95,7 @@ const Mailbox = () => {
                 <PlayerConversation
                   key={index}
                   pseudonym={otherUser?.username || 'Utilisateur inconnu'}
+                  team={otherUser?.teamname || 'Aucune équipe'}
                   lastMessage={
                     conversation.lastMessage?.content || 'Aucun message'
                   }
@@ -106,6 +114,14 @@ const Mailbox = () => {
               </TouchableOpacity>
             )
           })}
+          <TouchableOpacity
+            style={mailboxStyles.floatingButton}
+            onPress={() => router.push('/create_conversation')}
+          >
+            <View style={mailboxStyles.floatingButtonInner}>
+              <Text style={{ color: COLORS.background_blue, fontSize: 24 }}>+</Text>
+            </View>
+          </TouchableOpacity>
       </View>
     </>
   )

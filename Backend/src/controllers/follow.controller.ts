@@ -28,7 +28,7 @@ export const createFollow = async (
     }
 
     if (existingFollow) {
-      res.status(400).json({ message: 'Follow relationship already exists' })
+      res.status(400).json({ message: 'Vous suivez déjà cet utilisateur !' })
       return
     }
 

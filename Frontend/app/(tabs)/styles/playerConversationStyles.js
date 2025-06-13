@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
     teamTitle: {
         fontStyle: 'italic',
         color: COLORS.text_white,
-        marginLeft: 5
+        marginLeft: 2
     },
 
     lastMessage: {

@@ -28,6 +28,8 @@ export default function ProfileScreen() {
   const [username, setUsername] = React.useState("Chargement...");
   const [userDescription, setUserDescription] = React.useState("Chargement...");
   const [inTeam, setInTeam] = React.useState("Chargement...");
+  const [teamColor, setTeamColor] = React.useState(COLORS.main_blue);
+  const [profilePicture, setProfilePicture] = React.useState(AVATAR_URL);
 
   React.useEffect(() => {
     const fetchUsername = async () => {
@@ -42,6 +44,8 @@ export default function ProfileScreen() {
           setUsername(data.username);
           setUserDescription(data.description ? data.description : "Aucune description");
           setInTeam(teamData.teamname ? teamData.teamname : "Aucune équipe");
+          setTeamColor(teamData.teamColor ? teamData.teamColor : COLORS.main_blue);
+          setProfilePicture(data.avatarUrl ? data.avatarUrl : AVATAR_URL);
         }
 
       } catch (error) {
@@ -67,22 +71,22 @@ export default function ProfileScreen() {
       <CustomStackScreen title="profile" />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.bannerContainer}>
-          <Image source={{ uri: BANNER_URL }} style={styles.bannerImage} />
+          <Image source={{ uri: profilePicture }} style={styles.bannerImage} />
           <View style={styles.bannerOverlay} />
         </View>
 
         <View style={styles.profileInfoContainer}>
-          <Image source={{ uri: AVATAR_URL }} style={styles.avatarLarge} />
+          <Image source={{ uri: profilePicture }} style={styles.avatarLarge} />
           <View style={styles.profileTextContainer}>
             <Text style={styles.profileName}>{username}</Text>
             <Text style={styles.profileTeam}>
-              Équipe : <Text style={styles.highlightTeam}>{inTeam}</Text>
+              Équipe : <Text style={[styles.highlightTeam, { color: teamColor }]}>{inTeam}</Text>
             </Text>
-            <Text style={styles.profileDescription}>
+            {/*<Text style={styles.profileDescription}>
               Content Creator - VALORANT{"\n"}
               Ex-Joueur Professionnel dans la section VALORANT de l'équipe
               GentleMates
-            </Text>
+            </Text>*/}
           </View>
         </View>
 
@@ -95,7 +99,7 @@ export default function ProfileScreen() {
           </Text>
         </View>
 
-        <View style={styles.postsContainer}>
+        {/*<View style={styles.postsContainer}>
           <Text style={styles.postsTitle}>Posts récents</Text>
           <View style={styles.postsRow}>
             <View style={styles.postCard}>
@@ -177,7 +181,7 @@ export default function ProfileScreen() {
               </View>
             </View>
           </View>
-        </View>
+        </View>*/}
       </ScrollView>
 
       <BottomNavbar />
@@ -240,7 +244,6 @@ const styles = StyleSheet.create({
     marginVertical: -10,
   },
   highlightTeam: {
-    color: COLORS.gentle_mates,
     fontStyle: "italic",
     textDecorationLine: "underline",
     fontWeight: "600",

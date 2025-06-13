@@ -12,6 +12,7 @@ import {
 } from 'react-native'
 import * as Unicons from '@iconscout/react-native-unicons'
 import { LinearGradient } from 'expo-linear-gradient'
+import { useRouter } from 'expo-router'
 import { COLORS } from '../(tabs)/styles/colors'
 // eslint-disable-next-line import/no-unresolved
 import { styles } from '../(tabs)/styles/postCardStyles'
@@ -25,6 +26,7 @@ interface RegularPostCardProps {
   description: string
   imageList?: string[]
   poster: {
+    id: string // 👈 ID du poster ajouté pour navigation
     username: string
     avatarUrl: string
     teamName?: string
@@ -32,7 +34,7 @@ interface RegularPostCardProps {
   }
   likes?: number
   reposts?: number
-  comments?: any[] // ou nombre
+  comments?: any[]
 }
 
 export default function PostCard({
@@ -46,6 +48,7 @@ export default function PostCard({
   const slideAnim = React.useRef(new Animated.Value(0)).current
   const [isExpanded, setIsExpanded] = React.useState(false)
   const [modalVisible, setModalVisible] = React.useState(false)
+  const router = useRouter()
 
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text
@@ -56,7 +59,7 @@ export default function PostCard({
     imageList && imageList.length > 0 ? imageList[currentImageIndex] : undefined
 
   const animateImageChange = React.useCallback(() => {
-    if (!imageList || imageList.length <= 1) return // Animation de sortie
+    if (!imageList || imageList.length <= 1) return
 
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -70,12 +73,11 @@ export default function PostCard({
         useNativeDriver: true
       })
     ]).start(() => {
-      // Changer l'image
       setCurrentImageIndex(prevIndex =>
         prevIndex === imageList.length - 1 ? 0 : prevIndex + 1
-      ) // Reset position pour l'animation d'entrée
+      )
 
-      slideAnim.setValue(50) // Animation d'entrée
+      slideAnim.setValue(50)
 
       Animated.parallel([
         Animated.timing(fadeAnim, {
@@ -94,7 +96,6 @@ export default function PostCard({
 
   React.useEffect(() => {
     if (imageList && imageList.length > 1 && !modalVisible) {
-      // Démarrer l'intervalle pour changer les images toutes les 4 secondes
       const interval = setInterval(animateImageChange, 4000)
       return () => clearInterval(interval)
     }
@@ -194,7 +195,10 @@ export default function PostCard({
   )
 
   const PosterInfos = (
-    <View style={styles.posterInfo}>
+    <TouchableOpacity
+      style={styles.posterInfo}
+      onPress={() => router.push(`/profile/${poster.id}` as any)}
+    >
       <Image source={{ uri: poster.avatarUrl }} style={styles.avatar} />
       <Text style={styles.nameTitle}>{poster.username}</Text>
       {poster.isVerified && (
@@ -202,7 +206,7 @@ export default function PostCard({
           <Text>✔</Text>
         </View>
       )}
-    </View>
+    </TouchableOpacity>
   )
 
   const PostActions = (
@@ -240,7 +244,6 @@ export default function PostCard({
                     </Text>
                   )}
                 </View>
-                {/* Indicateurs de carousel */}
                 {imageList && imageList.length > 1 && (
                   <View style={styles.carouselIndicators}>
                     {imageList.map((_, index) => (
@@ -248,7 +251,6 @@ export default function PostCard({
                         key={index}
                         style={[
                           styles.indicator,
-
                           {
                             backgroundColor:
                               index === currentImageIndex
@@ -302,28 +304,7 @@ export default function PostCard({
                     </Text>
                   )}
                 </Text>
-                <View>
-                  <View style={styles.buttonsContainer}>
-                    <TouchableOpacity>
-                      <Unicons.UilHeart size={25} color={COLORS.main_blue} />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <Unicons.UilCommentAlt
-                        size={25}
-                        color={COLORS.main_blue}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <Unicons.UilRepeat size={25} color={COLORS.main_blue} /> 
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <Unicons.UilCornerUpRight
-                        size={25}
-                        color={COLORS.main_blue}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                <View>{PostActions}</View>
               </View>
             </View>
           </View>
@@ -332,18 +313,7 @@ export default function PostCard({
         <View style={[styles.cardWrapper, { padding: 10 }]}>
           <View>
             <View>
-              <View style={styles.posterInfo}>
-                <Image
-                  source={{ uri: poster.avatarUrl }}
-                  style={styles.avatar}
-                />
-                <Text style={styles.nameTitle}>{poster.username}</Text>
-                {poster.isVerified && (
-                  <View>
-                    <Text>✔</Text>
-                  </View>
-                )}
-              </View>
+              {PosterInfos}
               {poster.teamName && <Text>[{poster.teamName}]</Text>}
             </View>
           </View>

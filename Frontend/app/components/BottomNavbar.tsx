@@ -31,7 +31,7 @@ export const BottomNavbar: React.FC<BottomNavbarProps> = ({ activeTab }) => {
 
   const logout = async () => {
     await AsyncStorage.clear();
-    router.push("/");
+    router.replace("/");
   };
 
   const navButtons: NavButton[] = [

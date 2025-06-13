@@ -16,7 +16,7 @@ export const messageStyles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: COLORS.main_blue,
-    paddingBottom: 10,
+    padding: 10,
     textAlign: 'center',
     borderBottomColor: COLORS.main_blue,
     borderBottomWidth: 1
@@ -41,7 +41,6 @@ export const messageStyles = StyleSheet.create({
     flexDirection: 'row-reverse',
     alignItems: 'center',
     marginBottom: 10,
-    padding: 10,
     backgroundColor: COLORS.background_blue
   },
 
@@ -86,7 +85,7 @@ export const messageStyles = StyleSheet.create({
 
   inputContainer: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 40,
     left: 0,
     right: 0,
     flexDirection: 'row',
