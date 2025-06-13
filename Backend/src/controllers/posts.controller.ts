@@ -92,7 +92,7 @@ export const createPost = async (
       [fieldname: string]: Express.Multer.File[]
     }
     imageList = files?.images?.map(
-      file => `${req.protocol}://127.0.0.1:4040/uploads/${file.filename}`
+      file => `${req.protocol}://localhost:3000/uploads/${file.filename}`
     ) || []
   }
 
